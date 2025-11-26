@@ -1,0 +1,330 @@
+Wed 11/12/2025  9:03:14.48 
+test bin0/e 
+testing finding e
+271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
+exiting finding e with great success
+test bin1/e 
+testing finding e
+271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
+exiting finding e with great success
+test bin2/e 
+testing finding e
+271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
+exiting finding e with great success
+test bin3/e 
+testing finding e
+271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
+exiting finding e with great success
+test bin0/td 
+r64: 2.71828
+exiting real number testing with great success
+test bin1/td 
+r64: 2.71828
+exiting real number testing with great success
+test bin2/td 
+r64: 2.71828
+exiting real number testing with great success
+test bin3/td 
+r64: 2.71828
+exiting real number testing with great success
+test bin0/ttt 
+serial runtime:   18.2411ms
+moves:            6493
+iterations:       1
+test bin1/ttt 
+serial runtime:   5.757ms
+moves:            6493
+iterations:       1
+test bin2/ttt 
+serial runtime:   3.5346ms
+moves:            6493
+iterations:       1
+test bin3/ttt 
+serial runtime:   2.4572ms
+moves:            6493
+iterations:       1
+test bin0/tmm 
+sum f64: 465880
+sum f32: 465880
+sum u32: 465880
+sum u16: 7128
+exiting matrix multiply testing with great success
+test bin1/tmm 
+sum f64: 465880
+sum f32: 465880
+sum u32: 465880
+sum u16: 7128
+exiting matrix multiply testing with great success
+test bin2/tmm 
+sum f64: 465880
+sum f32: 465880
+sum u32: 465880
+sum u16: 7128
+exiting matrix multiply testing with great success
+test bin3/tmm 
+sum f64: 465880
+sum f32: 465880
+sum u32: 465880
+sum u16: 7128
+exiting matrix multiply testing with great success
+test bin0/ato 
+testing atomic operations
+i64
+u64
+i32
+u32
+i16
+u16
+i8
+u8
+bool
+exiting atomic testing with great success
+test bin1/ato 
+testing atomic operations
+i64
+u64
+i32
+u32
+i16
+u16
+i8
+u8
+bool
+exiting atomic testing with great success
+test bin2/ato 
+testing atomic operations
+i64
+u64
+i32
+u32
+i16
+u16
+i8
+u8
+bool
+exiting atomic testing with great success
+test bin3/ato 
+testing atomic operations
+i64
+u64
+i32
+u32
+i16
+u16
+i8
+u8
+bool
+exiting atomic testing with great success
+test bin0/fileops 
+exiting fileops with great success
+test bin1/fileops 
+exiting fileops with great success
+test bin2/fileops 
+exiting fileops with great success
+test bin3/fileops 
+exiting fileops with great success
+test bin0/real 
+testing real number operations
+r32: 0.31831014
+r64: 0.36787968862663156
+r32 sin: 0.31296203
+r64 sin: 0.3596377963109607
+r32 cos: 0.9497656
+r64 cos: 0.9330919866039982
+r32 tan: 0.329515
+r64 tan: 0.3854258759844972
+r32 asin: 0.3239464
+r64 asin: 0.37672777417563674
+r32 acos: 1.24685
+r64 acos: 1.1940685526192598
+r32 atan: 0.3081693
+r64 atan: 0.3525136397354091
+_r32x = 2976.1567
+_r64x = 2976.1192265545533
+sum: = 5952.275964835803
+32 total 4.101693, 64 total 4.101914337473573
+exiting real number testing with great success
+test bin1/real 
+testing real number operations
+r32: 0.31831014
+r64: 0.36787968862663156
+r32 sin: 0.31296203
+r64 sin: 0.3596377963109607
+r32 cos: 0.9497656
+r64 cos: 0.9330919866039982
+r32 tan: 0.329515
+r64 tan: 0.3854258759844972
+r32 asin: 0.3239464
+r64 asin: 0.37672777417563674
+r32 acos: 1.24685
+r64 acos: 1.1940685526192598
+r32 atan: 0.3081693
+r64 atan: 0.3525136397354091
+_r32x = 2976.1567
+_r64x = 2976.1192265545533
+sum: = 5952.275964835803
+32 total 4.101693, 64 total 4.101914337473573
+exiting real number testing with great success
+test bin2/real 
+testing real number operations
+r32: 0.31831014
+r64: 0.36787968862663156
+r32 sin: 0.31296203
+r64 sin: 0.3596377963109607
+r32 cos: 0.9497656
+r64 cos: 0.9330919866039982
+r32 tan: 0.329515
+r64 tan: 0.3854258759844972
+r32 asin: 0.3239464
+r64 asin: 0.37672777417563674
+r32 acos: 1.24685
+r64 acos: 1.1940685526192598
+r32 atan: 0.3081693
+r64 atan: 0.3525136397354091
+_r32x = 2976.1567
+_r64x = 2976.1192265545533
+sum: = 5952.275964835803
+32 total 4.101693, 64 total 4.101914337473573
+exiting real number testing with great success
+test bin3/real 
+testing real number operations
+r32: 0.31831014
+r64: 0.36787968862663156
+r32 sin: 0.31296203
+r64 sin: 0.3596377963109607
+r32 cos: 0.9497656
+r64 cos: 0.9330919866039982
+r32 tan: 0.329515
+r64 tan: 0.3854258759844972
+r32 asin: 0.3239464
+r64 asin: 0.37672777417563674
+r32 acos: 1.24685
+r64 acos: 1.1940685526192598
+r32 atan: 0.3081693
+r64 atan: 0.3525136397354091
+_r32x = 2976.1567
+_r64x = 2976.1192265545533
+sum: = 5952.275964835803
+32 total 4.101693, 64 total 4.101914337473573
+exiting real number testing with great success
+test bin0/tphi 
+phi should tend towards 1.61803398874989484820458683436563811772030
+  at    5 iterations: 1.625
+  at   10 iterations: 1.6179775280898876
+  at   15 iterations: 1.618034447821682
+  at   20 iterations: 1.618033985017358
+  at   25 iterations: 1.6180339887802426
+  at   30 iterations: 1.6180339887496482
+  at   35 iterations: 1.618033988749897
+  at   40 iterations: 1.618033988749895
+exiting finding phi with great success
+test bin1/tphi 
+phi should tend towards 1.61803398874989484820458683436563811772030
+  at    5 iterations: 1.625
+  at   10 iterations: 1.6179775280898876
+  at   15 iterations: 1.618034447821682
+  at   20 iterations: 1.618033985017358
+  at   25 iterations: 1.6180339887802426
+  at   30 iterations: 1.6180339887496482
+  at   35 iterations: 1.618033988749897
+  at   40 iterations: 1.618033988749895
+exiting finding phi with great success
+test bin2/tphi 
+phi should tend towards 1.61803398874989484820458683436563811772030
+  at    5 iterations: 1.625
+  at   10 iterations: 1.6179775280898876
+  at   15 iterations: 1.618034447821682
+  at   20 iterations: 1.618033985017358
+  at   25 iterations: 1.6180339887802426
+  at   30 iterations: 1.6180339887496482
+  at   35 iterations: 1.618033988749897
+  at   40 iterations: 1.618033988749895
+exiting finding phi with great success
+test bin3/tphi 
+phi should tend towards 1.61803398874989484820458683436563811772030
+  at    5 iterations: 1.625
+  at   10 iterations: 1.6179775280898876
+  at   15 iterations: 1.618034447821682
+  at   20 iterations: 1.618033985017358
+  at   25 iterations: 1.6180339887802426
+  at   30 iterations: 1.6180339887496482
+  at   35 iterations: 1.618033988749897
+  at   40 iterations: 1.618033988749895
+exiting finding phi with great success
+test bin0/mysort 
+element count in vector: 58210
+element count after dedup: 58175
+test bin1/mysort 
+element count in vector: 58210
+element count after dedup: 58175
+test bin2/mysort 
+element count in vector: 58210
+element count after dedup: 58175
+test bin3/mysort 
+element count in vector: 58210
+element count after dedup: 58175
+test bin0/tap 
+starting, should tend towards 1.2020569031595942854...
+first implementation...
+  1.197531985674193      at 10 iterations
+  1.2020074006596781     at 100 iterations
+  1.2020564036593433     at 1000 iterations
+  1.202056898160098      at 10000 iterations
+  1.2020569031097323     at 100000 iterations
+  1.202056903150321      at 1000000 iterations
+second implementation...
+  1.1111111111111112     at 10 iterations
+  1.25                   at 100 iterations
+  1.2285012285012284     at 1000 iterations
+  1.1987532965715655     at 10000 iterations
+  1.1989688867573887     at 100000 iterations
+exiting finding ap with great success
+test bin1/tap 
+starting, should tend towards 1.2020569031595942854...
+first implementation...
+  1.197531985674193      at 10 iterations
+  1.2020074006596781     at 100 iterations
+  1.2020564036593433     at 1000 iterations
+  1.202056898160098      at 10000 iterations
+  1.2020569031097323     at 100000 iterations
+  1.202056903150321      at 1000000 iterations
+second implementation...
+  1.1111111111111112     at 10 iterations
+  1.25                   at 100 iterations
+  1.2285012285012284     at 1000 iterations
+  1.1987532965715655     at 10000 iterations
+  1.1989688867573887     at 100000 iterations
+exiting finding ap with great success
+test bin2/tap 
+starting, should tend towards 1.2020569031595942854...
+first implementation...
+  1.197531985674193      at 10 iterations
+  1.2020074006596781     at 100 iterations
+  1.2020564036593433     at 1000 iterations
+  1.202056898160098      at 10000 iterations
+  1.2020569031097323     at 100000 iterations
+  1.202056903150321      at 1000000 iterations
+second implementation...
+  1.1111111111111112     at 10 iterations
+  1.25                   at 100 iterations
+  1.2285012285012284     at 1000 iterations
+  1.1987532965715655     at 10000 iterations
+  1.1989688867573887     at 100000 iterations
+exiting finding ap with great success
+test bin3/tap 
+starting, should tend towards 1.2020569031595942854...
+first implementation...
+  1.197531985674193      at 10 iterations
+  1.2020074006596781     at 100 iterations
+  1.2020564036593433     at 1000 iterations
+  1.202056898160098      at 10000 iterations
+  1.2020569031097323     at 100000 iterations
+  1.202056903150321      at 1000000 iterations
+second implementation...
+  1.1111111111111112     at 10 iterations
+  1.25                   at 100 iterations
+  1.2285012285012284     at 1000 iterations
+  1.1987532965715655     at 10000 iterations
+  1.1989688867573887     at 100000 iterations
+exiting finding ap with great success
+Wed 11/12/2025  9:03:22.70 

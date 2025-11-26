@@ -1,0 +1,63 @@
+Tue 11/25/2025 20:54:46.63 
+====== ntvao test
+!function pointers195D$
+elapsed milliseconds:            1,258
+6502 cycles:                16,340,505
+clock rate:                  unbounded
+ms at 1.022727 Mhz:             15,977 == 0 days, 0 hours, 0 minutes, 15 seconds, 977 milliseconds
+====== ntvcm test
+moves: 6493
+iterations: 10
+
+elapsed milliseconds:            1,489
+Z80  cycles:                52,149,739
+clock rate:                  unbounded
+approx ms at 4Mhz:              13,037
+====== ntvdm test
+2.14 seconds
+moves: 6493
+iterations: 10
+
+elapsed milliseconds:            2,151
+8086 cycles:                43,547,076
+clock rate:                  unbounded
+approx ms at 4.77Mhz:            9,129  == 0 days, 0 hours, 0 minutes, 9 seconds, 129 milliseconds
+app exit code:                       0
+====== rvos test
+starting...
+64930 moves
+1025 milliseconds
+10 iterations
+elapsed milliseconds:            1,029
+cycles:                      2,993,555
+effective clock rate:            2,909
+app exit code:                       0
+====== armos test
+starting
+1162192 microseconds (-6)
+10 iterations
+64930 moves
+elapsed milliseconds:            1,166
+cycles:                      3,483,025
+effective clock rate:            2,987
+app exit code:                       0
+====== m68 test
+moves: 64930
+elapsed milliseconds:            1,872
+cycles:                      2,581,230
+effective clock rate:            1,378
+app exit code:                       0
+====== sparcos test
+moves: 64930
+iterations: 10
+elapsed milliseconds:            1,547
+cycles:                      3,626,239
+effective clock rate:            2,344
+app exit code:                       0
+====== x64os test
+64930 moves
+elapsed milliseconds:            2,224
+instructions:                3,280,934
+effective clock rate:            1,475
+app exit code:                       0
+Tue 11/25/2025 20:55:00.29 
