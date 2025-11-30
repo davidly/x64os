@@ -82,18 +82,20 @@ template <typename T> inline void do_swap( T & a, T & b ) { T tmp = a; a = b; b 
 
 void x64::trace_state()
 {
+    uint64_t rip_save = rip;
     uint8_t op = getui8( rip );
     if ( ( 0x66 == op ) || ( ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) )
         return;
 
 //    tracer.TraceBinaryData( getmem( 0x4018cb + 0x2b40d0 ), 8, 2 );
 
-    _op_len = 1;
-    uint64_t ip = ( 0xff == _prefix_rex ) ? rip : ( rip - 1 );
+    uint64_t ip = ( 0 == _prefix_rex ) ? rip : ( rip - 1 );
     if ( 0x66 == _prefix_size )
         ip--;
-    if ( 0xff != _prefix_sse2_repeat )
+    if ( 0 != _prefix_sse2_repeat )
         ip--;
+
+    rip++;
 
     static const char * previous_symbol = 0;
     uint64_t offset;
@@ -170,7 +172,7 @@ void x64::trace_state()
         case 0x04: case 0x0c: case 0x14: case 0x1c: case 0x24: case 0x2c: case 0x34: case 0x3c: // math al, imm8
         {
             uint8_t math = ( op >> 3 ) & 7;
-            tracer.Trace( "%s al, %#x\n", math_names[ math ], getui8( rip + _op_len ) );
+            tracer.Trace( "%s al, %#x\n", math_names[ math ], get_rip8() );
             break;
         }
         case 0x05: case 0x0d: case 0x15: case 0x1d: case 0x25: case 0x2d: case 0x35: case 0x3d: // math ax, imm16 / math eax, imm32 / math rax, se( imm32 )
@@ -179,12 +181,12 @@ void x64::trace_state()
             decode_rex();
             if ( 0x66 == _prefix_size )
             {
-                uint16_t imm = (int16_t) (int16_t) getui16( rip + _op_len );
+                uint16_t imm = (int16_t) (int16_t) get_rip16();
                 tracer.Trace( "%sw ax, %#x\n", math_names[ math ], imm );
             }
             else
             {
-                uint32_t imm = (int32_t) getui32( rip + _op_len );
+                uint32_t imm = (int32_t) get_rip32();
                 if ( _rexW )
                     tracer.Trace( "%sq rax, %#llx\n", math_names[ math ], sign_extend( imm, 31 ) );
                 else
@@ -194,8 +196,7 @@ void x64::trace_state()
         }
         case 0x0f:
         {
-            uint8_t op1 = getui8( rip + _op_len );
-            _op_len++;
+            uint8_t op1 = get_rip8();
 
             switch( op1 )
             {
@@ -242,7 +243,7 @@ void x64::trace_state()
                 }
                 case 0x12:
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
@@ -255,7 +256,7 @@ void x64::trace_state()
                 }
                 case 0x13:
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // movlpd m64, xmm1  moves double from m64 to low qword of xmm1 and doesn't touch high qword
@@ -266,7 +267,7 @@ void x64::trace_state()
                 }
                 case 0x14:
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128
@@ -314,7 +315,7 @@ void x64::trace_state()
                 }
                 case 0x1e:
                 {
-                    uint8_t op2 = getui8( rip + _op_len );
+                    uint8_t op2 = getui8( rip );
                     if ( 0xfa == op2 ) // endbr64
                         tracer.Trace( "endbr64\n" );
                     else
@@ -344,7 +345,7 @@ void x64::trace_state()
                 case 0x29:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
 
                     if ( 0x66 == _prefix_size ) // movapd xmm2/m128, xmm1
@@ -380,7 +381,7 @@ void x64::trace_state()
                 case 0x2e: // ucomisd xmm1, xmm2/m64   compare low doubles and set eflags accordingly
                 {
                     decode_rm();
-                    if ( 0xff == _prefix_sse2_repeat )
+                    if ( 0 == _prefix_sse2_repeat )
                     {
                         if ( 0x66 == _prefix_size )
                             tracer.Trace( "ucomisd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -396,7 +397,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size )// comisd xmm1, xmm2/m32  compare low double scalar values and set eflags
                         tracer.Trace( "comisd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xff == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
+                    else if ( 0 == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
                         tracer.Trace( "comiss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
@@ -412,7 +413,7 @@ void x64::trace_state()
                 case 0x50:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
                         tracer.Trace( "movmskpd %s, %s\n", register_names[ _reg ], rm_string( 8, true ) );
@@ -429,7 +430,7 @@ void x64::trace_state()
                         tracer.Trace( "sqrtss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else if ( 0x66 == _prefix_size ) // sqrtpd xmm1, xmm2/m128  compute sqrt of packed doubles
                         tracer.Trace( "sqrtpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xff == _prefix_sse2_repeat && 0xff == _prefix_size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
+                    else if ( 0 == _prefix_sse2_repeat && 0 == _prefix_size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
                         tracer.Trace( "sqrtps %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -438,7 +439,7 @@ void x64::trace_state()
                 case 0x52:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_size || 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
                         unhandled();
                     // rsqrtps xmm1, xmm2/m128 compute reciprocals of the square roots of packed floats
                     tracer.Trace( "rsqrtps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -456,7 +457,7 @@ void x64::trace_state()
                 case 0x55: // andnps/andnpd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     bool wide = ( 0x66 == _prefix_size );
                     tracer.Trace( "andnp%c %s, %s\n", wide ? 'd' : 's', xmm_names[ _reg ], rm_string( wide ? 8 : 4, true ) );
@@ -465,7 +466,7 @@ void x64::trace_state()
                 case 0x56: // orps/orpd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     bool wide = ( 0x66 == _prefix_size );
                     tracer.Trace( "orp%c %s, %s\n", wide ? 'd' : 's', xmm_names[ _reg ], rm_string( wide ? 8 : 4, true ) );
@@ -474,7 +475,7 @@ void x64::trace_state()
                 case 0x57: // xorpd/xorps xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     bool wide = ( 0x66 == _prefix_size );
                     tracer.Trace( "xorp%c %s, %s\n", wide ? 'd' : 's', xmm_names[ _reg ], rm_string( wide ? 8 : 4, true ) );
@@ -485,7 +486,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // addpd xmm1, xmm2/m128   add packed double values
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         tracer.Trace( "addpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
@@ -495,7 +496,7 @@ void x64::trace_state()
                             tracer.Trace( "addsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // addss xmm1, xmm2/m64
                             tracer.Trace( "addss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0xff == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix_sse2_repeat )
                             tracer.Trace( "addps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -507,7 +508,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // mulpd xmm1, xmm2/m128   multiply packed double values
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         tracer.Trace( "mulpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
@@ -517,7 +518,7 @@ void x64::trace_state()
                             tracer.Trace( "mulsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // mulss xmm1, xmm2/m64
                             tracer.Trace( "mulss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0xff == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix_sse2_repeat )
                             tracer.Trace( "mulps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -540,11 +541,11 @@ void x64::trace_state()
                 case 0x5b:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_size )
+                    if ( 0 != _prefix_size )
                         unhandled();
                     if ( 0xf3 == _prefix_sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
                         tracer.Trace( "cvttps2dq %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                    else if ( 0xff == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
+                    else if ( 0 == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
                         tracer.Trace( "cvtdq2ps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
@@ -555,7 +556,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // subpd xmm1, xmm2/m128   subtract packed double values
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         tracer.Trace( "subpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
@@ -565,7 +566,7 @@ void x64::trace_state()
                             tracer.Trace( "subsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // subss xmm1, xmm2/m64
                             tracer.Trace( "subss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0xff == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix_sse2_repeat )
                             tracer.Trace( "subps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -577,7 +578,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // minpd xmm1, xmm2/m128   min packed double values
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         tracer.Trace( "minpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
@@ -587,7 +588,7 @@ void x64::trace_state()
                             tracer.Trace( "minsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // minss xmm1, xmm2/m64
                             tracer.Trace( "minss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0xff == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix_sse2_repeat )
                             tracer.Trace( "minps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -599,7 +600,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // divpd xmm1, xmm2/m128   divide packed double values
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         tracer.Trace( "divpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
@@ -609,7 +610,7 @@ void x64::trace_state()
                             tracer.Trace( "divsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // divss xmm1, xmm2/m64
                             tracer.Trace( "divss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0xff == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix_sse2_repeat )
                             tracer.Trace( "divps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -621,7 +622,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // maxpd xmm1, xmm2/m128   max packed double values
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         tracer.Trace( "maxpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
@@ -631,7 +632,7 @@ void x64::trace_state()
                             tracer.Trace( "maxsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // maxss xmm1, xmm2/m64
                             tracer.Trace( "maxss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0xff == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix_sse2_repeat )
                             tracer.Trace( "maxps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -796,14 +797,11 @@ void x64::trace_state()
                 {
                     decode_rm();
                     if ( 0xf2 == _prefix_sse2_repeat ) // pshuflw xmm1, xmm2/m128, imm8
-                        tracer.Trace( "pshuflw %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), getui8( rip + _op_len ) );
+                        tracer.Trace( "pshuflw %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), get_rip8() );
                     else if ( 0xf3 == _prefix_sse2_repeat ) // pshufhw xmm1, xmm2/m128, imm8
-                        tracer.Trace( "pshufhw %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), getui8( rip + _op_len ) );
+                        tracer.Trace( "pshufhw %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), get_rip8() );
                     else if ( 0x66 == _prefix_size ) // pshufd xmm, xmm/m128, imm8
-                    {
-                        uint8_t imm = getui8( rip + _op_len );
-                        tracer.Trace( "pshufd %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm );
-                    }
+                        tracer.Trace( "pshufd %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), get_rip8() );
                     else
                         unhandled();
                     break;
@@ -813,7 +811,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size )
                     {
-                        uint8_t shift = getui8( rip + _op_len );
+                        uint8_t shift = get_rip8();
                         if ( 2 == _reg ) // psrlw
                             tracer.Trace( "psrlw %s, %u\n", xmm_names[ _rm ], shift );
                         else if ( 4 == _reg ) // psraw xmm1, imm8 shift signed words
@@ -832,7 +830,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size )
                     {
-                        uint8_t shift = getui8( rip + _op_len );
+                        uint8_t shift = get_rip8();
                         if ( 2 == _reg ) // psrld xmm1, imm8
                             tracer.Trace( "psrld %s, %u\n", xmm_names[ _rm ], shift );
                         else if ( 4 == _reg ) // psrad
@@ -852,13 +850,13 @@ void x64::trace_state()
                     if ( 0x66 == _prefix_size )
                     {
                         if ( 2 == _reg ) // psrlq xmm1, imm8   shift quad right logical
-                            tracer.Trace( "psrlq %s, %u\n", xmm_names[ _rm ], getui8( rip + _op_len ) );
+                            tracer.Trace( "psrlq %s, %u\n", xmm_names[ _rm ], get_rip8() );
                         else if ( 3 == _reg ) // psrldq xmm1, imm8   shift dquad right logical
-                            tracer.Trace( "psrldq %s, %u\n", xmm_names[ _rm ], getui8( rip + _op_len ) );
+                            tracer.Trace( "psrldq %s, %u\n", xmm_names[ _rm ], get_rip8() );
                         else if ( 6 == _reg ) // psllq xmm1, imm8
-                            tracer.Trace( "psllq %s, %u\n", xmm_names[ _rm ], getui8( rip + _op_len ) );
+                            tracer.Trace( "psllq %s, %u\n", xmm_names[ _rm ], get_rip8() );
                         else if ( 7 == _reg ) // pslldq xmm1, imm8   shift dquad left logical
-                            tracer.Trace( "pslldq %s, %u\n", xmm_names[ _rm ], getui8( rip + _op_len ) );
+                            tracer.Trace( "pslldq %s, %u\n", xmm_names[ _rm ], get_rip8() );
                         else
                             unhandled();
                     }
@@ -921,8 +919,8 @@ void x64::trace_state()
                 case 0x80: case 0x81: case 0x82: case 0x83: case 0x84: case 0x85: case 0x86: case 0x87: // jcc rel32
                 case 0x88: case 0x89: case 0x8a: case 0x8b: case 0x8c: case 0x8d: case 0x8e: case 0x8f:
                 {
-                    uint64_t disp = sign_extend( getui32( rip + _op_len ), 31 );
-                    tracer.Trace( "j%s %lld  # %#llx\n", condition_names[ op1 & 0xf ], disp, 6 + rip + disp );
+                    uint64_t disp = sign_extend( get_rip32(), 31 );
+                    tracer.Trace( "j%s %lld  # %#llx\n", condition_names[ op1 & 0xf ], disp, rip + disp );
                     break;
                 }
                 case 0x90: case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // setcc
@@ -951,7 +949,7 @@ void x64::trace_state()
                 case 0xa4: // shld r/m, r, imm   double precision left shift and fill with bits from r
                 {
                     decode_rm();
-                    uint8_t imm = getui8( rip + _op_len );
+                    uint8_t imm = get_rip8();
                     if ( _rexW )
                         tracer.Trace( "shld %s, %s, %u\n", rm_string( 8 ), register_name( _reg, 8 ), imm );
                     else if ( 0x66 == _prefix_size )
@@ -985,7 +983,7 @@ void x64::trace_state()
                 case 0xac: // shrd r/m, r, imm   double precision right shift and fill with bits from left
                 {
                     decode_rm();
-                    uint8_t imm8 = getui8( rip + _op_len );
+                    uint8_t imm8 = get_rip8();
                     if ( _rexW )
                         tracer.Trace( "shrd %s, %s, %u\n", rm_string( 8 ), register_name( _reg, 8 ), imm8 );
                     else if ( 0x66 == _prefix_size )
@@ -1007,7 +1005,7 @@ void x64::trace_state()
                 }
                 case 0xae: // stmxcsr / ldmxcsr
                 {
-                    uint8_t imm = getui8( rip + _op_len );
+                    uint8_t imm = get_rip8();
                     if ( 0xf0 == imm )
                         tracer.Trace( "mfence\n" );
                     else if ( 0xf8 == imm )
@@ -1066,7 +1064,7 @@ void x64::trace_state()
                 }
                 case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size )
@@ -1080,9 +1078,9 @@ void x64::trace_state()
                 case 0xba:
                 {
                     decode_rm();
+                    uint8_t imm = get_rip8();
                     if ( 4 == _reg ) // bt r/m imm8 (16, 32, 64 bit bit test)
                     {
-                        uint8_t imm = getui8( rip + _op_len );
                         if ( 0x66 == _prefix_size )
                             tracer.Trace( "bt %s, %u\n", rm_string( 2 ), imm );
                         else if ( _rexW )
@@ -1092,7 +1090,6 @@ void x64::trace_state()
                     }
                     else if ( 5 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test and set)
                     {
-                        uint8_t imm = getui8( rip + _op_len );
                         if ( 0x66 == _prefix_size )
                             tracer.Trace( "bts %s, %u\n", rm_string( 2 ), imm );
                         else if ( _rexW )
@@ -1102,7 +1099,6 @@ void x64::trace_state()
                     }
                     else if ( 6 == _reg ) // btr r/m, imm8  (16, 32, 64 bit test and reset)
                     {
-                        uint8_t imm = getui8( rip + _op_len );
                         if ( 0x66 == _prefix_size )
                             tracer.Trace( "btr %s, %u\n", rm_string( 2 ), imm );
                         else if ( _rexW )
@@ -1112,7 +1108,6 @@ void x64::trace_state()
                     }
                     else if ( 7 == _reg ) // btc r/m, imm8  (16, 32, 64 bit test and complement)
                     {
-                        uint8_t imm = getui8( rip + _op_len );
                         if ( 0x66 == _prefix_size )
                             tracer.Trace( "btc %s, %u\n", rm_string( 2 ), imm );
                         else if ( _rexW )
@@ -1188,7 +1183,7 @@ void x64::trace_state()
                 case 0xc2: // cmpps / cmppd / cmpsd / cmpss xmm1, xmm2/m128, imm8   compare floats/doubles using bits2:0 of imm8 as a comparison predicate
                 {
                     decode_rm();
-                    uint8_t imm = getui8( rip + _op_len );
+                    uint8_t imm = get_rip8();
                     if ( 0x66 == _prefix_size ) // packed double
                         tracer.Trace( "cmppd %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm );
                     else if ( 0xf2 == _prefix_sse2_repeat ) // scalar double
@@ -1202,9 +1197,9 @@ void x64::trace_state()
                 case 0xc4:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
-                    uint8_t imm = getui8( rip + _op_len );
+                    uint8_t imm = get_rip8();
                     if ( 0x66 == _prefix_size ) // pinsrw xmm, r32/m16, imm8
                         tracer.Trace( "pinsrw %s, %s, %u\n", xmm_names[ _reg ], rm_string( 2, true ), imm );
                     else
@@ -1215,7 +1210,7 @@ void x64::trace_state()
                 {
                     decode_rm();
                     if ( 0x66 == _prefix_size )
-                        tracer.Trace( "pextrw %s %s, %u\n", register_name( _reg, ( _rexW ? 8 : 4 ) ), xmm_names[ _rm ], getui8( rip + _op_len ) );
+                        tracer.Trace( "pextrw %s %s, %u\n", register_name( _reg, ( _rexW ? 8 : 4 ) ), xmm_names[ _rm ], get_rip8() );
                     else
                         unhandled();
                     break;
@@ -1223,21 +1218,16 @@ void x64::trace_state()
                 case 0xc6:
                 {
                     decode_rm();
+                    uint8_t imm8 = get_rip8();
                     if ( 0x66 == _prefix_size ) // shufpd xmm, xmm/m128, imm8
-                    {
-                        uint8_t imm8 = getui8( rip + _op_len );
                         tracer.Trace( "shufpd, %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm8 );
-                    }
                     else // shufps xmm, xmm/m128, imm8
-                    {
-                        uint8_t imm8 = getui8( rip + _op_len );
                         tracer.Trace( "shufps, %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm8 );
-                    }
                     break;
                 }
                 case 0xc8: case 0xc9: case 0xca: case 0xcb: case 0xcc: case 0xcd: case 0xce: case 0xcf: // bswap r32/r64
                 {
-                    if ( 0xff != _prefix_size || 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
                         unhandled();
                     _rm = ( op1 & 7 );
                     decode_rex();
@@ -1247,7 +1237,7 @@ void x64::trace_state()
                 case 0xd2:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size ) // psrld xmm1, xmm2/m128   shift dwords in xmm1 right by amount specified
                         tracer.Trace( "paddq, %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1258,7 +1248,7 @@ void x64::trace_state()
                 case 0xd3:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size ) // psrlq xmm1, xmm2/m128   shift qwords right while shifting in 0s
                         tracer.Trace( "psrlq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1269,7 +1259,7 @@ void x64::trace_state()
                 case 0xd4:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size )  // paddq xmm1, xmm2/m128
                         tracer.Trace( "paddq, %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1351,7 +1341,7 @@ void x64::trace_state()
                 }
                 case 0xdf: // pandn xmm1, xmm2/m128
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size )
@@ -1362,7 +1352,7 @@ void x64::trace_state()
                 }
                 case 0xe2:
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // psrad xmm1, xmm2/m128   shift signed dword in xmm1 right by xmm2/m128
@@ -1373,7 +1363,7 @@ void x64::trace_state()
                 }
                 case 0xe4: // pmulhuw xmm1, xmm2/m128
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size )
@@ -1384,7 +1374,7 @@ void x64::trace_state()
                 }
                 case 0xe5:
                 {
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
                     if ( 0x66 == _prefix_size ) // pmulhw xmm1, xmm2/m128   multiply packed signed words and store high 16 bits of results
@@ -1416,7 +1406,7 @@ void x64::trace_state()
                 case 0xea: // pminsw xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size )
                         tracer.Trace( "pminsw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1436,7 +1426,7 @@ void x64::trace_state()
                 case 0xee: // pmaxsw xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size )
                         tracer.Trace( "pmaxsw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1456,7 +1446,7 @@ void x64::trace_state()
                 case 0xf2:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size ) // pslld xmm1, xmm2/m128   shift dwords left while shifting in 0s
                         tracer.Trace( "pslld %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -1467,7 +1457,7 @@ void x64::trace_state()
                 case 0xf3:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size ) // psllq xmm1, xmm2/m128   shift qwords left while shifting in 0s
                         tracer.Trace( "psllq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1528,7 +1518,7 @@ void x64::trace_state()
                 case 0xfb:
                 {
                     decode_rm();
-                    if ( 0xff != _prefix_sse2_repeat )
+                    if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix_size )
                         tracer.Trace( "psubq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -1627,50 +1617,51 @@ void x64::trace_state()
         case 0x68: // push imm16 / imm32
         {
             if ( 0x66 == _prefix_size )
-                tracer.Trace( "push %#x\n", getui16( rip + _op_len ) );
+                tracer.Trace( "push %#x\n", get_rip16() );
             else
-                tracer.Trace( "push %#x\n", getui32( rip + _op_len ) );
+                tracer.Trace( "push %#x\n", get_rip32() );
             break;
         }
         case 0x69: // imul reg, r/m, imm. 16, 32, and 64-bit values (imm 16 or 32)
         {
             decode_rm();
             if ( 0x66 == _prefix_size )
-                tracer.Trace( "imul %s, %s, %d\n", register_names8[ _reg ], rm_string( 2 ), getui16( rip + _op_len ) );
+                tracer.Trace( "imul %s, %s, %d\n", register_names8[ _reg ], rm_string( 2 ), get_rip16() );
             else if ( _rexW )
-                tracer.Trace( "imul %s, %s, %d\n", register_names[ _reg ], rm_string( 8 ), getui32( rip + _op_len ) );
+                tracer.Trace( "imul %s, %s, %d\n", register_names[ _reg ], rm_string( 8 ), get_rip32() );
             else
-                tracer.Trace( "imul %s, %s, %d\n", register_names32[ _reg ], rm_string( 4 ), getui32( rip + _op_len ) );
+                tracer.Trace( "imul %s, %s, %d\n", register_names32[ _reg ], rm_string( 4 ), get_rip32() );
             break;
         }
         case 0x6a: // push imm8. sign-extended to 64 bits
         {
-            tracer.Trace( "push %#llx\n", (int64_t) (int8_t) getui8( rip + _op_len ) );
+            tracer.Trace( "push %#llx\n", (int64_t) (int8_t) get_rip8() );
             break;
         }
         case 0x6b: // imul reg, r/m, se( imm8 ). sizes 16/32/64
         {
             decode_rm();
+            uint8_t imm = get_rip8();
             if ( 0x66 == _prefix_size )
-                tracer.Trace( "imul %s, %s, %lld\n", register_names8[ _reg ], rm_string( 2 ), sign_extend( getui8( rip + _op_len ), 7 ) );
+                tracer.Trace( "imul %s, %s, %lld\n", register_names8[ _reg ], rm_string( 2 ), sign_extend( imm, 7 ) );
             else if ( _rexW )
-                tracer.Trace( "imul %s, %s, %lld\n", register_names[ _reg ], rm_string( 8 ), sign_extend( getui8( rip + _op_len ), 7 ) );
+                tracer.Trace( "imul %s, %s, %lld\n", register_names[ _reg ], rm_string( 8 ), sign_extend( imm, 7 ) );
             else
-                tracer.Trace( "imul %s, %s, %lld\n", register_names32[ _reg ], rm_string( 4 ), sign_extend( getui8( rip + _op_len ), 7 ) );
+                tracer.Trace( "imul %s, %s, %lld\n", register_names32[ _reg ], rm_string( 4 ), sign_extend( imm, 7 ) );
             break;
         }
         case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75: case 0x76: case 0x77: // jcc
         case 0x78: case 0x79: case 0x7a: case 0x7b: case 0x7c: case 0x7d: case 0x7e: case 0x7f:
         {
-            tracer.Trace( "j%s %d  # %#llx\n", condition_names[ op & 0xf ], (int8_t) getui8( rip + _op_len ), 2 + rip + (int64_t) (int8_t) getui8( rip + _op_len ) );
+            int8_t val = (int8_t) get_rip8();
+            tracer.Trace( "j%s %d  # %#llx\n", condition_names[ op & 0xf ], offset, rip + (int64_t) val );
             break;
         }
         case 0x80: // math r/m8, i8
         {
             decode_rm();
-            uint8_t imm = getui8( rip + _op_len );
             uint8_t math = _reg;
-            tracer.Trace( "%sb %s, %#x\n", math_names[ math ], rm_string( 1 ), imm );
+            tracer.Trace( "%sb %s, %#x\n", math_names[ math ], rm_string( 1 ), get_rip8() );
             break;
         }
         case 0x81: // math r/m, imm32
@@ -1678,13 +1669,10 @@ void x64::trace_state()
             decode_rm();
             uint8_t math = _reg;
             if ( 0x66 == _prefix_size )
-            {
-                uint16_t imm = getui16( rip + _op_len );
-                tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 2 ), imm );
-            }
+                tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 2 ), get_rip16() );
             else
             {
-                uint64_t imm = getui32( rip + _op_len );
+                uint64_t imm = get_rip32();
                 tracer.Trace( "%s%c %s, %#llx\n", math_names[ math ], _rexW ? 'q' : 'd', rm_string( _rexW ? 8 : 4 ), _rexW ? sign_extend( imm, 31 ) : imm );
             }
             break;
@@ -1694,13 +1682,13 @@ void x64::trace_state()
             decode_rm();
             if ( 0x66 == _prefix_size )
             {
-                uint16_t imm = (int16_t) (int16_t) getui8( rip + _op_len );
+                uint16_t imm = (int16_t) (int16_t) get_rip8();
                 uint8_t math = _reg;
                 tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 8 ), imm );
             }
             else
             {
-                uint32_t imm = (int32_t) (int8_t) getui8( rip + _op_len );
+                uint32_t imm = (int32_t) (int8_t) get_rip8();
                 uint8_t math = _reg;
                 if ( _rexW )
                     tracer.Trace( "%sq %s, %#llx\n", math_names[ math ], rm_string( 8 ), sign_extend( imm, 31 ) );
@@ -1774,7 +1762,7 @@ void x64::trace_state()
         case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // xchg ax, r  (widths 16, 32, 64)
         {
             _rm = op & 0xf;
-            if ( 0xff != _prefix_rex )
+            if ( 0 != _prefix_rex )
             {
                 decode_rex();
                 tracer.Trace( "xchg rax, %s\n", register_names[ _rm ] );
@@ -1816,18 +1804,18 @@ void x64::trace_state()
         }
         case 0xa8: // test al, imm8
         {
-            tracer.Trace( "test al, %#x\n", getui8( rip + _op_len ) );
+            tracer.Trace( "test al, %#x\n", get_rip8() );
             break;
         }
         case 0xa9: // test ax, imm16    text eax, imm32   test rax, se(imm32)
         {
             decode_rex();
-            if ( 0xff != _prefix_rex )
-                tracer.Trace( "test rax, %#x\n", sign_extend( getui32( rip + _op_len ), 31 ) );
+            if ( 0 != _prefix_rex )
+                tracer.Trace( "test rax, %#x\n", sign_extend( get_rip32(), 31 ) );
             else if ( 0x66 == _prefix_size )
-                tracer.Trace( "test ax, %#x\n", getui16( rip + _op_len ) );
+                tracer.Trace( "test ax, %#x\n", get_rip16() );
             else
-                tracer.Trace( "test eax, %#x\n", getui32( rip + _op_len ) );
+                tracer.Trace( "test eax, %#x\n", get_rip32() );
             break;
         }
         case 0xaa: // stos m8
@@ -1837,7 +1825,7 @@ void x64::trace_state()
         }
         case 0xab: // stos
         {
-            char w = ( 0xff != _prefix_rex ) ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
+            char w = ( 0 != _prefix_rex ) ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
             tracer.Trace( "sto%c rdi\n", w ); // 32-bit edi addressing ignored
             break;
         }
@@ -1859,19 +1847,19 @@ void x64::trace_state()
             if ( 0x66 == _prefix_size )
             {
                 w = 'w';
-                val = getui16( rip + _op_len );
+                val = get_rip16();
                 width = 2;
             }
             else if ( _rexW )
             {
                 w = 'q';
-                val = getui64( rip + _op_len );
+                val = get_rip64();
                 width = 8;
             }
             else
             {
                 w = 'd';
-                val = getui32( rip + _op_len );
+                val = get_rip32();
                 width = 4;
             }
 
@@ -1881,13 +1869,13 @@ void x64::trace_state()
         case 0xc0: // shift r8/m8, imm8
         {
             decode_rm();
-            tracer.Trace( "%s %s, %u\n", shift_names[ _reg ], rm_string( 1 ), getui8( rip + _op_len ) );
+            tracer.Trace( "%s %s, %u\n", shift_names[ _reg ], rm_string( 1 ), get_rip8() );
             break;
         }
         case 0xc1: // sal/shr r/m, imm8
         {
             decode_rm();
-            uint8_t val = getui8( rip + _op_len );
+            uint8_t val = get_rip8();
             if ( 0x66 == _prefix_size )
                 tracer.Trace( "%s %s, %#x\n", shift_names[ _reg ], rm_string( 2 ), val );
             else if ( _rexW )
@@ -1905,7 +1893,7 @@ void x64::trace_state()
         {
             decode_rm();
             if ( 0 == _reg )
-                tracer.Trace( "movb %s, %d\n", rm_string( 1 ), getui8( rip + _op_len ) );
+                tracer.Trace( "movb %s, %d\n", rm_string( 1 ), get_rip8() );
             else
                 unhandled();
             break;
@@ -1914,11 +1902,11 @@ void x64::trace_state()
         {
             decode_rm();
             if ( 0x66 == _prefix_size )
-                tracer.Trace( "movw %s, %#x\n", rm_string( 8 ), getui16( rip + _op_len ) );
+                tracer.Trace( "movw %s, %#x\n", rm_string( 8 ), get_rip16() );
             else if ( _rexW )
-                tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), sign_extend( getui32( rip + _op_len ), 31 ) );
+                tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), sign_extend( get_rip32(), 31 ) );
             else
-                tracer.Trace( "movd %s, %##x\n", rm_string( 4 ), getui32( rip + _op_len ) );
+                tracer.Trace( "movd %s, %##x\n", rm_string( 4 ), get_rip32() );
             break;
         }
         case 0xc9:
@@ -1956,7 +1944,7 @@ void x64::trace_state()
         }
         case 0xd8:
         {
-            uint8_t op1 = getui8( rip + 1 );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fmul st(0), st(i)
                 tracer.Trace( "fadd st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(0), st(i)
@@ -1971,6 +1959,7 @@ void x64::trace_state()
                 tracer.Trace( "fdivr st(0), st(%u)\n", op1 & 7 );
             else
             {
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fadd m32fp
                     tracer.Trace( "fadd %s  # m32fp\n", rm_string( 4, true ) );
@@ -1991,7 +1980,7 @@ void x64::trace_state()
         }
         case 0xd9:
         {
-            uint8_t op1 = getui8( rip + 1 );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xc0 && op1 <= 0xc7 )
                 tracer.Trace( "fld st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xc8 && op1 <= 0xcf )
@@ -2014,6 +2003,7 @@ void x64::trace_state()
                 tracer.Trace( "%s\n", float_d9_f8[ op1 & 7 ] );
             else
             {
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
                     tracer.Trace( "fld %s  # m32fp\n", rm_string( 4 ) );
@@ -2036,7 +2026,7 @@ void x64::trace_state()
         }
         case 0xda:
         {
-            uint8_t op1 = getui8( rip + 1 );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xc0 && op1 <= 0xc7 ) // move if below
                 tracer.Trace( "fcmovb st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xc8 && op1 <= 0xcf ) // move if equal
@@ -2047,6 +2037,7 @@ void x64::trace_state()
                 tracer.Trace( "fcmovu st(0), st(%u)\n", op1 & 7 );
             else
             {
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fiadd m32int  add m32int to st(0) and store in st(0)
                     tracer.Trace( "fiadd %d  # m32int\n", get_rm32() );
@@ -2059,8 +2050,7 @@ void x64::trace_state()
         }
         case 0xdb:
         {
-            decode_rm();
-            uint8_t op1 = getui8( rip + 1 );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xc0 && op1 <= 0xc7 ) // move if not below
                 tracer.Trace( "fcmovnb st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xc8 && op1 <= 0xcf ) // move if not equal
@@ -2073,23 +2063,27 @@ void x64::trace_state()
                 tracer.Trace( "fcomi st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomi st, st(i)
                 tracer.Trace( "fucomi st(0), st(%u)\n", op1 & 7 );
-            else if ( 0 == _reg ) // fild m32int
-                tracer.Trace( "fild %d\n", getui32( rip + _op_len ) );
-            else if ( 3 == _reg ) // fistp m32int
-                tracer.Trace( "fistp %s  # m32int\n", rm_string( 4 ) );
-            else if ( 4 == _reg ) // nop, clear exceptions, init fp unit
-                tracer.Trace( "f nop of some sort\n" );
-            else if ( 5 == _reg ) // fld m80fp push m80fp onto the fpu register stack
-                tracer.Trace( "fld %s  # push m80fp\n", rm_string( 8 ) );
-            else if ( 7 == _reg ) // fstp m80fp   copy top of stack to m80fp and pop it
-                tracer.Trace( "fstp %s  # m80fp\n", rm_string( 8 ) );
-            else
-                unhandled();
+            {
+                rip--;
+                decode_rm();
+                if ( 0 == _reg ) // fild m32int
+                    tracer.Trace( "fild %d\n", get_rip32() );
+                else if ( 3 == _reg ) // fistp m32int
+                    tracer.Trace( "fistp %s  # m32int\n", rm_string( 4 ) );
+                else if ( 4 == _reg ) // nop, clear exceptions, init fp unit
+                    tracer.Trace( "f nop of some sort\n" );
+                else if ( 5 == _reg ) // fld m80fp push m80fp onto the fpu register stack
+                    tracer.Trace( "fld %s  # push m80fp\n", rm_string( 8 ) );
+                else if ( 7 == _reg ) // fstp m80fp   copy top of stack to m80fp and pop it
+                    tracer.Trace( "fstp %s  # m80fp\n", rm_string( 8 ) );
+                else
+                    unhandled();
+            }
             break;
         }
         case 0xdc:
         {
-            uint8_t op1 = getui8( rip + 1 );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubr st(i), st(0)
                 tracer.Trace( "fsubr st(%u), st(0)\n", op1 & 7 );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsub st(i), st(0)
@@ -2104,6 +2098,7 @@ void x64::trace_state()
                 tracer.Trace( "fdiv st(%u), st(0)\n", op1 & 7 );
             else
             {
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fadd m64fp
                     tracer.Trace( "fadd %s  # m64fp\n", rm_string( 8 ) );
@@ -2128,24 +2123,27 @@ void x64::trace_state()
         }
         case 0xdd:
         {
-            decode_rm();
-            uint8_t op1 = getui8( rip + 1 );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
                 tracer.Trace( "fstp st(%u), st(0)\n", op1 & 7 );
-            else if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
-                tracer.Trace( "fld %s\n", rm_string( 8 ) );
-            else if ( 2 == _reg ) // fst m64fp   copy st(0) to m64fp
-                tracer.Trace( "fst %s\n", rm_string( 8 ) );
-            else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
-                tracer.Trace( "fstp %s\n", rm_string( 8 ) );
             else
-                unhandled();
+            {
+                rip--;
+                decode_rm();
+                if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
+                    tracer.Trace( "fld %s\n", rm_string( 8 ) );
+                else if ( 2 == _reg ) // fst m64fp   copy st(0) to m64fp
+                    tracer.Trace( "fst %s\n", rm_string( 8 ) );
+                else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
+                    tracer.Trace( "fstp %s\n", rm_string( 8 ) );
+                else
+                    unhandled();
+            }
             break;
         }
         case 0xde:
         {
-            uint8_t op1 = getui8( rip + _op_len );
-            _op_len++;
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubrp st(i), st(0)
                 tracer.Trace( "fsubrp st(%u), st(0)\n", ( op1 & 7 ) % _countof( fregs ) );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubp st(i), st(0)
@@ -2160,6 +2158,7 @@ void x64::trace_state()
                 tracer.Trace( "fdivp st(%u), st(0)\n", ( op1 & 7 ) % _countof( fregs ) );
             else
             {
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fiadd m16int   add m16int to st(0) and store in st(0)
                     tracer.Trace( "fiadd %s  # m16int\n", rm_string( 2 ) );
@@ -2170,15 +2169,16 @@ void x64::trace_state()
         }
         case 0xdf:
         {
-            uint8_t op1 = getui8( rip + _op_len );
+            uint8_t op1 = get_rip8();
             if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomip st, st(i)
                 tracer.Trace( "fucomip st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fcomip st(0), st(i)
                 tracer.Trace( "fcomip st(0), st(%u)\n", op1 & 7 );
             else if ( 0xe0 == op1 )
                 tracer.Trace( "fnstsw ax\n" );
-            else if ( 0xff == _prefix_sse2_repeat )
+            else if ( 0 == _prefix_sse2_repeat )
             {
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fild m16int
                     tracer.Trace( "fild %s  # m16int\n", rm_string( 2 ) );
@@ -2197,7 +2197,7 @@ void x64::trace_state()
         }
         case 0xe3: // jcxz / jecxz / jrcxz rel8
         {
-            int8_t rel = getui8( rip + _op_len );
+            int8_t rel = get_rip8();
             if ( 0x66 == _prefix_size )
                 tracer.Trace( "jcxz %d\n", (int32_t) rel );
             else if ( _rexW )
@@ -2208,17 +2208,20 @@ void x64::trace_state()
         }
         case 0xe8: // call rel32
         {
-            tracer.Trace( "call %d  # %#llx\n", getui32( rip + _op_len ), 5 + rip + (int32_t) getui32( rip + _op_len ) );
+            uint32_t imm = get_rip32();
+            tracer.Trace( "call %d  # %#llx\n", imm, rip + (int32_t) imm );
             break;
         }
         case 0xe9: // jmp cd  (relative to rip sign-extended 32-bit immediate)
         {
-            tracer.Trace( "jmp %d  # %#llx\n", (int32_t) getui32( rip + _op_len ), 5 + rip + (int32_t) getui32( rip + _op_len ) );
+            uint32_t imm = get_rip32();
+            tracer.Trace( "jmp %d  # %#llx\n", (int32_t) imm, rip + (int32_t) imm );
             break;
         }
         case 0xeb: // jmp
         {
-            tracer.Trace( "jmp %d  # %#llx\n", (int8_t) getui8( rip + _op_len ), 2 + rip + (int8_t) getui8( rip + _op_len ) );
+            int8_t imm = (int8_t) get_rip8();
+            tracer.Trace( "jmp %d  # %#llx\n", imm, rip + imm );
             break;
         }
         case 0xf0: // lock
@@ -2240,7 +2243,7 @@ void x64::trace_state()
         {
             decode_rm();
             if ( 0 == _reg ) // test r/m8, imm8
-                tracer.Trace( "test %s, %#x\n", rm_string( 1 ), getui8( rip + _op_len ) );
+                tracer.Trace( "test %s, %#x\n", rm_string( 1 ), get_rip8() );
             else if ( 2 == _reg ) // not r/m8
                 tracer.Trace( "not %s\n", rm_string( 1 ) );
             else if ( 3 == _reg ) // neg r/m8
@@ -2261,11 +2264,11 @@ void x64::trace_state()
             if ( 0 == _reg ) // test r/m16, imm16   test r/m32, imm32    test r/m64, se( imm32 )
             {
                 if ( 0x66 == _prefix_size )
-                    tracer.Trace( "testw %s, %#x\n", rm_string( 2 ), getui16( rip + _op_len ) );
+                    tracer.Trace( "testw %s, %#x\n", rm_string( 2 ), get_rip16() );
                 else if ( _rexW )
-                    tracer.Trace( "testq %s, %#llx\n", rm_string( 8 ), sign_extend( getui32( rip + _op_len ), 31 ) );
+                    tracer.Trace( "testq %s, %#llx\n", rm_string( 8 ), sign_extend( get_rip32(), 31 ) );
                 else
-                    tracer.Trace( "testd %s, %#x\n", rm_string( 4 ), getui32( rip + _op_len ) );
+                    tracer.Trace( "testd %s, %#x\n", rm_string( 4 ), get_rip32() );
             }
             else if ( 2 == _reg )
             {
@@ -2390,6 +2393,7 @@ void x64::trace_state()
             unhandled();
     }
 
+    rip = rip_save;
     clear_decoding();
 } //trace_state
 
@@ -2988,14 +2992,12 @@ void x64::unhandled()
       00       101     RIP-relative addressing: This is a special case in 64-bit mode where the memory address is calculated relative to the instruction pointer (RIP).
                        The r/m=101 and mod=00 combination, which typically specifies a base register in other modes, is repurposed for this.
       01/10    100     SIB byte required, with 8-bit (mod=01) or 32-bit (mod=10) displacement.
-      00/01/10 Other   Memory addressing with no displacement (mod=00), 8-bit displacement (mod=01), or 32-bit displacement (mod=10) or (mod=00 and base=5).
 */
 
 void x64::decode_sib()
 {
     assert( ( _mod < 3 ) && ( 4 == ( _rm & 7 ) ) ); // SIB byte required
-    uint8_t sib = getui8( rip + _op_len );
-    _op_len++;
+    uint8_t sib = get_rip8();
     _sibScale = sib >> 6;
     _sibIndex = ( ( sib >> 3 ) & 7 );
     if ( _rexX )
@@ -3003,15 +3005,9 @@ void x64::decode_sib()
     _sibBase = ( sib & 7 );
 
     if ( ( 2 == _mod ) || ( ( 0 == _mod ) && ( 5 == _sibBase ) ) ) // 32-bit displacement
-    {
-        _displacement = sign_extend( getui32( rip + _op_len ), 31 );
-        _op_len += 4;
-    }
+        _displacement = sign_extend( get_rip32(), 31 );
     else if ( 1 == _mod ) // 8-bit displacement
-    {
-        _displacement = sign_extend( getui8( rip + _op_len ), 7 );
-        _op_len++;
-    }
+        _displacement = sign_extend( get_rip8(), 7 );
 
     if ( _rexB )
         _sibBase |= 8;
@@ -3019,7 +3015,9 @@ void x64::decode_sib()
 
 inline void x64::decode_rex()
 {
-    if ( 0xff != _prefix_rex )
+    if ( 0 == _prefix_rex )
+        _rexW = _rexR = _rexX = _rexB = 0;
+    else
     {
         assert( 0x40 == ( 0xf0 & _prefix_rex ) );
         _rexW = ( 0 != ( _prefix_rex & 8 ) );      // W = wide (64-bit), not 32-bit
@@ -3032,15 +3030,13 @@ inline void x64::decode_rex()
         if ( _rexB )
             _rm |= 8;
     }
-    else
-        _rexW = _rexR = _rexX = _rexB = 0;
 } //decode_rex
 
 void x64::decode_rm()
 {
-    uint8_t modRM = getui8( rip + _op_len );
-    _op_len++;
+    uint8_t modRM = get_rip8();
     _rm = ( modRM & 7 );             // register or memory operand
+    uint8_t saved_rm = _rm;          // we'll need this version without the possible _rexB
     _reg = ( ( modRM >> 3 ) & 7 );   // register operand
     _mod = ( modRM >> 6 );           // this indicates whether the _rm operand is a register or memory location
 
@@ -3048,21 +3044,12 @@ void x64::decode_rm()
 
     if ( _mod < 3 ) // if r/m refers to memory
     {
-        if ( 4 == ( _rm & 7 ) )
+        if ( 4 == saved_rm )
             decode_sib();
-        else
-        {
-            if ( ( 2 == _mod ) || ( ( 0 == _mod ) && ( 5 == ( _rm & 7 ) ) ) ) // 32-bit displacement
-            {
-                _displacement = sign_extend( getui32( rip + _op_len ), 31 );
-                _op_len += 4;
-            }
-            else if ( 1 == _mod ) // 8-bit displacement
-            {
-                _displacement = sign_extend( getui8( rip + _op_len ), 7 );
-                _op_len++;
-            }
-        }
+        else if ( ( 2 == _mod ) || ( ( 0 == _mod ) && ( 5 == saved_rm ) ) ) // 32-bit displacement
+            _displacement = sign_extend( get_rip32(), 31 );
+        else if ( 1 == _mod ) // 8-bit displacement
+            _displacement = sign_extend( get_rip8(), 7 );
     }
 } //decode_rm
 
@@ -3073,10 +3060,9 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
 
     if ( 1 == byte_width )
     {
-        if ( 0xff != _prefix_rex )
+        if ( 0 != _prefix_rex )
             return register_names8[ reg ];
-        else
-            return register_names8_old[ reg ];
+        return register_names8_old[ reg ];
     }
     if ( 2 == byte_width )
         return register_names16[ reg ];
@@ -3122,7 +3108,7 @@ uint64_t x64::effective_address()
         else if ( 0 == _mod )
         {
             if ( 5 == ( _rm & 7 ) ) // [rip + disp32] RIP-relative addressing. relative to the following instruction
-                ea = rip + _op_len + _displacement;
+                ea = rip + _displacement;
             else // [ r/m ]
             {
                 assert( ( _rm <= 3 ) || ( _rm >= 6 && _rm <= 11 ) || ( _rm >= 14 && _rm <= 15 ) );
@@ -3135,7 +3121,7 @@ uint64_t x64::effective_address()
     else // [ r/m ]
         ea = regs[ _rm ].q;
 
-    if ( 0xff != _prefix_segment )
+    if ( 0 != _prefix_segment )
     {
         if ( 0x64 == _prefix_segment )
             ea += fs;
@@ -3568,19 +3554,15 @@ void x64::set_eflags_from_fcc( uint32_t fcc )
 
 uint64_t x64::run()
 {
-    tracer.Trace( "code at rip %#llx:\n", rip );
-    tracer.TraceBinaryData( getmem( rip ), 128, 4 );
-
     uint64_t instruction_count = 0;
 
     for ( ;; )
     {
         instruction_count++;        // .67% of runtime for this and 2% for prefix initialization below
-        _prefix_rex = 0xff;         // can be 0x40 through 0x4f to indicate high registers and 64-bit operands
-        _prefix_size = 0xff;        // can be 0x66 (operand size 16)
-        _prefix_sse2_repeat = 0xff; // can be f2 or f3 for SSE2 instructions or string repeat opcodes
-        _prefix_segment = 0xff;     // 0x64 for fs: or 0x65 for gs:
-        _op_len = 1;
+        _prefix_rex = 0;            // can be 0x40 through 0x4f to indicate high registers and 64-bit operands
+        _prefix_size = 0;           // can be 0x66 (operand size 16)
+        _prefix_sse2_repeat = 0;    // can be 0xf2 or 0xf3 for SSE2 instructions or string repeat opcodes
+        _prefix_segment = 0;        // 0x64 for fs: or 0x65 for gs:
 
 _prefix_is_set:
 
@@ -3607,7 +3589,7 @@ _prefix_is_set:
                 trace_state();
         }
 
-        uint8_t op = getui8( rip ); // 5.4% of runtime
+        uint8_t op = get_rip8(); // 5.4% of runtime
 
         switch( op )                // 25% of runtime setting up for the switch
         {
@@ -3680,8 +3662,7 @@ _prefix_is_set:
             {
                 uint8_t math = ( op >> 3 ) & 7;
                 uint8_t val = regs[ rax ].b;
-                uint8_t imm = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t imm = get_rip8();
                 do_math( math, &val, imm );
                 if ( 7 != math ) // don't write on cmp
                     regs[ rax ].b = val; // only modify the low byte
@@ -3693,14 +3674,12 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rexW )
                 {
-                    uint32_t imm = (int32_t) getui32( rip + _op_len );
-                    _op_len += 4;
+                    uint32_t imm = (int32_t) get_rip32();
                     do_math( math, & regs[ rax ].q, (uint64_t) sign_extend( imm, 31 ) );
                 }
                 else if ( 0x66 == _prefix_size )
                 {
-                    uint16_t imm = getui16( rip + _op_len );
-                    _op_len += 2;
+                    uint16_t imm = get_rip16();
                     uint16_t regval = regs[ rax ].w;
                     do_math( math, &regval, imm );
                     if ( 7 != math )
@@ -3708,8 +3687,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    uint32_t imm = (int32_t) getui32( rip + _op_len );
-                    _op_len += 4;
+                    uint32_t imm = (int32_t) get_rip32();
                     uint32_t regval = regs[ rax ].d;
                     do_math( math, &regval, imm );
                     if ( 7 != math )
@@ -3719,14 +3697,12 @@ _prefix_is_set:
             }
             case 0x0f:
             {
-                uint8_t op1 = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t op1 = get_rip8();
 
                 switch ( op1 )
                 {
                     case 5: // syscall
                     {
-                        _op_len = 2;
                         emulator_invoke_svc( *this );
                         break;
                     }
@@ -3784,7 +3760,7 @@ _prefix_is_set:
                     }
                     case 0x12:
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         decode_rm();
                         if ( 0x66 == _prefix_size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
@@ -3804,7 +3780,7 @@ _prefix_is_set:
                     }
                     case 0x13:
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         decode_rm();
                         if ( 0x66 == _prefix_size ) // movlpd m64, xmm1. moves double from low qword of xmm1 to m64
@@ -3816,7 +3792,7 @@ _prefix_is_set:
                     }
                     case 0x14:
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         decode_rm();
                         if ( 0x66 == _prefix_size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128 into low of xmm1 and high of xmm1
@@ -3895,13 +3871,14 @@ _prefix_is_set:
                     }
                     case 0x1e:
                     {
-                        uint8_t op2 = getui8( rip + _op_len );
+                        uint8_t op2 = getui8( rip );
                         if ( 0xfa == op2 ) // endbr64
-                            _op_len++;
+                            rip++;
                         else
                         {
                             decode_rm();
-                            if ( 1 == _reg ) { /* cet isn't implemented */ }  // rdsspd/rdsspq
+                            if ( 1 == _reg )
+                                { /* cet isn't implemented */ }  // rdsspd/rdsspq
                             else
                                 unhandled();
                         }
@@ -3909,17 +3886,17 @@ _prefix_is_set:
                     }
                     case 0x1f: // nopl
                     {
-                        uint8_t op2 = getui8( rip + _op_len );
+                        uint8_t op2 = get_rip8();
                         if ( 0 == op2 )
-                            _op_len = 3;
+                            { /* do nothing */ }
                         else if ( 0x40 == op2 )
-                            _op_len = 4;
+                            rip += 1;
                         else if ( 0x44 == op2 )
-                            _op_len = 5;
+                            rip += 2;
                         else if ( 0x80 == op2 )
-                            _op_len = 7;
+                            rip += 4;
                         else if ( 0x84 == op2 )
-                            _op_len = 8;
+                            rip += 5;
                         else
                             unhandled();
                         break;
@@ -3948,7 +3925,7 @@ _prefix_is_set:
                     case 0x29: // movaps xmm/m128, xmm   move 4 aligned packed single precision fp values from xmm1 to xmm2/m128
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size )
                             set_rmx64_2( xregs[ _reg ].get64( 0 ), xregs[ _reg ].get64( 1 ) );
@@ -3984,7 +3961,7 @@ _prefix_is_set:
                     case 0x2e: // ucomisd xmm1, xmm2/m64 compare low doubles and set eflags accordingly. also ucomiss
                     {
                         decode_rm();
-                        if ( 0xff == _prefix_sse2_repeat )
+                        if ( 0 == _prefix_sse2_repeat )
                         {
                             if ( 0x66 == _prefix_size )
                             {
@@ -4009,7 +3986,7 @@ _prefix_is_set:
                             uint32_t fcc = compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) );
                             set_eflags_from_fcc( fcc );
                         }
-                        else if ( 0xff == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
+                        else if ( 0 == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
                         {
                             uint32_t fcc = compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) );
                             set_eflags_from_fcc( fcc );
@@ -4029,7 +4006,7 @@ _prefix_is_set:
                     case 0x50:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
                         {
@@ -4060,7 +4037,7 @@ _prefix_is_set:
                             for ( uint32_t e = 0; e < 2; e++ )
                                 dst.setd( e, sqrt( get_rmxdouble( e ) ) );
                         }
-                        else if ( 0xff == _prefix_sse2_repeat && 0xff == _prefix_size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
+                        else if ( 0 == _prefix_sse2_repeat && 0 == _prefix_size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 dst.setf( e, sqrtf( get_rmxfloat( e ) ) );
@@ -4073,7 +4050,7 @@ _prefix_is_set:
                     case 0x52:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_size || 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
                             unhandled();
                         // rsqrtps xmm1, xmm2/m128 compute reciprocals of the square roots of packed floats
                         vec16_t & dst = xregs[ _reg ];
@@ -4105,7 +4082,7 @@ _prefix_is_set:
                     case 0x55: // andnpd/andnps xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         bool wide = ( 0x66 == _prefix_size );
                         vec16_t & dst = xregs[ _reg ];
@@ -4121,7 +4098,7 @@ _prefix_is_set:
                     case 0x56: // orpd/orps xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         bool wide = ( 0x66 == _prefix_size );
                         vec16_t & dst = xregs[ _reg ];
@@ -4137,7 +4114,7 @@ _prefix_is_set:
                     case 0x57: // xorpd/xorps xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         bool wide = ( 0x66 == _prefix_size );
                         vec16_t & dst = xregs[ _reg ];
@@ -4163,7 +4140,7 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // addss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fadd( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0xff == _prefix_size && 0xff == _prefix_sse2_repeat ) // addps xmm1, xmm2/m128   add packed float values
+                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // addps xmm1, xmm2/m128   add packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fadd( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4186,7 +4163,7 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // mulss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fmul( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0xff == _prefix_size && 0xff == _prefix_sse2_repeat ) // mulps xmm1, xmm2/m128   multiply packed float values
+                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // mulps xmm1, xmm2/m128   multiply packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fmul( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4223,7 +4200,7 @@ _prefix_is_set:
                     case 0x5b:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_size )
+                        if ( 0 != _prefix_size )
                             unhandled();
                         vec16_t & xmm1 = xregs[ _reg ];
                         if ( 0xf3 == _prefix_sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
@@ -4233,7 +4210,7 @@ _prefix_is_set:
                             xmm1.set32( 2, (int32_t) trunc( get_rmxfloat( 2 ) ) );
                             xmm1.set32( 3, (int32_t) trunc( get_rmxfloat( 3 ) ) );
                         }
-                        else if ( 0xff == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
+                        else if ( 0 == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
                         {
                             xmm1.setf( 0, (float) (int32_t) get_rmx32( 0 ) );
                             xmm1.setf( 1, (float) (int32_t) get_rmx32( 1 ) );
@@ -4258,7 +4235,7 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // subss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fsub( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0xff == _prefix_size && 0xff == _prefix_sse2_repeat ) // subps xmm1, xmm2/m128   subtract packed float values
+                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // subps xmm1, xmm2/m128   subtract packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fsub( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4281,7 +4258,7 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // minss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fmin( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0xff == _prefix_size && 0xff == _prefix_sse2_repeat ) // minps xmm1, xmm2/m128   minide packed float values
+                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // minps xmm1, xmm2/m128   minide packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fmin( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4304,7 +4281,7 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // divss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fdiv( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0xff == _prefix_size && 0xff == _prefix_sse2_repeat ) // divps xmm1, xmm2/m128   divide packed float values
+                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // divps xmm1, xmm2/m128   divide packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fdiv( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4327,7 +4304,7 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // maxss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fmax( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0xff == _prefix_size && 0xff == _prefix_sse2_repeat ) // maxps xmm1, xmm2/m128   get max packed float values
+                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // maxps xmm1, xmm2/m128   get max packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fmax( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4595,10 +4572,9 @@ _prefix_is_set:
                     case 0x70:
                     {
                         decode_rm();
+                        uint8_t imm8 = get_rip8();
                         if ( 0xf2 == _prefix_sse2_repeat ) // pshuflw xmm1, xmm2/m128, imm8
                         {
-                            uint8_t imm8 = getui8( rip + _op_len );
-                            _op_len++;
                             vec16_t & dst = xregs[ _reg ];
                             vec16_t xmm1 = xregs[ _reg ];
                             uint64_t src0 = get_rmx64( 0 );
@@ -4609,8 +4585,6 @@ _prefix_is_set:
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // pshufhw xmm1, xmm2/m128, imm8
                         {
-                            uint8_t imm8 = getui8( rip + _op_len );
-                            _op_len++;
                             vec16_t & dst = xregs[ _reg ];
                             vec16_t xmm1 = xregs[ _reg ];
                             uint64_t src0 = get_rmx64( 0 );
@@ -4621,13 +4595,11 @@ _prefix_is_set:
                         }
                         else if ( 0x66 == _prefix_size ) // pshufd xmm, xmm/m128, imm8
                         {
-                            uint8_t imm = getui8( rip + _op_len );
-                            _op_len++;
                             vec16_t target = xregs[ _reg ];
-                            target.set32( 0, get_rmx32( imm & 3 ) );
-                            target.set32( 1, get_rmx32( ( imm >> 2 ) & 3 ) );
-                            target.set32( 2, get_rmx32( ( imm >> 4 ) & 3 ) );
-                            target.set32( 3, get_rmx32( ( imm >> 6 ) & 3 ) );
+                            target.set32( 0, get_rmx32( imm8 & 3 ) );
+                            target.set32( 1, get_rmx32( ( imm8 >> 2 ) & 3 ) );
+                            target.set32( 2, get_rmx32( ( imm8 >> 4 ) & 3 ) );
+                            target.set32( 3, get_rmx32( ( imm8 >> 6 ) & 3 ) );
                             xregs[ _reg ] = target;
                         }
                         else
@@ -4640,8 +4612,7 @@ _prefix_is_set:
                         decode_rm();
                         if ( 0x66 == _prefix_size ) // pshufd xmm, xmm/m128, imm8
                         {
-                            uint8_t shift = getui8( rip + _op_len );
-                            _op_len++;
+                            uint8_t shift = get_rip8();
                             vec16_t target = xregs[ _rm ];
                             if ( 2 == _reg ) // psrlw right logical
                             {
@@ -4672,8 +4643,7 @@ _prefix_is_set:
                         decode_rm();
                         if ( 0x66 == _prefix_size )
                         {
-                            uint8_t shift = getui8( rip + _op_len );
-                            _op_len++;
+                            uint8_t shift = get_rip8();
 
                             if ( 2 == _reg ) // psrld xmm1, imm8
                             {
@@ -4703,10 +4673,9 @@ _prefix_is_set:
                         decode_rm();
                         if ( 0x66 == _prefix_size )
                         {
+                            uint8_t shift = get_rip8();
                             if ( 2 == _reg ) // psrlq xmm1, imm8
                             {
-                                uint8_t shift = getui8( rip + _op_len );
-                                _op_len++;
                                 shift &= 0x3f;
                                 vec16_t & r = xregs[ _rm ];
                                 r.set64( 0, r.get64( 0 ) >> shift );
@@ -4715,8 +4684,6 @@ _prefix_is_set:
                             else if ( 3 == _reg ) // psrldq xmm1, imm8   shift dquad right logical
                             {
                                 vec16_t & r = xregs[ _rm ];
-                                uint8_t shift = getui8( rip + _op_len );
-                                _op_len++;
                                 if ( shift > 15 )
                                     r.zero();
                                 else
@@ -4741,8 +4708,6 @@ _prefix_is_set:
                             }
                             else if ( 6 == _reg ) // psllq xmm1, imm8
                             {
-                                uint8_t shift = getui8( rip + _op_len );
-                                _op_len++;
                                 shift &= 0x3f;
                                 vec16_t & r = xregs[ _rm ];
                                 r.set64( 0, r.get64( 0 ) << shift );
@@ -4751,8 +4716,6 @@ _prefix_is_set:
                             else if ( 7 == _reg ) // pslldq xmm1, imm8   shift dquad left logical
                             {
                                 vec16_t & r = xregs[ _rm ];
-                                uint8_t shift = getui8( rip + _op_len );
-                                _op_len++;
                                 if ( shift > 15 )
                                     r.zero();
                                 else
@@ -4855,12 +4818,9 @@ _prefix_is_set:
                     case 0x80: case 0x81: case 0x82: case 0x83: case 0x84: case 0x85: case 0x86: case 0x87: // jcc rel32
                     case 0x88: case 0x89: case 0x8a: case 0x8b: case 0x8c: case 0x8d: case 0x8e: case 0x8f:
                     {
+                        uint32_t offset = get_rip32();
                         if ( check_condition( op1 & 0xf ) )
-                        {
-                            rip += 6 + sign_extend( getui32( rip + _op_len ), 31 );
-                            continue;
-                        }
-                        _op_len = 6;
+                            rip += sign_extend( offset, 31 );
                         break;
                     }
                     case 0x90: case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // setcc
@@ -4921,10 +4881,7 @@ _prefix_is_set:
                         if ( 0xa5 == op1 )
                             count = regs[ rcx ].b;
                         else
-                        {
-                           count = getui8( rip + _op_len );
-                           _op_len++;
-                        }
+                           count = get_rip8();
 
                         if ( _rexW )
                         {
@@ -4995,10 +4952,7 @@ _prefix_is_set:
                         if ( 0xad == op1 )
                             count = regs[ rcx ].b;
                         else
-                        {
-                           count = getui8( rip + _op_len );
-                           _op_len++;
-                        }
+                           count = get_rip8();
 
                         if ( _rexW )
                         {
@@ -5037,9 +4991,9 @@ _prefix_is_set:
                     }
                     case 0xae: // stmxcsr / ldmxcsr
                     {
-                        uint8_t imm = getui8( rip + _op_len );
+                        uint8_t imm = getui8( rip );
                         if ( 0xf0 == imm || 0xf8 == imm ) // mfence / sfence
-                            _op_len++; // do nothing
+                            rip++; // do nothing
                         else
                         {
                             decode_rm();
@@ -5162,7 +5116,7 @@ _prefix_is_set:
                     }
                     case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         decode_rm();
                         if ( _rexW )
@@ -5194,11 +5148,10 @@ _prefix_is_set:
                     case 0xba:
                     {
                         decode_rm();
+                        uint8_t imm = get_rip8();
 
                         if ( 4 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test
                         {
-                            uint8_t imm = getui8( rip + _op_len );
-                            _op_len++;
                             if ( _rexW )
                             {
                                 uint64_t bit = 1ull << ( imm & 0x3f );
@@ -5220,8 +5173,6 @@ _prefix_is_set:
                         }
                         else if ( 5 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test and set
                         {
-                            uint8_t imm = getui8( rip + _op_len );
-                            _op_len++;
                             if ( _rexW )
                             {
                                 uint64_t bit = 1ull << ( imm & 0x3f );
@@ -5246,8 +5197,6 @@ _prefix_is_set:
                         }
                         else if ( 6 == _reg ) // btr r/m, imm8  (16, 32, 64 bit test and set
                         {
-                            uint8_t imm = getui8( rip + _op_len );
-                            _op_len++;
                             if ( _rexW )
                             {
                                 uint64_t bit = 1ull << ( imm & 0x3f );
@@ -5272,8 +5221,6 @@ _prefix_is_set:
                         }
                         else if ( 7 == _reg ) // btc r/m, imm8  (16, 32, 64 bit test and complement
                         {
-                            uint8_t imm = getui8( rip + _op_len );
-                            _op_len++;
                             if ( _rexW )
                             {
                                 uint64_t bit = 1ull << ( imm & 0x3f );
@@ -5374,8 +5321,7 @@ _prefix_is_set:
                     case 0xc2: // cmpps / cmppd / cmpsd / cmpss xmm1, xmm2/m128, imm8   compare floats/doubles using bits2:0 of imm8 as a comparison predicate
                     {
                         decode_rm();
-                        uint8_t imm = getui8( rip + _op_len );
-                        _op_len++;
+                        uint8_t imm = get_rip8();
                         vec16_t & xmm1 = xregs[ _reg ];
 
                         if ( 0x66 == _prefix_size ) // packed double
@@ -5394,10 +5340,9 @@ _prefix_is_set:
                     case 0xc4:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
-                        uint8_t imm = getui8( rip + _op_len );
-                        _op_len++;
+                        uint8_t imm = get_rip8();
                         vec16_t & xmm1 = xregs[ _reg ];
                         uint16_t val = ( 3 == _mod ) ? (uint16_t) regs[ _rm ].d : get_rm16();
                         if ( 0x66 == _prefix_size ) // pinsrw xmm, r32/m16, imm8
@@ -5411,11 +5356,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         if ( 0x66 == _prefix_size )
-                        {
-                            uint8_t imm8 = getui8( rip + _op_len );
-                            _op_len++;
-                            regs[ _reg ].q = xregs[ _rm ].get16( imm8 );
-                        }
+                            regs[ _reg ].q = xregs[ _rm ].get16( get_rip8() );
                         else
                             unhandled();
                         break;
@@ -5423,10 +5364,9 @@ _prefix_is_set:
                     case 0xc6:
                     {
                         decode_rm();
+                        uint8_t imm8 = get_rip8();
                         if ( 0x66 == _prefix_size ) // shufpd xmm, xmm/m128, imm8
                         {
-                            uint8_t imm8 = getui8( rip + _op_len );
-                            _op_len++;
                             vec16_t src1 = xregs[ _reg ];
                             vec16_t target = xregs[ _reg ];
 
@@ -5444,8 +5384,6 @@ _prefix_is_set:
                         }
                         else // shufps xmm, xmm/m128, imm8
                         {
-                            uint8_t imm8 = getui8( rip + _op_len );
-                            _op_len++;
                             vec16_t src1 = xregs[ _reg ];
                             vec16_t target = xregs[ _reg ];
                             target.set32( 0, src1.get32( imm8 & 3 ) );
@@ -5459,7 +5397,7 @@ _prefix_is_set:
                     }
                     case 0xc8: case 0xc9: case 0xca: case 0xcb: case 0xcc: case 0xcd: case 0xce: case 0xcf: // bswap r32/r64
                     {
-                        if ( 0xff != _prefix_size || 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
                             unhandled();
                         _rm = ( op1 & 7 );
                         decode_rex();
@@ -5472,7 +5410,7 @@ _prefix_is_set:
                     case 0xd2:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size ) // psrld xmm1, xmm2/m128   shift dwords in xmm1 right by amount specified
                         {
@@ -5494,7 +5432,7 @@ _prefix_is_set:
                     case 0xd3:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size ) // psrlq xmm1, xmm2/m128   shift qwords right while shifting in 0s
                         {
@@ -5653,7 +5591,7 @@ _prefix_is_set:
                     }
                     case 0xe2:
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         decode_rm();
                         if ( 0x66 == _prefix_size ) // psrad xmm1, xmm2/m128   shift signed dword in xmm1 right by xmm2/m128
@@ -5675,7 +5613,7 @@ _prefix_is_set:
                     }
                     case 0xe4: // pmulhuw xmm1, xmm2/m128
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 != _prefix_size )
                             unhandled();
@@ -5693,7 +5631,7 @@ _prefix_is_set:
                     }
                     case 0xe5: // pmulhuw xmm1, xmm2/m128
                     {
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 != _prefix_size )
                             unhandled();
@@ -5748,7 +5686,7 @@ _prefix_is_set:
                     case 0xea: // pminsw xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size )
                         {
@@ -5785,7 +5723,7 @@ _prefix_is_set:
                     case 0xee: // pmaxsw xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size )
                         {
@@ -5815,7 +5753,7 @@ _prefix_is_set:
                     case 0xf2:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size ) // pslld xmm1, xmm2/m128   shift dwords left while shifting in 0s
                         {
@@ -5836,7 +5774,7 @@ _prefix_is_set:
                     case 0xf3:
                     {
                         decode_rm();
-                        if ( 0xff != _prefix_sse2_repeat )
+                        if ( 0 != _prefix_sse2_repeat )
                             unhandled();
                         if ( 0x66 == _prefix_size ) // psllq xmm1, xmm2/m128   shift qwords left while shifting in 0s
                         {
@@ -6006,9 +5944,7 @@ _prefix_is_set:
             case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f: // REX prefix
             {
                 _prefix_rex = op;
-                rip++;
                 goto _prefix_is_set;
-                break;
             }
             case 0x50: case 0x51: case 0x52: case 0x53: case 0x54: case 0x55: case 0x56: case 0x57: // push
             {
@@ -6038,30 +5974,20 @@ _prefix_is_set:
             case 0x64: case 0x65: // prefix for fs: and gs:
             {
                 _prefix_segment = op;
-                rip++;
                 goto _prefix_is_set;
-                break;
             }
             case 0x66: case 0x67:
             {
                 _prefix_size = op;
-                rip++;
                 goto _prefix_is_set;
-                break;
             }
             case 0x68: // push imm16 / imm32
             {
                 uint64_t val;
                 if ( 0x66 == _prefix_size )
-                {
-                    val = sign_extend( getui16( rip + _op_len ), 15 );
-                    _op_len += 2;
-                }
+                    val = sign_extend( get_rip16(), 15 );
                 else
-                {
-                    val = sign_extend( getui32( rip + _op_len ), 31 );
-                    _op_len += 4;
-                }
+                    val = sign_extend( get_rip32(), 31 );
                 push( val );
                 break;
             }
@@ -6070,8 +5996,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rexW )
                 {
-                    uint64_t imm64 = sign_extend( getui32( rip + _op_len ), 31 );
-                    _op_len += 4;
+                    uint64_t imm64 = sign_extend( get_rip32(), 31 );
                     int64_t result128H = 0;
                     uint64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), imm64, &result128H );
                     setflag_o( val_signed( result128H) != val_signed( result128L ) );
@@ -6080,8 +6005,7 @@ _prefix_is_set:
                 }
                 else if ( 0x66 == _prefix_size )
                 {
-                    uint16_t imm16 = getui16( rip + _op_len );
-                    _op_len += 2;
+                    uint16_t imm16 = get_rip16();
                     uint32_t a = (uint32_t) sign_extend( get_rm16(), 15 );
                     uint32_t b = (uint32_t) imm16;
                     uint32_t result32 = a * b;
@@ -6092,8 +6016,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    uint32_t imm32 = getui32( rip + _op_len );
-                    _op_len += 4;
+                    uint32_t imm32 = get_rip32();
                     uint64_t a = sign_extend( get_rm32(), 31 );
                     uint64_t b = imm32;
                     uint64_t result64 = a * b;
@@ -6106,15 +6029,13 @@ _prefix_is_set:
             }
             case 0x6a: // push imm8. sign-extended to 64 bits
             {
-                push( (int64_t) (int8_t) getui8( rip + _op_len ) );
-                _op_len++;
+                push( (int64_t) (int8_t) get_rip8() );
                 break;
             }
             case 0x6b: // imul reg, r/m, se(imm8). 16, 32, and 64-bit values
             {
                 decode_rm();
-                uint8_t imm8 = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t imm8 = get_rip8();
                 if ( _rexW )
                 {
                     int64_t result128H = 0;
@@ -6148,20 +6069,15 @@ _prefix_is_set:
             case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75: case 0x76: case 0x77: // jcc
             case 0x78: case 0x79: case 0x7a: case 0x7b: case 0x7c: case 0x7d: case 0x7e: case 0x7f:
             {
+                int16_t offset = (int16_t) (int8_t) get_rip8();
                 if ( check_condition( op & 0xf ) )
-                {
-                    rip += ( 2 + (int16_t) (int8_t) getui8( rip + _op_len ) );
-                    continue;
-                }
-
-                _op_len = 2;
+                    rip += offset;
                 break;
             }
             case 0x80: // math r/m8, i8
             {
                 decode_rm();
-                uint8_t value = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t value = get_rip8(); // must read this prior to the get_rm_ptr8() call in case it's rip-relative
                 do_math( _reg, get_rm_ptr8(), value );
                 break;
             }
@@ -6171,8 +6087,7 @@ _prefix_is_set:
                 uint8_t math = _reg;
                 if ( _rexW )
                 {
-                    uint64_t r = getui32( rip + _op_len );
-                    _op_len += 4;
+                    uint64_t r = get_rip32();
                     uint64_t val = get_rm64();
                     do_math( math, &val, (uint64_t) sign_extend( r, 31 ) );
                     if ( 7 != math )
@@ -6180,8 +6095,7 @@ _prefix_is_set:
                 }
                 else if ( 0x66 == _prefix_size )
                 {
-                    uint16_t r = getui16( rip + _op_len );
-                    _op_len += 2;
+                    uint16_t r = get_rip16();
                     uint16_t val = get_rm16();
                     do_math( math, &val, r );
                     if ( 7 != math )
@@ -6189,8 +6103,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    uint32_t r = getui32( rip + _op_len );
-                    _op_len += 4;
+                    uint32_t r = get_rip32();
                     uint32_t val = get_rm32();
                     do_math( math, &val, r );
                     if ( 7 != math )
@@ -6201,8 +6114,7 @@ _prefix_is_set:
             case 0x83: // math sign_extend( imm8 )
             {
                 decode_rm();
-                uint8_t imm8 = getui8( rip + _op_len );
-                _op_len += 1;
+                uint8_t imm8 = get_rip8();
                 uint8_t math = _reg;
 
                 if ( _rexW ) // if wide/64-bit
@@ -6327,7 +6239,7 @@ _prefix_is_set:
             case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // xchg ax, r  (widths 16, 32, 64)
             {
                 _rm = op & 0xf;
-                if ( 0xff != _prefix_rex )
+                if ( 0 != _prefix_rex )
                 {
                     decode_rex();
                     if ( _rexW )
@@ -6378,7 +6290,7 @@ _prefix_is_set:
             case 0xa4: // movb m, m  RSI to RDI
             {
                 decode_rex();
-                if ( 0xff != _prefix_sse2_repeat ) // f3 is legal. alllow f2
+                if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
                     while ( 0 != regs[ rcx ].q )
                     {
@@ -6393,9 +6305,9 @@ _prefix_is_set:
             case 0xa5: // movs m, m  RSI to RDI 16/32/64
             {
                 decode_rex();
-                uint8_t width = ( 0xff != _prefix_rex ) ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
+                uint8_t width = ( 0 != _prefix_rex ) ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
 
-                if ( 0xff != _prefix_sse2_repeat ) // f3 is legal. alllow f2
+                if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
                     while ( 0 != regs[ rcx ].q )
                     {
@@ -6409,33 +6321,23 @@ _prefix_is_set:
             }
             case 0xa8: // test al, imm8
             {
-                op_and( regs[ rax ].b, getui8( rip + _op_len ) );
-                _op_len++;
+                op_and( regs[ rax ].b, get_rip8() );
                 break;
             }
             case 0xa9: // test ax, imm16    text eax, imm32   test rax, se(imm32)
             {
                 decode_rex();
-                if ( 0xff != _prefix_rex )
-                {
-                    op_and( regs[ rax ].q, (uint64_t) sign_extend( getui32( rip + _op_len ), 31 ) );
-                    _op_len += 4;
-                }
+                if ( 0 != _prefix_rex )
+                    op_and( regs[ rax ].q, (uint64_t) sign_extend( get_rip32(), 31 ) );
                 else if ( 0x66 == _prefix_size )
-                {
-                    op_and( regs[ rax ].w, getui16( rip + _op_len ) );
-                    _op_len += 2;
-                }
+                    op_and( regs[ rax ].w, get_rip16() );
                 else
-                {
-                    op_and( regs[ rax ].d, getui32( rip + _op_len ) );
-                    _op_len += 4;
-                }
+                    op_and( regs[ rax ].d, get_rip32() );
                 break;
             }
             case 0xaa: // stoa
             {
-                if ( 0xff != _prefix_sse2_repeat ) // f3 is legal. alllow f2
+                if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
                     while ( 0 != regs[ rcx ].q )
                     {
@@ -6449,9 +6351,9 @@ _prefix_is_set:
             }
             case 0xab: // stos
             {
-                uint8_t width = ( 0xff != _prefix_rex ) ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
+                uint8_t width = ( 0 != _prefix_rex ) ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
 
-                if ( 0xff != _prefix_sse2_repeat ) // f3 is legal. alllow f2
+                if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
                     while ( 0 != regs[ rcx ].q )
                     {
@@ -6468,8 +6370,7 @@ _prefix_is_set:
                 _rm = ( op & 7 );
                 _mod = 3;
                 decode_rex();
-                set_rm8( getui8( rip + _op_len ) ); // no sign or zero extension; just the one byte is updated
-                _op_len++;
+                set_rm8( get_rip8() ); // no sign or zero extension; just the one byte is updated
                 break;
             }
             case 0xb8: case 0xb9 : case 0xba : case 0xbb : case 0xbc : case 0xbd : case 0xbe : case 0xbf: // mov reg, 64-bit immediate
@@ -6477,27 +6378,17 @@ _prefix_is_set:
                 _rm = ( op & 7 );
                 decode_rex();
                 if ( _rexW )
-                {
-                    regs[ _rm ].q = getui64( rip + _op_len );
-                    _op_len += 8;
-                }
+                    regs[ _rm ].q = get_rip64();
                 else if ( 0x66 == _prefix_size )
-                {
-                    regs[ _rm ].q = getui16( rip + _op_len );
-                    _op_len += 2;
-                }
+                    regs[ _rm ].q = get_rip16();
                 else
-                {
-                    regs[ _rm ].q = getui32( rip + _op_len );
-                    _op_len += 4;
-                }
+                    regs[ _rm ].q = get_rip32();
                 break;
             }
             case 0xc0: // shift r8/m8, imm8
             {
                 decode_rm();
-                uint8_t shift = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t shift = get_rip8();
                 if ( 0 == shift )
                     break;
                 shift &= 7;
@@ -6507,8 +6398,7 @@ _prefix_is_set:
             case 0xc1: // sal/shr/sar r/m, imm8
             {
                 decode_rm();
-                uint8_t shift = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t shift = get_rip8();
                 if ( 0 == shift )
                     break;
 
@@ -6538,17 +6428,13 @@ _prefix_is_set:
             case 0xc3: // ret
             {
                 rip = pop();
-                continue;
+                break;
             }
             case 0xc6:
             {
                 decode_rm();
                 if ( 0 == _reg ) // mov r/m8, imm8
-                {
-                    uint8_t val = getui8( rip + _op_len );
-                    _op_len++;
-                    set_rm8( val );
-                }
+                    set_rm8( get_rip8() );
                 else
                     unhandled();
                 break;
@@ -6557,23 +6443,11 @@ _prefix_is_set:
             {
                 decode_rm();
                 if ( _rexW )
-                {
-                    uint32_t val = getui32( rip + _op_len );
-                    _op_len += 4;
-                    set_rm64( sign_extend( val, 31 ) );
-                }
+                    set_rm64( sign_extend( get_rip32(), 31 ) );
                 else if ( 0x66 == _prefix_size )
-                {
-                    uint16_t val = getui16( rip + _op_len );
-                    _op_len += 2;
-                    set_rm16( val );
-                }
+                    set_rm16( get_rip16() );
                 else
-                {
-                    uint32_t val = getui32( rip + _op_len );
-                    _op_len += 4;
-                    set_rm32z( val );
-                }
+                    set_rm32z( get_rip32() );
                 break;
             }
             case 0xc9: // leave
@@ -6642,9 +6516,8 @@ _prefix_is_set:
             }
             case 0xd8:
             {
-                uint8_t op1 = getui8( rip + 1 );
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
-                _op_len++;
                 if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fadd st(0), st(i)
                     poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(0), st(i)
@@ -6659,7 +6532,7 @@ _prefix_is_set:
                     poke_fp( 0, do_fdiv( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
                 else
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fadd m32fp
                         poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
@@ -6680,8 +6553,7 @@ _prefix_is_set:
             }
             case 0xd9:
             {
-                uint8_t op1 = getui8( rip + 1 );
-                _op_len++;
+                uint8_t op1 = get_rip8();
                 uint8_t offset = ( op1 & 7 );
                 if ( op1 >= 0xc0 && op1 <= 0xc7 )
                     push_fp( peek_fp( offset ) );
@@ -6794,7 +6666,7 @@ _prefix_is_set:
                     poke_fp( 0, cosl( peek_fp( 0 ).getld() ) );
                 else
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
                         push_fp( (long double) getfloat( effective_address() ) );
@@ -6825,8 +6697,7 @@ _prefix_is_set:
             }
             case 0xda:
             {
-                uint8_t op1 = getui8( rip + 1 );
-                _op_len++;
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xc0 && op1 <= 0xc7 ) // move if below
                 {
@@ -6850,7 +6721,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m32int  add m32int to st(0) and store in st(0)
                         poke_fp( 0, do_fadd( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
@@ -6863,8 +6734,7 @@ _prefix_is_set:
             }
             case 0xdb:
             {
-                uint8_t op1 = getui8( rip + 1 );
-                _op_len++;
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xc0 && op1 <= 0xc7 ) // move if not below
                 {
@@ -6892,7 +6762,7 @@ _prefix_is_set:
                     set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
                 else
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fild m32int
                         push_fp( (long double) (int32_t) get_rm32() );
@@ -6918,8 +6788,7 @@ _prefix_is_set:
             }
             case 0xdc:
             {
-                uint8_t op1 = getui8( rip + 1 );
-                _op_len++;
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubr st(i), st(0)
                     poke_fp( offset, do_fsub( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
@@ -6935,7 +6804,7 @@ _prefix_is_set:
                     poke_fp( offset, do_fdiv( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
                 else
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fadd m64fp
                         poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) get_rmdouble() ) );
@@ -6960,28 +6829,31 @@ _prefix_is_set:
             }
             case 0xdd:
             {
-                decode_rm();
-                uint8_t op1 = getui8( rip + 1 );
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
                 {
                     poke_fp( offset, peek_fp( 0 ) );
                     pop_fp();
                 }
-                else if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
-                    push_fp( get_rmdouble() );
-                else if ( 2 == _reg ) // fstp m64fp  copy st(0) to m64fp
-                    set_rmdouble( peek_fp( 0 ).getd() );
-                else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
-                    set_rmdouble( pop_fp().getd() );
                 else
-                    unhandled();
+                {
+                    rip--;
+                    decode_rm();
+                    if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
+                        push_fp( get_rmdouble() );
+                    else if ( 2 == _reg ) // fstp m64fp  copy st(0) to m64fp
+                        set_rmdouble( peek_fp( 0 ).getd() );
+                    else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
+                        set_rmdouble( pop_fp().getd() );
+                    else
+                        unhandled();
+                }
                 break;
             }
             case 0xde:
             {
-                uint8_t op1 = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubrp st(i), st(0)
                 {
@@ -7015,7 +6887,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m16int
                         poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
@@ -7026,8 +6898,7 @@ _prefix_is_set:
             }
             case 0xdf:
             {
-                uint8_t op1 = getui8( rip + _op_len );
-                _op_len++;
+                uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( ( op1 >= 0xe8 && op1 <= 0xef ) || // fucomip st, st(i)
                      ( op1 >= 0xf0 && op1 <= 0xf7 ) )  // fcomip st(0), st(i)
@@ -7041,9 +6912,9 @@ _prefix_is_set:
                     update_x87_status_top();
                     regs[ rax ].q = x87_fpu_status_word;
                 }
-                else if ( 0xff == _prefix_sse2_repeat )
+                else if ( 0 == _prefix_sse2_repeat )
                 {
-                    _op_len--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fild m64int
                         push_fp( (double) (int16_t) get_rm16() );
@@ -7070,8 +6941,7 @@ _prefix_is_set:
             }
             case 0xe3: // jcxz / jecxz / jrcxz rel8
             {
-                int64_t rel = (int8_t) getui8( rip + _op_len );
-                _op_len++;
+                int64_t rel = (int8_t) get_rip8();
 
                 bool jump = false;
                 if ( _rexW )
@@ -7082,39 +6952,35 @@ _prefix_is_set:
                     jump = ( 0 == regs[ rcx ].d );
 
                 if ( jump )
-                {
-                    rip += _op_len + rel;
-                    continue;
-                }
+                    rip += rel;
                 break;
             }
             case 0xe8: // call rel32
             {
-                uint64_t return_address = rip + 5;
-                push( return_address );
-                rip = return_address + (int32_t) getui32( rip + _op_len );
-                continue;
+                uint32_t offset = get_rip32();
+                push( rip );
+                rip += (int32_t) offset;
+                break;
             }
             case 0xe9: // jmp cd  (relative to rip sign-extended 32-bit immediate)
             {
-                rip += ( 5 + (int64_t) (int32_t) getui32( rip + _op_len ) );
-                continue;
+                uint32_t offset = get_rip32();
+                rip += (int64_t) (int32_t) offset;
+                break;
             }
             case 0xeb: // jmp
             {
-                rip += ( 2 + (int64_t) (int8_t) getui8( rip + _op_len ) );
-                continue;
+                uint8_t offset = get_rip8();
+                rip += (int64_t) (int8_t) offset;
+                break;
             }
             case 0xf0: // lock (do nothing since there is just one thread and core supported
             {
-                rip++;
                 goto _prefix_is_set; // don't wipe other prefixes that may have been set
-                break;
             }
             case 0xf2: case 0xf3: // repeat or multibyte or bnd (memory protection)
             {
                 _prefix_sse2_repeat = op;
-                rip++;
                 goto _prefix_is_set;
             }
             case 0xf4: // hlt
@@ -7132,8 +6998,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( 0 == _reg ) // test r/m8, imm8
                 {
-                    uint8_t val = getui8( rip + _op_len );
-                    _op_len++;
+                    uint8_t val = get_rip8();
                     op_and( get_rm8(), val );
                 }
                 else if ( 2 == _reg ) // not r/m8   no status flags are updated
@@ -7191,20 +7056,17 @@ _prefix_is_set:
                 {
                     if ( _rexW )
                     {
-                        uint64_t val = (uint64_t) sign_extend( getui32( rip + _op_len ), 31 ) ;
-                        _op_len += 4;
+                        uint64_t val = (uint64_t) sign_extend( get_rip32(), 31 ) ;
                         op_and( get_rm64(), val );
                     }
                     else if ( 0x66 == _prefix_size )
                     {
-                        uint16_t val = getui16( rip + _op_len );
-                        _op_len += 2;
+                        uint16_t val = get_rip16();
                         op_and( get_rm16(), val );
                     }
                     else
                     {
-                        uint32_t val = getui32( rip + _op_len );
-                        _op_len += 4;
+                        uint32_t val = get_rip32();
                         op_and( get_rm32(), val );
                     }
                 }
@@ -7478,17 +7340,16 @@ _prefix_is_set:
                     }
                     case 2: // call
                     {
-                        uint64_t return_address = rip + _op_len;
-                        push( return_address );
+                        push( rip );
                         rip = get_rm64();
-                        continue;
+                        break;
                     }
                     case 3: // call
                         unhandled();
                     case 4: // jmp near absolute indirect. rip = 64 bit offset from r/m
                     {
                         rip = get_rm64();
-                        continue;
+                        break;
                     }
                     case 5: // jmp
                         unhandled();
@@ -7509,8 +7370,6 @@ _prefix_is_set:
                 unhandled();
             }
         }
-
-        rip += _op_len;
     }
 
     return instruction_count;

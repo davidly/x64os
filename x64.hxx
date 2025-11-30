@@ -301,17 +301,16 @@ private:
     } //render_flags
 
     vec16_t vec_zeroes;
-    uint8_t _prefix_rex;                // 0xff for none. 0x4x
-    uint8_t _prefix_size;               // 0xff for none. can be 0x66 (operand size 16) or 0x67 (address size 32)
-    uint8_t _prefix_sse2_repeat;        // 0xff for none. f2 repne/repnz, f3 rep/repe/repz. f3 can also mean multibyte. f2 can also mean bnd (memory protection)
-    uint8_t _prefix_segment;            // 0xff for none. 0x64 for fs: or 0x65 for gs:
+    uint8_t _prefix_rex;                // 0 for none. 0x4x
+    uint8_t _prefix_size;               // 0 for none. can be 0x66 (operand size 16) or 0x67 (address size 32)
+    uint8_t _prefix_sse2_repeat;        // 0 for none. f2 repne/repnz, f3 rep/repe/repz. f3 can also mean multibyte. f2 can also mean bnd (memory protection)
+    uint8_t _prefix_segment;            // 0 for none. 0x64 for fs: or 0x65 for gs:
 
     // decoding state and functions
 
     int64_t _displacement;
     uint8_t _rexW, _rexR, _rexX, _rexB; // aligned and consecutive so the compiler can 0 them all out at once
     uint8_t _rm, _reg, _mod;
-    uint8_t _op_len;                    // # of bytes for the current opcode (if not a prefix or jump)
     uint8_t _sibScale, _sibIndex, _sibBase;
 
     void decode_sib();
@@ -320,7 +319,6 @@ private:
     void clear_decoding()
     {
         _rm = _reg = _mod = _rexW = _rexR = _rexX = _rexB = 0;
-        _op_len = 1;
         _sibScale = _sibIndex = _sibBase = 0;
         _displacement = 0;
     } //clear_decoding
@@ -386,9 +384,14 @@ private:
     void op_sto( uint8_t width );
     void op_movs( uint8_t width );
 
+    inline uint8_t get_rip8() { return getui8( rip++ ); }
+    inline uint16_t get_rip16() { uint16_t val = getui16( rip ); rip += 2; return val; }
+    inline uint32_t get_rip32() { uint32_t val = getui32( rip ); rip += 4; return val; }
+    inline uint64_t get_rip64() { uint64_t val = getui64( rip ); rip += 8; return val; }
+
     inline uint8_t get_reg8()
     {
-        if ( 0xff == _prefix_rex && _reg >= 4 )
+        if ( 0 == _prefix_rex && _reg >= 4 )
         {
             assert( _reg <= 7 );
             return regs[ _reg & 3 ].h;
@@ -398,7 +401,7 @@ private:
 
     inline void set_reg8( uint8_t val )
     {
-        if ( 0xff == _prefix_rex && _reg >= 4 )
+        if ( 0 == _prefix_rex && _reg >= 4 )
         {
             assert( _reg <= 7 );
             regs[ _reg & 3 ].h = val;
@@ -412,7 +415,7 @@ private:
         if ( _mod < 3 )
             return getmem( effective_address() );
 
-        if ( ( 0xff == _prefix_rex ) && ( _rm >= 4 ) )
+        if ( ( 0 == _prefix_rex ) && ( _rm >= 4 ) )
         {
             assert( _rm <= 7 );
             return ( & regs[ _rm & 3 ].h ); // ah, ch, dh, bh
@@ -428,7 +431,7 @@ private:
         if ( _mod < 3 )
             return getui8( effective_address() );
 
-        if ( ( 0xff == _prefix_rex ) && ( _rm >= 4 ) )
+        if ( ( 0 == _prefix_rex ) && ( _rm >= 4 ) )
         {
             assert( _rm <= 7 );
             return ( regs[ _rm & 3 ].h ); // ah, ch, dh, bh
@@ -479,7 +482,7 @@ private:
             setui8( effective_address(), val );
         else
         {
-            if ( 0xff == _prefix_rex && _rm >= 4 )
+            if ( 0 == _prefix_rex && _rm >= 4 )
             {
                 assert( _rm <= 7 );
                 regs[ _rm & 3 ].h = val; // ah, ch, dh, bh
