@@ -70,7 +70,7 @@ static const char * math_names[8] = { "add", "or", "addc", "sbb", "and", "sub", 
 static const char * condition_names[16] = { "o", "no", "b", "ae", "e", "ne", "be", "a", "s", "ns", "p", "np", "l", "ge", "le", "g" };
 static const char * shift_names[ 8 ] = { "rol", "ror", "rcl", "rcr", "sal", "shr", "!invalid!", "sar" };
 static const char * float_d9_e8[ 7 ] = { "fld1", "fldl2t", "fldl2e", "fldpi", "fldgl2", "fldln2", "fldz" };
-static const double float_d9_e8_constants[ 7 ] = { 1.0, 3.3219280949, 1.44269504088, 3.1415927, 0.301029995664, 0.6931471805599453, 0.0 };
+static const double float_d9_e8_constants[ 7 ] = { 1.0, 3.3219280949, 1.44269504088, 3.14159265358979, 0.301029995664, 0.6931471805599453, 0.0 };
 static const char * float_d9_f0[ 8 ] = { "f2xm1 st", "fyl2x st1, st", "fptan st", "fpatan st1, st", "extract st", "fprem1 st st1", "fdecstp", "fincstp" };
 static const char * float_d9_f8[ 8 ] = { "fprem st, st1", "fyl2xp1 st1, st", "fsqrt st", "fsincos st", "frndint st", "fscale st, st1", "fsin st", "fcos st" };
 
@@ -1654,7 +1654,7 @@ void x64::trace_state()
         case 0x78: case 0x79: case 0x7a: case 0x7b: case 0x7c: case 0x7d: case 0x7e: case 0x7f:
         {
             int8_t val = (int8_t) get_rip8();
-            tracer.Trace( "j%s %d  # %#llx\n", condition_names[ op & 0xf ], offset, rip + (int64_t) val );
+            tracer.Trace( "j%s %d  # %#llx\n", condition_names[ op & 0xf ], val, rip + (int64_t) val );
             break;
         }
         case 0x80: // math r/m8, i8
@@ -3016,7 +3016,7 @@ void x64::decode_sib()
 inline void x64::decode_rex()
 {
     if ( 0 == _prefix_rex )
-        _rexW = _rexR = _rexX = _rexB = 0;
+        _rexB = _rexX = _rexR = _rexW = 0;
     else
     {
         assert( 0x40 == ( 0xf0 & _prefix_rex ) );
@@ -3036,7 +3036,7 @@ void x64::decode_rm()
 {
     uint8_t modRM = get_rip8();
     _rm = ( modRM & 7 );             // register or memory operand
-    uint8_t saved_rm = _rm;          // we'll need this version without the possible _rexB
+    uint8_t saved_rm = _rm;
     _reg = ( ( modRM >> 3 ) & 7 );   // register operand
     _mod = ( modRM >> 6 );           // this indicates whether the _rm operand is a register or memory location
 
@@ -3057,7 +3057,6 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
 {
     if ( is_xmm )
         return xmm_names[ reg ];
-
     if ( 1 == byte_width )
     {
         if ( 0 != _prefix_rex )
@@ -3068,7 +3067,6 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
         return register_names16[ reg ];
     if ( 4 == byte_width )
         return register_names32[ reg ];
-
     if ( 8 != byte_width )
         unhandled();
 
@@ -3558,7 +3556,7 @@ uint64_t x64::run()
 
     for ( ;; )
     {
-        instruction_count++;        // .67% of runtime for this and 2% for prefix initialization below
+        instruction_count++;        // 14.7% of runtime including _prefix initialization below
         _prefix_rex = 0;            // can be 0x40 through 0x4f to indicate high registers and 64-bit operands
         _prefix_size = 0;           // can be 0x66 (operand size 16)
         _prefix_sse2_repeat = 0;    // can be 0xf2 or 0xf3 for SSE2 instructions or string repeat opcodes
@@ -3577,7 +3575,7 @@ _prefix_is_set:
                 emulator_hard_termination( *this, "rip is higher than it should be:", rip );
         #endif
 
-        if ( 0 != g_State )         // 2.0% of runtime
+        if ( 0 != g_State )         // 1.1% of runtime
         {
             if ( g_State & stateEndEmulation )
             {
@@ -3589,9 +3587,9 @@ _prefix_is_set:
                 trace_state();
         }
 
-        uint8_t op = get_rip8(); // 5.4% of runtime
+        uint8_t op = get_rip8();    // 18% of runtime
 
-        switch( op )                // 25% of runtime setting up for the switch
+        switch( op )                // 20.7% of runtime setting up for the switch
         {
             case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38:  // math r/m8, r8. rex math r/m8, r8 sign-extended to 64 bits
             {
@@ -6243,7 +6241,7 @@ _prefix_is_set:
                 {
                     decode_rex();
                     if ( _rexW )
-                        do_swap( regs[ rax ].q, regs[ _rm ].q );
+                        do_swap( regs[ rax ].q, regs[ _rm ].q ); // can use swap here because the full q is updated
                     else
                     {
                         uint32_t tmp = regs[ rax ].d;
@@ -6943,7 +6941,7 @@ _prefix_is_set:
             {
                 int64_t rel = (int8_t) get_rip8();
 
-                bool jump = false;
+                bool jump;
                 if ( _rexW )
                     jump = ( 0 == regs[ rcx ].q );
                 else if ( 0x66 == _prefix_size )
@@ -6964,14 +6962,12 @@ _prefix_is_set:
             }
             case 0xe9: // jmp cd  (relative to rip sign-extended 32-bit immediate)
             {
-                uint32_t offset = get_rip32();
-                rip += (int64_t) (int32_t) offset;
+                rip += (int64_t) (int32_t) get_rip32();
                 break;
             }
             case 0xeb: // jmp
             {
-                uint8_t offset = get_rip8();
-                rip += (int64_t) (int8_t) offset;
+                rip += (int64_t) (int8_t) get_rip8();
                 break;
             }
             case 0xf0: // lock (do nothing since there is just one thread and core supported

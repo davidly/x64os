@@ -266,7 +266,7 @@ struct x64
 private:
     uint64_t rcs, rds, rss, rfs, rgs;
                                       // 0                                        8                                    16
-    uint64_t rflags;                  // CF, n/a, PF, n/a, AF, n/a, ZF, SF,   :   TF, IF, DF, OF, IOPL+IOPL, n/a   :   RF, VM AC, n/a, n/a, ID, 22.31 n/a
+    uint64_t rflags;                  // CF, n/a, PF, n/a, AF, n/a, ZF, SF,   :   TF, IF, DF, OF, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
 
     void setflag_c( bool f ) { rflags &= ~( 1 << 0 );  rflags |= ( ( 0 != f ) << 0 );  } // carry
     void setflag_p( bool f ) { rflags &= ~( 1 << 2 );  rflags |= ( ( 0 != f ) << 2 );  } // parity even
@@ -285,6 +285,8 @@ private:
     bool flag_i() { return ( 0 != ( rflags & ( 1 << 9 ) ) ); }  // interrupt
     bool flag_d() { return ( 0 != ( rflags & ( 1 << 10 ) ) ); } // direction
     bool flag_o() { return ( 0 != ( rflags & ( 1 << 11 ) ) ); } // overflow
+
+    void reset_carry_overflow() { rflags &= ~( 0x801 ); }
 
     const char * render_flags()
     {
@@ -371,8 +373,6 @@ private:
         setflag_z( 0 == val );
         setflag_s( val_signed( val ) );
     } //set_PSZ
-
-    void reset_carry_overflow() { setflag_c( false ); setflag_o( false ); }
 
     template <typename T> T op_add( T lhs, T rhs, bool carry = false );
     template <typename T> T op_sub( T lhs, T rhs, bool carry = false );
