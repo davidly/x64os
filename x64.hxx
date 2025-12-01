@@ -16,6 +16,12 @@ template <typename T> inline bool val_signed( T x )
     return ( 0 != ( x & (T) mask ) );
 } //val_signed
 
+template <typename T> inline bool second_highest_bit( T x )
+{
+    uint64_t mask = ( 0x40ull << ( ( sizeof( T ) - 1 ) * 8 ) );
+    return ( 0 != ( x & (T) mask ) );
+} //second_highest_bit
+
 template <typename T> inline T mk_signed( T x )
 {
     T hibit = ( ( (T) 0x80 ) << ( ( (uint8_t) sizeof( T ) - 1 ) * 8 ) );

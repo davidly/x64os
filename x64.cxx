@@ -14,6 +14,12 @@
         https://wiki.osdev.org/X86-64_Instruction_Encoding#Mandatory_prefix
         http://ref.x86asm.net/coder64.html
         http://ref.x86asm.net/coder64.html#two-byte
+
+    Notes about why the code is the way it is:
+        * in some cases it looks like two lines can be combined into one, but immediate values must be read prior to r/m memory access.
+        * generally, only instructions used in the test suite are implemented to avoid having a bunch of untested code.
+        * no attempt was made to emulate x87 80-bit floating point on non-AMD64 machines because there isn't a lot of code that requires long doubles.
+        * the disassembler roughly uses Intel syntax, not GNU's syntax that reverses argument order, because that's what I grew up with.
 */
 
 #define NOMINMAX
@@ -86,13 +92,13 @@ void x64::trace_state()
 {
     uint64_t rip_save = rip;
     uint8_t op = getui8( rip );
-    if ( ( 0x66 == op ) || ( ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) )
+    if ( ( 0x66 == op ) || ( ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
 
 //    tracer.TraceBinaryData( getmem( 0x4018cb + 0x2b40d0 ), 8, 2 );
 
     uint64_t ip = ( 0 == _prefix_rex ) ? rip : ( rip - 1 );
-    if ( 0x66 == _prefix_size )
+    if ( 0 != _prefix_size )
         ip--;
     if ( 0 != _prefix_sse2_repeat )
         ip--;
@@ -443,8 +449,23 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
                         unhandled();
-                    // rsqrtps xmm1, xmm2/m128 compute reciprocals of the square roots of packed floats
-                    tracer.Trace( "rsqrtps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
+                    if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of square root of the float in xmm2/m32 and store result in xmm1
+                        tracer.Trace( "rsqrtss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
+                    else // rsqrtps xmm1, xmm2/m128 compute reciprocals of the square roots of packed floats
+                        tracer.Trace( "rsqrtps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
+                    break;
+                }
+                case 0x53:
+                {
+                    decode_rm();
+                    if ( 0 != _prefix_size )
+                        unhandled();
+                    if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
+                        tracer.Trace( "rcpss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
+                    else if ( 0 == _prefix_sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
+                        tracer.Trace( "rcpps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
+                    else
+                        unhandled();
                     break;
                 }
                 case 0x54: // andpd xmm, xmm/m128   bitwise and of doubles and singles
@@ -2806,7 +2827,7 @@ template <typename T> void x64::op_ror( T * pval, uint8_t shift )
     }
 
     if ( 1 == shift )
-        setflag_o( val_signed( val ) ^ ( 0 != ( val & 0x40 ) ) );
+        setflag_o( val_signed( val ) ^ second_highest_bit( val ) );
     *pval = val;
 } //op_ror
 
@@ -2845,8 +2866,8 @@ template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
         setflag_c( newCarry );
     }
 
-    if ( shift )
-        setflag_o( val_signed( val ) ^ ( 0 != ( val & 0x40 ) ) );
+    if ( 1 == shift )
+        setflag_o( val_signed( val ) ^ second_highest_bit( val ) );
     *pval = val;
 } //op_rcr
 
@@ -4100,11 +4121,32 @@ _prefix_is_set:
                         decode_rm();
                         if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
                             unhandled();
-                        // rsqrtps xmm1, xmm2/m128 compute reciprocals of the square roots of packed floats
-                        vec16_t & dst = xregs[ _reg ];
-                        for ( uint32_t e = 0; e < 4; e++ )
-                            dst.setf( e, 1.0f / sqrtf( get_rmxfloat( e ) ) );
-                       break;
+                        if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of square root of the float in xmm2/m32 and store result in xmm1
+                            xregs[ _reg ].setf( 0, 1.0f / sqrtf( get_rmxfloat( 0 ) ) );
+                        else if ( 0 == _prefix_sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
+                        {
+                            for ( uint32_t e = 0; e < 4; e++ )
+                                xregs[ _reg ].setf( e, 1.0f / sqrtf( get_rmxfloat( e ) ) );
+                        }
+                        else
+                            unhandled();
+                        break;
+                    }
+                    case 0x53:
+                    {
+                        decode_rm();
+                        if ( 0 != _prefix_size )
+                            unhandled();
+                        if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
+                            xregs[ _reg ].setf( 0, 1.0f / get_rmxfloat( 0 ) );
+                        else if ( 0 == _prefix_sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
+                        {
+                            for ( uint32_t e = 0; e < 4; e++ )
+                                xregs[ _reg ].setf( e, 1.0f / get_rmxfloat( e ) );
+                        }
+                        else
+                            unhandled();
+                        break;
                     }
                     case 0x54: // andpd xmm, xmm/m128   bitwise and. also andps
                     {
