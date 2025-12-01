@@ -16,13 +16,15 @@
         http://ref.x86asm.net/coder64.html#two-byte
 */
 
+#define NOMINMAX
+
 #include <stdint.h>
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
-#include <limits.h>
+#include <limits>
 #include <chrono>
 #include <type_traits>
 
@@ -1965,6 +1967,10 @@ void x64::trace_state()
                     tracer.Trace( "fadd %s  # m32fp\n", rm_string( 4, true ) );
                 else if ( 1 == _reg ) // fmul m32fp
                     tracer.Trace( "fmul %s  # m32fp\n", rm_string( 4, true ) );
+                else if ( 2 == _reg ) // fcom m32fp
+                    tracer.Trace( "fcom %s  # m32fp\n", rm_string( 8 ) );
+                else if ( 3 == _reg ) // fcomp m32fp
+                    tracer.Trace( "fcomp %s  # m32fp\n", rm_string( 8 ) );
                 else if ( 4 == _reg ) // fsub m32fp
                     tracer.Trace( "fsub %s  # m32fp\n", rm_string( 4, true ) );
                 else if ( 5 == _reg ) // fsubr m32fp
@@ -2043,6 +2049,18 @@ void x64::trace_state()
                     tracer.Trace( "fiadd %d  # m32int\n", get_rm32() );
                 else if ( 1 == _reg ) // fimul m32int  multiply st(0) by m32int and store in st(0)
                     tracer.Trace( "fimul %d  # m32int\n", get_rm32() );
+                else if ( 2 == _reg ) // ficom m32int  compare st(0) with m32int
+                    tracer.Trace( "ficom %d  # m32int\n", get_rm32() );
+                else if ( 3 == _reg ) // ficomp m32int  compare st(0) with m32int and pop
+                    tracer.Trace( "ficomp %d  # m32int\n", get_rm32() );
+                else if ( 4 == _reg ) // fisub m32int  subtract m32int from st(0) and store in st(0)
+                    tracer.Trace( "fisub %d  # m32int\n", get_rm32() );
+                else if ( 5 == _reg ) // fisubr m32int  subtract st(0) from m32int and store in st(0)
+                    tracer.Trace( "fisubr %d  # m32int\n", get_rm32() );
+                else if ( 6 == _reg ) // fidiv m32int  divide st(0) by m32int and store in st(0)
+                    tracer.Trace( "fidiv %d  # m32int\n", get_rm32() );
+                else if ( 7 == _reg ) // fidivr m32int  divide m32int by st(0) and store in st(0)
+                    tracer.Trace( "fidivr %d  # m32int\n", get_rm32() );
                 else
                     unhandled();
             }
@@ -2063,11 +2081,18 @@ void x64::trace_state()
                 tracer.Trace( "fcomi st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomi st, st(i)
                 tracer.Trace( "fucomi st(0), st(%u)\n", op1 & 7 );
+            else if ( 0xe3 == op1 ) // finit
+                tracer.Trace( "finit\n" );
+            else
             {
                 rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fild m32int
                     tracer.Trace( "fild %d\n", get_rip32() );
+                else if ( 1 == _reg ) // fisttp m32int   store st(0) in m32int with truncation
+                    tracer.Trace( "fisstp %s  # m32int\n", rm_string( 4 ) );
+                else if ( 2 == _reg ) // fcom m32fp   compare st(0) with m32fp
+                    tracer.Trace( "fcom %s  # m32fp\n", rm_string( 4 ) );
                 else if ( 3 == _reg ) // fistp m32int
                     tracer.Trace( "fistp %s  # m32int\n", rm_string( 4 ) );
                 else if ( 4 == _reg ) // nop, clear exceptions, init fp unit
@@ -2132,6 +2157,8 @@ void x64::trace_state()
                 decode_rm();
                 if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
                     tracer.Trace( "fld %s\n", rm_string( 8 ) );
+                else if ( 1 == _reg ) // fisttp m64int   store st(0) in m64int with truncation
+                    tracer.Trace( "fisstp %s  # m64int\n", rm_string( 4 ) );
                 else if ( 2 == _reg ) // fst m64fp   copy st(0) to m64fp
                     tracer.Trace( "fst %s\n", rm_string( 8 ) );
                 else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
@@ -2162,6 +2189,20 @@ void x64::trace_state()
                 decode_rm();
                 if ( 0 == _reg ) // fiadd m16int   add m16int to st(0) and store in st(0)
                     tracer.Trace( "fiadd %s  # m16int\n", rm_string( 2 ) );
+                else if ( 1 == _reg ) // fimul m16int   multiply m16int by st(0) and store in st(0)
+                    tracer.Trace( "fimul %s  # m16int\n", rm_string( 2 ) );
+                else if ( 2 == _reg ) // ficom m16int  compare st(0) with m16int
+                    tracer.Trace( "ficom %d  # m16int\n", get_rm16() );
+                else if ( 3 == _reg ) // ficomp m16int  compare st(0) with m16int and pop
+                    tracer.Trace( "ficomp %d  # m16int\n", get_rm16() );
+                else if ( 4 == _reg ) // fisub m16int  subtract m16int from st(0) and store in st(0)
+                    tracer.Trace( "fisub %d  # m16int\n", get_rm16() );
+                else if ( 5 == _reg ) // fisubr m16int  subtract st(0) from m16int and store in st(0)
+                    tracer.Trace( "fisubr %d  # m16int\n", get_rm16() );
+                else if ( 6 == _reg ) // fidiv m16int  divide st(0) by m16int and store in st(0)
+                    tracer.Trace( "fidiv %d  # m16int\n", get_rm16() );
+                else if ( 7 == _reg ) // fidivr m16int  divide m16int by st(0) and store in st(0)
+                    tracer.Trace( "fidivr %d  # m16int\n", get_rm16() );
                 else
                     unhandled();
             }
@@ -2182,6 +2223,8 @@ void x64::trace_state()
                 decode_rm();
                 if ( 0 == _reg ) // fild m16int
                     tracer.Trace( "fild %s  # m16int\n", rm_string( 2 ) );
+                else if ( 2 == _reg ) // fist m16int   store st(0) in m16int
+                    tracer.Trace( "fist %s  # m16int\n", rm_string( 2 ) );
                 else if ( 3 == _reg ) // fistp m16int   store st(0) in m16int and pop register stack
                     tracer.Trace( "fistp %s  # m16int\n", rm_string( 2 ) );
                 else if ( 5 == _reg ) // fild m64int   loads signed 64 bit integer converted to a float and pushed to fp stack
@@ -2460,27 +2503,34 @@ void x64::trace_fregs()
 #define ROUNDING_MODE_CEILING  2
 #define ROUNDING_MODE_TRUNCATE 3
 
-int32_t round_i32_from_double( double d, uint8_t rm )
+template <typename T> T round_i_from_double( double d, uint8_t rm )
 {
+    static_assert(std::is_integral<T>::value, "Type must be an integral type.");
+    static_assert(std::is_signed<T>::value, "Type must be a signed type.");
+
+    T max_val = std::numeric_limits<T>::max();
+
     if ( my_isnan( d ) || isinf( d ) )
-        return INT32_MAX;
+        return max_val;
 
-    if ( d > (double) INT32_MAX )
-        return INT32_MAX;
+    if ( d > (double) max_val )
+        return max_val;
 
-    if ( d < (double) INT32_MIN )
-        return INT32_MIN;
+    T min_val = std::numeric_limits<T>::min();
+
+    if ( d < (double) min_val )
+        return min_val;
 
     if ( ROUNDING_MODE_NEAREST == rm ) // nearest
-        return (int32_t) round( d );
+        return (T) round( d );
     if ( ROUNDING_MODE_FLOOR == rm ) // towards -infinity
-        return (int32_t) floor( d );
+        return (T) floor( d );
     if ( ROUNDING_MODE_CEILING == rm ) // towards +infinity
-        return (int32_t) ceil( d );
+        return (T) ceil( d );
 
     assert( ROUNDING_MODE_TRUNCATE == rm );
-    return (int32_t) trunc( d ); // towards 0 (truncate)
-} //round_i32_from_double
+    return (T) trunc( d ); // towards 0 (truncate)
+} //round_i_from_double
 
 double round_double_from_double( double d, uint8_t rm )
 {
@@ -2678,28 +2728,28 @@ template <typename T> T x64::op_add( T a, T b, bool carry )
     return result;
 } //op_add
 
-template <typename T> T x64::op_xor( T lhs, T rhs )
+template <typename T> T x64::op_xor( T a, T b )
 {
-    lhs ^= rhs;
-    set_PSZ( lhs );
+    a ^= b;
+    set_PSZ( a );
     reset_carry_overflow();
-    return lhs;
+    return a;
 } //op_xor
 
-template <typename T> T x64::op_and( T lhs, T rhs )
+template <typename T> T x64::op_and( T a, T b )
 {
-    lhs &= rhs;
-    set_PSZ( lhs );
+    a &= b;
+    set_PSZ( a );
     reset_carry_overflow();
-    return lhs;
+    return a;
 } //op_xor
 
-template <typename T> T x64::op_or( T lhs, T rhs )
+template <typename T> T x64::op_or( T a, T b )
 {
-    lhs |= rhs;
-    set_PSZ( lhs );
+    a |= b;
+    set_PSZ( a );
     reset_carry_overflow();
-    return lhs;
+    return a;
 } //op_or
 
 template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
@@ -5660,8 +5710,8 @@ _prefix_is_set:
                         {
                             double val0 = get_rmxdouble( 0 );
                             double val1 = get_rmxdouble( 1 );
-                            xregs[ _reg ].set32( 0, round_i32_from_double( val0, ROUNDING_MODE_TRUNCATE ) );
-                            xregs[ _reg ].set32( 1, round_i32_from_double( val1, ROUNDING_MODE_TRUNCATE ) );
+                            xregs[ _reg ].set32( 0, round_i_from_double<int32_t>( val0, ROUNDING_MODE_TRUNCATE ) );
+                            xregs[ _reg ].set32( 1, round_i_from_double<int32_t>( val1, ROUNDING_MODE_TRUNCATE ) );
                         }
                         else
                             unhandled();
@@ -6536,6 +6586,10 @@ _prefix_is_set:
                         poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
                     else if ( 1 == _reg ) // fmul m32fp
                         poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                    else if ( 2 == _reg ) // fcom m32fp
+                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                    else if ( 3 == _reg ) // fcomp m32fp
+                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) get_rmfloat() ) );
                     else if ( 4 == _reg ) // fsub m32fp
                         poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
                     else if ( 5 == _reg ) // fsubr m32fp
@@ -6725,6 +6779,18 @@ _prefix_is_set:
                         poke_fp( 0, do_fadd( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
                     else if ( 1 == _reg ) // fimul m32int  multiply st(0) by m32int and store in st(0)
                         poke_fp( 0, do_fmul( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
+                    else if ( 2 == _reg ) // ficom m32int  compare st(0) with m32int
+                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) (int32_t) get_rm32() ) );
+                    else if ( 3 == _reg ) // ficomp m32int  compare st(0) with m32int and pop
+                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) (int32_t) get_rm32() ) );
+                    else if ( 4 == _reg ) // fisub m32int  subtract m32int from st(0) and store in st(0)
+                        poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) (int32_t) get_rm32() ) );
+                    else if ( 5 == _reg ) // fisubr m32int  subtract st(0) from m32int and store in st(0)
+                        poke_fp( 0, do_fsub( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
+                    else if ( 6 == _reg ) // fidiv m32int  divide st(0) by m32int and store in st(0)
+                        poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), (long double) (int32_t) get_rm32() ) );
+                    else if ( 7 == _reg ) // fidivr m32int  divide m32int by st(0) and store in st(0)
+                        poke_fp( 0, do_fdiv( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
                     else
                         unhandled();
                 }
@@ -6758,25 +6824,38 @@ _prefix_is_set:
                     set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomi st, st(i)
                     set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                else if ( 0xe3 == op1 ) // finit
+                {
+                    x87_fpu_control_word = 0x37f;
+                    x87_fpu_status_word = 0;
+                    fp_sp = 0;
+                }
                 else
                 {
                     rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fild m32int
                         push_fp( (long double) (int32_t) get_rm32() );
+                    else if ( 1 == _reg ) // fisttp m32int
+                        set_rm32( round_i_from_double<int32_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
+                    else if ( 2 == _reg ) // fcom m32fp   compare st(0) with m32fp
+                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
                     else if ( 3 == _reg ) // fistp m32int
-                        set_rm32( round_i32_from_double( pop_fp().getd(), get_x87_rounding_mode() ) );
+                        set_rm32( round_i_from_double<int32_t>( pop_fp().getd(), get_x87_rounding_mode() ) );
+                    else if ( 4 == _reg ) // nop, clear exceptions, init fp unit
+                    {
+                        x87_fpu_control_word = 0x37f;
+                        x87_fpu_status_word = 0;
+                    }
                     else if ( 5 == _reg ) // fld m80fp push m80fp onto the fpu register stack
                     {
                         float80_t f80;
                         memcpy( &f80, getmem( effective_address() ), 10 );
-                        //tracer.TraceBinaryData( (uint8_t *) &f80, 10, 2 );
                         push_fp( f80 );
                     }
                     else if ( 7 == _reg ) // fstp m80fp   copy top of stack to m80fp and pop it
                     {
                         float80_t f80 = pop_fp();
-                        //tracer.TraceBinaryData( (uint8_t *) &f80, 10, 2 );
                         memcpy( getmem( effective_address() ), &f80, 10 );
                     }
                     else
@@ -6840,6 +6919,8 @@ _prefix_is_set:
                     decode_rm();
                     if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
                         push_fp( get_rmdouble() );
+                    else if ( 1 == _reg ) // fisttp m64int
+                        set_rm64( round_i_from_double<int64_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
                     else if ( 2 == _reg ) // fstp m64fp  copy st(0) to m64fp
                         set_rmdouble( peek_fp( 0 ).getd() );
                     else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
@@ -6889,6 +6970,20 @@ _prefix_is_set:
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m16int
                         poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                    else if ( 1 == _reg ) // fimul m16int
+                        poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                    else if ( 2 == _reg ) // ficom m16int  compare st(0) with m16int
+                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                    else if ( 3 == _reg ) // ficomp m16int  compare st(0) with m16int and pop
+                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) (int16_t) get_rm16() ) );
+                    else if ( 4 == _reg ) // fisub m16int   subtract m16int from st(0) and store result in st(0)
+                        poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                    else if ( 5 == _reg ) // fisubr m16int   subtract st(0) from m16int and store result in st(0)
+                        poke_fp( 0, do_fsub( (long double) (int16_t) get_rm16(), peek_fp( 0 ).getld() ) );
+                    else if ( 6 == _reg ) // fidiv m16int  divide st(0) by m16int and store in st(0)
+                        poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                    else if ( 7 == _reg ) // fidivr m16int  divide m16int by st(0) and store in st(0)
+                        poke_fp( 0, do_fdiv( (long double) (int16_t) get_rm16(), peek_fp( 0 ).getld() ) );
                     else
                         unhandled();
                 }
@@ -6916,6 +7011,18 @@ _prefix_is_set:
                     decode_rm();
                     if ( 0 == _reg ) // fild m64int
                         push_fp( (double) (int16_t) get_rm16() );
+                    else if ( 1 == _reg ) // fisttp m16int
+                        set_rm16( round_i_from_double<int16_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
+                    else if ( 2 == _reg ) // fistp m16int   store st(0) in m16int
+                    {
+                        long double val = peek_fp( 0 ).getld();
+                        int16_t ival;
+                        if ( ( val > INT16_MAX ) || ( val < INT16_MIN ) )
+                            ival = INT16_MIN; // integer indefinte value my CPU stores in this case
+                        else
+                            ival = (int16_t) val;
+                        set_rm16( ival );
+                    }
                     else if ( 3 == _reg ) // fistp m16int   store st(0) in m16int and pop register stack
                     {
                         long double val = pop_fp().getld();
@@ -7365,8 +7472,8 @@ _prefix_is_set:
                 printf( "default unhandled opcode at rip %#llx, op %#x\n", rip, op );
                 unhandled();
             }
-        }
-    }
+        } //switch
+    } //for
 
     return instruction_count;
 } //run

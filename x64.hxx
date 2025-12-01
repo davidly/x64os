@@ -164,6 +164,7 @@ struct x64
     x64( vector<uint8_t> & memory, uint64_t base_address, uint64_t start, uint64_t stack_commit, uint64_t top_of_stack )
     {
         memset( this, 0, sizeof( *this ) );
+        x87_fpu_control_word = 0x37f;
         rip = start;
         stack_size = stack_commit;                 // remember how much of the top of RAM is allocated to the stack
         stack_top = top_of_stack;                  // where the stack started
