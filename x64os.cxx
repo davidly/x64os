@@ -3884,7 +3884,7 @@ void emulator_invoke_svc( CPUClass & cpu )
                 tracer.Trace( "  size: %#llx\n", pout->stx_size );
                 tracer.Trace( "  blocks: %#llx\n", pout->stx_blocks );
                 tracer.Trace( "  attrib_mask: %#llx\n", pout->stx_attributes_mask );
-                tracer.TraceBinaryData( (uint8_t *) pout, cbStat, 5 );
+                tracer.TraceBinaryData( (uint8_t *) pout, (uint32_t) cbStat, 5 );
 #endif
             }
             else

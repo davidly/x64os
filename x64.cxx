@@ -130,7 +130,7 @@ void x64::trace_state()
     reg_string[ 0 ] = 0;
     int len = 0;
     int reg_count = mode32 ? 8 : 16;
-    for ( int r = 0; r < reg_count; r++ )
+    for ( uint8_t r = 0; r < reg_count; r++ )
         if ( 0 != regs[ r ].q )
             len += snprintf( & reg_string[ len ], 32, "%s:%llx ", register_name( r ), regs[ r ].q );
 
@@ -3512,7 +3512,7 @@ uint16_t get_x87_control_word()
 
 #else
 
-    void set_x87_control_word( uint16_t cw ) { /* empty */ }
+    #define set_x87_control_word( cw )
 
 #endif // NATIVE_LONG_DOUBLE x87 support
 
@@ -3523,9 +3523,9 @@ template <typename T> T x64::handle_math_nan( T a, T b )
         if ( my_isnan( b ) )
         {
             if ( signbit( a ) && signbit( b ) )
-                return -MY_NAN;
+                return (T) -MY_NAN;
             if ( mode32 )            // an interesting difference between 32 and 64 bit 
-                return MY_NAN;
+                return (T) MY_NAN;
             return a;
         }
         else
@@ -6644,9 +6644,9 @@ _prefix_is_set:
                 if ( _rexW )
                     regs[ rax ].q = sign_extend( regs[ rax ].q, 31 );
                 else if ( 0x66 == _prefix_size )
-                    regs[ rax ].q = sign_extend16( regs[ rax ].q, 7 );
+                    regs[ rax ].q = sign_extend16( regs[ rax ].w, 7 );
                 else
-                    regs[ rax ].q = sign_extend32( regs[ rax ].q, 15 );
+                    regs[ rax ].q = sign_extend32( regs[ rax ].d, 15 );
                 break;
             }
             case 0x99: // cwd/cdq/cqo
