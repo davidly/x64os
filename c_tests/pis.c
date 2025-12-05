@@ -152,7 +152,7 @@ int main( int argc, char * argv[] )
         countGenerated = 128 * countGenerated128;
     }
 
-    printf( "startingOffset128: %lld, startingOffset: %lld, countGenerated128 %lld, countGenerated %lld\n", 
+    printf( "startingOffset128: %zd, startingOffset: %zd, countGenerated128 %zd, countGenerated %zd\n", 
             startingOffset128, startingOffset, countGenerated128, countGenerated );
 
     size_t bufsize = 1 + countGenerated;
