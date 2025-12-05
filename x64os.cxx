@@ -21,6 +21,8 @@
     build a cross-compiler from here: https://gitlab.com/buildroot.org/buildroot/
 #elif defined( X64OS )
     This emulates an AMD64 CPU in Long Mode + 64-bit mode. No other modes are supported
+#elif defined( X32OS )
+    This emulates an Intel x86 CPU in 32-bit real mode.
 #else
     #error one of ARMOS, RVOS, M68, SPARCOS, X64OS, or X32OS must be defined
 #endif
@@ -1858,6 +1860,7 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 295, SYS_openat },
     { 296, SYS_mkdirat },
     { 301, SYS_unlinkat },
+    { 302, SYS_renameat },
     { 305, SYS_readlinkat },
     { 308, SYS_pselect6 },
     { 311, SYS_set_robust_list },
