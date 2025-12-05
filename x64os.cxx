@@ -1847,6 +1847,7 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 201, SYS_geteuid }, // actually geteuid32
     { 202, SYS_getegid }, // actually getegid32
     { 220, SYS_getdents64 },
+    { 221, SYS_fcntl }, // actually fcntl64
     { 224, SYS_gettid },
     { 243, emulator_sys_set_thread_area },
     { 244, emulator_sys_set_thread_area },
@@ -1855,6 +1856,8 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 267, SYS_clock_nanosleep },
     { 270, SYS_tgkill },
     { 295, SYS_openat },
+    { 296, SYS_mkdirat },
+    { 301, SYS_unlinkat },
     { 305, SYS_readlinkat },
     { 308, SYS_pselect6 },
     { 311, SYS_set_robust_list },
@@ -2021,7 +2024,7 @@ void emulator_invoke_svc( CPUClass & cpu )
     // Linux syscalls support up to 6 arguments
 
     if ( tracer.IsEnabled() )
-#if defined( M68 ) || defined( SPARCOS )
+#if defined( M68 ) || defined( SPARCOS ) || defined( X32OS )
         tracer.Trace( "syscall %s %x = %d, arg0 %x, arg1 %x, arg2 %x, arg3 %x, arg4 %x, arg5 %x\n",
                       lookup_syscall( syscall_id ), syscall_id, syscall_id,
                       ACCESS_REG( REG_ARG0 ), ACCESS_REG( REG_ARG1 ), ACCESS_REG( REG_ARG2 ), ACCESS_REG( REG_ARG3 ),
