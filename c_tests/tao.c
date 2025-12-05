@@ -11,8 +11,11 @@
 #define _perhaps_inline __attribute__((noinline))
 //#define _perhaps_inline
 
+#if defined(__SIZEOF_INT128__)
 typedef unsigned __int128 uint128_t;
 typedef __int128 int128_t;
+#endif
+
 typedef long double ldouble_t;
 
 template <class T> T do_abs( T x )
@@ -307,7 +310,7 @@ template <class T> T do_abs( T x )
         fillA_##ftype##dim( -10 ); \
         /* printf( "initial: " ); print_array_##ftype##dim(); */ \
         shift_left_##ftype##dim(); \
-        /* printf( "left: " ); print_array_##ftype##dim(); */ \
+        /*printf( "left: " ); print_array_##ftype##dim(); */ \
         shift_right_##ftype##dim(); \
         /* printf( "right: " ); print_array_##ftype##dim(); */ \
         and_##ftype##dim(); \
@@ -464,8 +467,11 @@ declare_array_operations_tests( int32_t );
 declare_array_operations_tests( uint32_t );
 declare_array_operations_tests( int64_t );
 declare_array_operations_tests( uint64_t );
+
+#if defined(__SIZEOF_INT128__)
 declare_array_operations_tests( int128_t );
 declare_array_operations_tests( uint128_t );
+#endif
 
 #define run_tests( type ) \
     run_##type##1(); \
@@ -506,10 +512,12 @@ int main( int argc, char * argv[] )
         run_tests( uint32_t );
         run_tests( int64_t );
         run_tests( uint64_t );
+#if defined(__SIZEOF_INT128__)        
         run_tests( int128_t );
         run_tests( uint128_t );
+#endif        
 #else    
-        run_this_test( uint64_t );    
+        run_this_test( int8_t );    
 #endif    
     }
 

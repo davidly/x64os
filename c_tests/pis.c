@@ -114,6 +114,7 @@ int pi_digit( size_t n )
 
     if ( x < 0 || x > 15 )
         printf( "resulting sum %lf, f %lf, r %lf, x: %d\n", sum, f, r, x );
+
     assert( x >= 0 && x <= 15 );
     return x;
 } //pi_digit
@@ -162,7 +163,7 @@ int main( int argc, char * argv[] )
     size_t startInChunks = ( startingOffset128 * 128 ) / chunkSize;
     size_t limitInChunks = ( startInChunks + ( countGenerated128 * 128 ) ) / chunkSize;
 
-    printf( "startInChunks: %lld, limitInChunks %lld\n", startInChunks, limitInChunks );
+    printf( "startInChunks: %zd, limitInChunks %zd\n", startInChunks, limitInChunks );
 
     size_t complete = 0;
     size_t generatedChunks = countGenerated128 * 129 / chunkSize;

@@ -8,6 +8,7 @@ struct x64;
 
 extern void emulator_invoke_svc( x64 & cpu );                                                // called when the syscall instruction is executed
 extern const char * emulator_symbol_lookup( uint64_t address, uint64_t & offset );           // returns the best guess for a symbol name and offset for the address
+extern const char * emulator_symbol_lookup( uint32_t address, uint32_t & offset );           // returns the best guess for a symbol name and offset for the address
 extern void emulator_hard_termination( x64 & cpu, const char *pcerr, uint64_t error_value ); // show an error and exit
 
 template <typename T> inline bool val_signed( T x )
@@ -102,7 +103,7 @@ typedef struct reg8_t // 8-byte register
 // Obviously, apps not using long double (i.e. just use float and double) work fine when using 8-byte long doubles.
 // clang++ v19.1.5 building with -mlong-double-80 exposes many bugs in their implementation and so is avoided here.
 
-#if defined( __GNUC__ ) && defined( __amd64 )
+#if defined( __GNUC__ ) && ( defined( __amd64__ ) || defined( __i386__ ) )
 #define NATIVE_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64
 #else
 #define NATIVE_LONG_DOUBLE 0         // use 8-byte long double with a loss in precision
@@ -170,8 +171,9 @@ struct x64
     x64( vector<uint8_t> & memory, uint64_t base_address, uint64_t start, uint64_t stack_commit, uint64_t top_of_stack )
     {
         memset( this, 0, sizeof( *this ) );
+        mode32 = false;
         x87_fpu_control_word = 0x37f;
-        rip = start;
+        rip.q = start;
         stack_size = stack_commit;                 // remember how much of the top of RAM is allocated to the stack
         stack_top = top_of_stack;                  // where the stack started
         regs[ rsp ].q = top_of_stack;              // points at argc with argv, penv, and aux records above it
@@ -260,15 +262,18 @@ struct x64
     reg8_t regs[ 16 ];               // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
     vec16_t xregs[ 16 ];             // xmm0 through 15
     float80_t fregs[ 8 ];            // 80-bit numbers are stored in this fp stack, while math is done as 8-byte or 10-byte doubles depending on the compiler and ISA
-    uint64_t rip;                    // instruction pointer
-    uint64_t fs, gs;                 // these segement registers are actually used in 64-bit code via a prefix for glibc thread and global data
+    reg8_t rip;                      // instruction pointer
+    reg8_t es, cs, ss, ds, fs, gs;   // fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
     uint32_t mxcsr;
     uint16_t x87_fpu_control_word;   // for fldcw, fstcw/fnstcw. applies to sse as well as x87
     uint16_t x87_fpu_status_word;    // for fstsw/fnstsw.
     uint8_t fp_sp;                   // current stack pointer for fregs[]
+    bool mode32;                     // true for 32-bit CPU vs 64-bit
 
-    uint64_t & reg_fs() { return fs; }
-    uint64_t & reg_gs() { return gs; }
+    void Mode32( bool m32 ) { mode32 = m32; }
+
+    uint64_t & reg_fs() { return fs.q; }
+    uint64_t & reg_gs() { return gs.q; }
 
 private:
     uint64_t rcs, rds, rss, rfs, rgs;
@@ -317,6 +322,7 @@ private:
 
     // decoding state and functions
 
+    uint64_t _instruction_start;        // rip where decoding of the current instruction started
     int64_t _displacement;
     uint8_t _rexW, _rexR, _rexX, _rexB; // aligned and consecutive so the compiler can 0 them all out at once
     uint8_t _rm, _reg, _mod;
@@ -333,8 +339,34 @@ private:
     } //clear_decoding
 
     uint64_t effective_address();
-    inline uint64_t pop() { uint64_t val = getui64( regs[ rsp ].q ); regs[ rsp ].q += 8; return val; }
-    inline void push( uint64_t val ) { regs[ rsp ].q -= 8; setui64( regs[ rsp ].q, val );  }
+
+    inline uint64_t pop()
+    {
+        if ( mode32 )
+        {
+            uint32_t val = getui32( regs[ rsp ].q );
+            regs[ rsp ].q += 4;
+            return val;
+        }
+
+        uint64_t val = getui64( regs[ rsp ].q );
+        regs[ rsp ].q += 8;
+        return val;
+    } //pop
+
+    inline void push( uint64_t val )
+    {
+        if ( mode32 )
+        {
+            regs[ rsp ].q -= 4;
+            setui32( regs[ rsp ].d, (uint32_t) val );
+        }
+        else
+        {
+            regs[ rsp ].q -= 8;
+            setui64( regs[ rsp ].q, val );
+        }
+    } //push
 
     static inline int64_t sign_extend( uint64_t x, uint64_t high_bit )
     {
@@ -362,7 +394,7 @@ private:
 
     inline bool is_parity_even8( uint8_t x ) // unused by apps and expensive to compute.
     {
-#ifdef _M_AMD64
+#if defined( _M_AMD64 ) || defined( _M_IX86 )
         return ( ! ( __popcnt16( x ) & 1 ) ); // less portable, but faster. Not on Q9650 CPU and other older Intel CPUs. use code below instead if needed.
 #elif defined( __aarch64__ )
         return ( ! ( std::bitset<8>( x ).count() & 1 ) );
@@ -391,10 +423,10 @@ private:
     void op_sto( uint8_t width );
     void op_movs( uint8_t width );
 
-    inline uint8_t get_rip8() { return getui8( rip++ ); }
-    inline uint16_t get_rip16() { uint16_t val = getui16( rip ); rip += 2; return val; }
-    inline uint32_t get_rip32() { uint32_t val = getui32( rip ); rip += 4; return val; }
-    inline uint64_t get_rip64() { uint64_t val = getui64( rip ); rip += 8; return val; }
+    inline uint8_t get_rip8() { return getui8( rip.q++ ); }
+    inline uint16_t get_rip16() { uint16_t val = getui16( rip.q ); rip.q += 2; return val; }
+    inline uint32_t get_rip32() { uint32_t val = getui32( rip.q ); rip.q += 4; return val; }
+    inline uint64_t get_rip64() { uint64_t val = getui64( rip.q ); rip.q += 8; return val; }
 
     inline uint8_t get_reg8()
     {
@@ -668,8 +700,9 @@ private:
     } //set_rmx32
 
     uint8_t op_width() { return ( _rexW ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4 ); }
+    const char * rm_displacement();
     const char * rm_string( uint8_t width, bool is_xmm = false );
-    const char * register_name( uint8_t reg, uint8_t width, bool is_xmm = false );
+    const char * register_name( uint8_t reg, uint8_t width = 8, bool is_xmm = false );
 
     bool check_condition( uint8_t condition );
     template <typename T> inline uint32_t compare_floating( T a, T b );
@@ -693,8 +726,30 @@ private:
     void poke_fp( uint8_t offset, long double val );
     void poke_fp( uint8_t offset, double val );
 
+    template <typename T> T handle_math_nan( T a, T b );
+    template <typename T> T do_fadd( T a, T b );
+    template <typename T> T do_fsub( T a, T b );
+    template <typename T> T do_fmul( T a, T b );
+    template <typename T> T do_fdiv( T a, T b );
+
+    /*
+        fp control word
+        ---------------
+        11-10  rounding control. 00 = nearest, 01 = round down, 10 = round up, 11 = round towards 0 / trunc
+         9-8   precision control. 00 = float, 01 = reserved, 10 = double, 11 = extended 80-bit. used for intermediate results.
+         7   
+         6   
+         5     exception mask: PM inexact result/precision
+         4     exception mask: UM underflow
+         3     exception mask: OM overflow
+         2     exception mask: ZM zero divide
+         1     exception mask: DM denormal operand
+         0     excepiton mask: IM invalid operation
+    */
+
     /*
         fp status word
+        --------------
         15    B    Busy (currently executing an instruction)
         14    C3   Condition Code. used for comparision and test for branching
         13-11 TOP  Top of stack pointer. points to st(0). same as fp_sp
@@ -740,6 +795,13 @@ private:
     } //update_x87_status_top
 
     uint8_t get_x87_rounding_mode() { return ( x87_fpu_control_word >> 10 ) & 3; }
+
+    inline uint64_t lower32_address( uint64_t a )
+    {
+        if ( mode32 )
+            return 0xffffffff & a;
+        return a;
+    } //lower32_address
 
     void force_trace_xregs();
     void force_trace_xreg( uint32_t i );

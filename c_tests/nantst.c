@@ -40,12 +40,36 @@ const char * tf( bool f )
     return f ? "true" : "false";
 }
 
+bool my_signbit( double d )
+{
+    uint64_t val = * (uint64_t *) &d;
+    return ( val & 0x8000000000000000 ) != 0;
+} //my_signbit
+
+template <typename T> bool my_isnan( T x ) { return ( FP_NAN == fpclassify( x ) ); } // fpclassify instead of isnan because isnan() takes a double and we don't want type conversions here from long double
+
+// needed because printf using glibc for 32-bit x86 doesn't print nan with sign if negative
+const char * double_string( double d )
+{
+    static char buffer[ 64 ];
+    if ( std::isnan( d ) )
+    {
+        if ( my_signbit( d ) )
+            strcpy( buffer, "-nan" );
+        else
+            strcpy( buffer, "nan" );
+    }
+    else
+        snprintf( buffer, sizeof( buffer ), "%lf", d );
+    return buffer;
+} //double_string
+
 void _perhaps_inline show_num( double d )
 {
-    printf( "  %lf = %#llx, isnan %s, isinf %s, iszero %s, signbit %s\n",
-            d, * (uint64_t *) &d,
-            tf( std::isnan( d ) ), tf( std::isinf( d ) ),
-            tf( 0.0 == d ),  tf( std::signbit( d ) ) );
+    printf( "  %s = %#llx, isnan %s, isinf %s, iszero %s, signbit %s\n",
+            double_string( d ), * (uint64_t *) &d,
+            tf( my_isnan( d ) ), tf( std::isinf( d ) ),
+            tf( 0.0 == d ),  tf( my_signbit( d ) ) );
 } //show_num
 
 template <class T> void _perhaps_inline cmp( T a, T b )
@@ -62,7 +86,7 @@ template <class T> void _perhaps_inline minmax( T a, T b )
 {
     T min = get_min( a, b );
     T max = get_max( a, b );
-    printf( "  min %lf, max %lf\n", (double) min, (double) max );
+    printf( "  min %s, max %s\n", double_string( (double) min ), double_string( (double) max ) );
 } //minmax
 
 double _perhaps_inline do_math( double a, double b )
@@ -75,9 +99,7 @@ double _perhaps_inline do_math( double a, double b )
     printf( "         b:" );
     show_num( b );
 
-    syscall( 0x2002, 1 );
     r = a * b;
-    syscall( 0x2002, 0 );
     printf( "         *:" );
     show_num( r );
 
@@ -98,7 +120,6 @@ double _perhaps_inline do_math( double a, double b )
 
     printf( "    minmax:" );
     minmax( a, b );
-
     return r;
 }
 
@@ -114,6 +135,7 @@ double signaling_nan = std::numeric_limits<double>::signaling_NaN();
 double test_case( double d )
 {
     double r = 0.0;
+
     r += do_math( d, 0.0 );
     r += do_math( 0.0, d );
     r += do_math( d, neg_zero );

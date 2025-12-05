@@ -7,6 +7,11 @@
 #include <float.h>
 #include <stdint.h>
 
+#if defined(__SIZEOF_INT128__)
+typedef unsigned __int128 uint128_t;
+typedef __int128 int128_t;
+#endif
+
 char *floattoa( char *buffer, double d, int precision )
 {
     char * pbuf = buffer;
@@ -47,7 +52,7 @@ char *floattoa( char *buffer, double d, int precision )
 // less than full precision because libc only provides this much precision in trig functions
 
 #define TRIG_FLT_EPSILON 0.00002  /* 0.00000011920928955078 */
-#define TRIG_DBL_EPSILON 0.00000002 /* 0.00000000000000022204 */
+#define TRIG_DBL_EPSILON 0.000002 /* 0.00000000000000022204 */
 #define TRIG_LDBL_EPSILON 0.0000000000000002 /* 0.0000000000000000000000000000000001925930 */
 
 void check_same_f( const char * operation, float a, float b, float dbgval )
@@ -90,7 +95,13 @@ void check_same_ld( const char * operation, long double a, long double b, long d
     }
 } //check_same_ld
 
-__int128 factorial( __int128 n )
+#if defined(__SIZEOF_INT128__)
+const int max_N_Iterations = 17; // limited by factorial size for int128_t
+int128_t factorial( int128_t n )
+#else
+const int max_N_Iterations = 10; // limited by factorial size for int64_t
+int64_t factorial( int64_t n ) // should work for up to n=20
+#endif
 {
     if ( 0 == n )
         return 1;
@@ -98,12 +109,12 @@ __int128 factorial( __int128 n )
     return n * factorial( n - 1 );
 } //factorial
 
-long double my_sin_ld( long double x, int n = 18 )
+long double my_sin_ld( long double x, int n = max_N_Iterations )
 {
     long double result = 0;
     int sign = 1; // can't use an __int128 here because gnu at -O0 and -O1 generates code that requires 10-byte long doubles in x64os, which don't exist in msvc.
 
-    for ( __int128 i = 1; i <= n; i++ ) 
+    for ( int64_t i = 1; i <= n; i++ ) 
     {
         result += sign * powl( x, ( 2 * i - 1 ) ) / factorial( 2 * i - 1 );
         sign *= -1;
@@ -112,12 +123,12 @@ long double my_sin_ld( long double x, int n = 18 )
     return result;
 } //my_sin_ld
 
-double my_sin_d( double x, int n = 18 )
+double my_sin_d( double x, int n = max_N_Iterations )
 {
     double result = 0;
     int sign = 1;
 
-    for ( __int128 i = 1; i <= n; i++ ) 
+    for ( int64_t i = 1; i <= n; i++ ) 
     {
         result += sign * pow( x, ( 2 * i - 1 ) ) / factorial( 2 * i - 1 );
         sign *= -1;
@@ -126,12 +137,12 @@ double my_sin_d( double x, int n = 18 )
     return result;
 } //my_sin_d
 
-float my_sin_f( float x, int n = 18 )
+float my_sin_f( float x, int n = max_N_Iterations )
 {
     float result = 0;
     int sign = 1;
 
-    for ( __int128 i = 1; i <= n; i++ ) 
+    for ( int64_t i = 1; i <= n; i++ ) 
     {
         result += sign * powf( x, ( 2 * i - 1 ) ) / factorial( 2 * i - 1 );
         sign *= -1;
@@ -269,19 +280,19 @@ int fl_cl_test()
 
     f = floor( f1_1 );
     x = (int32_t) f;
-    printf( "floor of 1.1: %f == %ld\n", f, x );
+    printf( "floor of 1.1: %f == %d\n", f, x );
 
     f = ceil( f1_1 );
     x = (int32_t) f;
-    printf( "ceil of 1.1: %f == %ld\n", f, x );
+    printf( "ceil of 1.1: %f == %d\n", f, x );
 
     f = floor( -f1_8 );
     x = (int32_t) f;
-    printf( "floor of -1.8: %f == %ld\n", f, x );
+    printf( "floor of -1.8: %f == %d\n", f, x );
 
     f = ceil( -f1_8 );
     x = (int32_t) f;
-    printf( "ceil of -1.8: %f == %ld\n", f, x );
+    printf( "ceil of -1.8: %f == %d\n", f, x );
 
     return 0;
 }

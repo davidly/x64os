@@ -159,22 +159,46 @@ void test_many()
         SMany & m = amany[ i ];
 
         if ( m.ui8 != i )
+        {
             printf( "error: i %u, ui8 is %llu, not %llu\n", (int) i, (uint64_t) m.ui8, (uint64_t) i );
+            exit( 1 );
+        }
         if ( m.ui64 != (uint64_t) i * 8 )
+        {
             printf( "error: i %u, ui64 is %llu, not %llu\n", (int) i, (uint64_t) m.ui64, (uint64_t) i * 8 );
+            exit( 1 );
+        }
         if ( m.ui16 != (uint16_t) i * 2 )
+        {
             printf( "error: i %u, ui16 is %llu, not %llu\n", (int) i, (uint64_t) m.ui16, (uint64_t) i * 2 );
+            exit( 1 );
+        }
         if ( m.ui32 != (uint32_t) i * 4 )
+        {
             printf( "error: i %u, ui32 is %llu, not %llu\n", (int) i, (uint64_t) m.ui32, (uint64_t) i * 4 );
+            exit( 1 );
+        }
 
         if ( m.i8 != - (int8_t) i )
+        {
             printf( "error: i %u, i8 is %lld, not %lld\n", (int) i, (int64_t) m.i8, - (int64_t) i );
+            exit( 1 );
+        }
         if ( m.i64 != - (int64_t) i * 8 )
+        {
             printf( "error: i %u, i64 is %lld, not %lld\n", (int) i, (int64_t) m.ui64, - (int64_t) i * 8 );
+            exit( 1 );
+        }
         if ( m.i16 != - (int16_t) i * 2 )
+        {
             printf( "error: i %u, i16 is %lld, not %lld\n", (int) i, (int64_t) m.ui16, - (int64_t) i * 2 );
+            exit( 1 );
+        }
         if ( m.i32 != - (int32_t) i * 4 )
+        {
             printf( "error: i %u, i32 is %lld, not %lld\n", (int) i, (int64_t) m.ui32, - (int64_t) i * 4 );
+            exit( 1 );
+        }
     }
 
     ShowBinaryData( (uint8_t *) amany, sizeof( amany ), 4 );
@@ -212,7 +236,7 @@ int main( int argc, char * argv[] )
     validate_array( aui32, _countof( aui32 ) );
     validate_array( ai64, _countof( ai64 ) );
     validate_array( aui64, _countof( aui64 ) );
-    
+
     test_array( ai16, _countof( ai16 ) );
     test_array( aui16, _countof( aui16 ) );
     test_array( ai8, _countof( ai8 ) );

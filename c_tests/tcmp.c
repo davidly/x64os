@@ -3,6 +3,7 @@
 #include <cmath>
 #include <float.h>
 
+#if defined(__SIZEOF_INT128__)
 typedef __int128 int128_t;
 typedef unsigned __int128 uint128_t;
 
@@ -19,6 +20,7 @@ union uint128_t_union
     uint64_t parts[ 2 ];
     void init( uint64_t hi, uint64_t lo ) { parts[ 0 ] = lo; parts[ 1 ] = hi; }
 };
+#endif
 
 //#pragma GCC optimize("O0")
 
@@ -222,6 +224,7 @@ int main( int argc, char * argv[] )
     cmp( (int64_t) 0, (int64_t) 0x8000000000000000 );
     cmp( (int64_t) 0x7fffffffffffffff, (int64_t) 0x8000000000000000 );
 
+#if defined(__SIZEOF_INT128__)
     printf( "uint128_t:\n" );
     uint128_t_union ui128a, ui128b;
 
@@ -364,6 +367,7 @@ int main( int argc, char * argv[] )
     i128a.init( 0x7fffffffffffffff, 0xffffffffffffffff );
     i128b.init( 0x8000000000000000, 0 );
     cmp( i128a.v, i128b.v );
+#endif    
 
     printf( "floating point:\n" );
     float f = -0.5f;

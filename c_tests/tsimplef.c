@@ -32,9 +32,11 @@ int main( int argc, char * argv[] )
     printf( "    add = %lf\n", d_add );
     printf( "    sub = %lf\n", d_sub );
 
+#if defined(__SIZEOF_INT128__)    
     unsigned __int128 i128 = 1000;
     double d = (double) i128;
     printf( "double from int128: %lf\n", d );
+#endif    
 
     printf( "tsimplef completed with great success\n");    
     return 0;

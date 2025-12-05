@@ -20,13 +20,18 @@
 #include <cstring>
 #include <type_traits>
 
+#if defined(__SIZEOF_INT128__)
 typedef unsigned __int128 uint128_t;
 typedef __int128 int128_t;
+#endif
+
 typedef long double ldouble_t;
 
+#if defined(__SIZEOF_INT128__)
 static const uint128_t UINT128_MAX = uint128_t( int128_t( -1L ) );
 static const int128_t INT128_MAX = (int128_t) ( 0x7fffffffffffffff );
 static const int128_t INT128_MIN = -INT128_MAX - 1;
+#endif
 
 //#define _perhaps_inline __attribute__((noinline))
 #define _perhaps_inline
@@ -44,8 +49,11 @@ bool IS_FP( int32_t x ) { return false; }
 bool IS_FP( uint32_t x ) { return false; }
 bool IS_FP( int64_t x ) { return false; }
 bool IS_FP( uint64_t x ) { return false; }
+
+#if defined(__SIZEOF_INT128__)
 bool IS_FP( int128_t x ) { return false; }
 bool IS_FP( uint128_t x ) { return false; }
+#endif
 
 template <class T> T do_abs( T x )
 {
@@ -69,6 +77,8 @@ const char * maptype( const char * p )
         case 'f' : return "float";
         case 'd' : return "double";
         case 'e' : return "ldouble";
+        case 'x' : return "int64";
+        case 'y' : return "uint64";
     }
     return "unknown";
 } //maptype
@@ -137,6 +147,7 @@ template <class T, class U> T do_cast( U x )
             else
                 result = (T) ( ( x < 0 ) ? 0 : ( x > UINT64_MAX ) ? UINT64_MAX : x );
         }
+  #if defined(__SIZEOF_INT128__)        
         else if ( 16 == cbT )
         {
             //printf( "signedT: %d, signedU: %d, x %#llx\n", signedT, signedU, (unsigned long long) x );
@@ -148,6 +159,7 @@ template <class T, class U> T do_cast( U x )
             else
                 result = (T) ( ( x < 0 ) ? 0 : ( x > (T) UINT128_MAX ) ? (T) UINT128_MAX : x );
         }
+#endif        
         else
             printf( "unknown integer type\n" );
     }
@@ -204,7 +216,11 @@ template <class T, class U, size_t size> T tstCasts( T t, U u )
         //printf( "  point after addition, x %.12g\n", (double) x );
         x = -x;
         //printf( "  point after negation, x %.12g\n", (double) x );
+#if defined(__SIZEOF_INT128__)
         x = do_cast<T,int128_t>( (int128_t) x & 0x33303330333033 );
+#else        
+        x = do_cast<T,int64_t>( (int64_t) x & 0x33303330333033 );
+#endif        
         //printf( "  point after bitwise AND, x %.12g\n", (double) x );
         x = do_abs( x );
         //printf( "  point after abs, x %.12g\n", (double) x );
@@ -222,7 +238,7 @@ template <class T, class U, size_t size> T tstCasts( T t, U u )
         //printBytes( "array a:", a, size );
     }
 
-    //syscall( 0x2002, 1 );        
+  //  syscall( 0x2002, 1 );        
     for ( int i = 0; i < _countof( a ); i++ )
     {
         //if ( 16 == sizeof( U ) && 16 == sizeof( T ) )
@@ -239,6 +255,9 @@ template <class T, class U, size_t size> T tstCasts( T t, U u )
     T sumA = do_sum( a, _countof( a ) );
     //syscall( 0x2002, 1 );        
     U sumB = do_sum( b, _countof( b ) );
+//printf( "b[0]: %#x\n", (int) b[0] );
+//    syscall( 0x2002, 0 );        
+
     T sumC = do_sum( c, _countof( c ) );
     //printf( "sumC: %f = %#x\n", sumC, * (uint32_t *) &sumC );
     
@@ -278,7 +297,11 @@ template <class T, class U, size_t size> T tstOverflows( T t, U u )
     {
         x += ( rand() % ( i + 1000 ) ) / 2;
         x = -x;
+#if defined(__SIZEOF_INT128__)        
         x = (int128_t) x & 0x33303330333033;
+#else        
+        x = (int64_t) x & 0x33303330333033;
+#endif        
         x = do_abs( x );
         x = (T) sqrt( (double) x );
         x += (T) 1.02;
@@ -378,6 +401,7 @@ template <class T, class U, size_t size> T tst( T t, U u )
     return result;
 }
 
+#if defined(__SIZEOF_INT128__)
 #define run_tests( ftype, dim ) \
   tst<ftype,int8_t,dim>( 0, 0 ); \
   tst<ftype,uint8_t,dim>( 0, 0 ); \
@@ -392,6 +416,20 @@ template <class T, class U, size_t size> T tst( T t, U u )
   tst<ftype,float,dim>( 0, 0 ); \
   tst<ftype,double,dim>( 0, 0 ); \
   tst<ftype,ldouble_t,dim>( 0, 0 ); 
+#else  
+#define run_tests( ftype, dim ) \
+  tst<ftype,int8_t,dim>( 0, 0 ); \
+  tst<ftype,uint8_t,dim>( 0, 0 ); \
+  tst<ftype,int16_t,dim>( 0, 0 ); \
+  tst<ftype,uint16_t,dim>( 0, 0 ); \
+  tst<ftype,int32_t,dim>( 0, 0 ); \
+  tst<ftype,uint32_t,dim>( 0, 0 ); \
+  tst<ftype,int64_t,dim>( 0, 0 ); \
+  tst<ftype,uint64_t,dim>( 0, 0 ); \
+  tst<ftype,float,dim>( 0, 0 ); \
+  tst<ftype,double,dim>( 0, 0 ); \
+  tst<ftype,ldouble_t,dim>( 0, 0 ); 
+#endif
 
 #define run_testsz( ftype, dim ) \
   tst<ftype,int16_t,dim>( 0, 0 ); \
@@ -400,11 +438,11 @@ template <class T, class U, size_t size> T tst( T t, U u )
   tst<ftype,uint32_t,dim>( 0, 0 ); \
   tst<ftype,int64_t,dim>( 0, 0 ); \
   tst<ftype,uint64_t,dim>( 0, 0 ); \
-  tst<ftype,int128_t,dim>( 0, 0 );
 
 #define run_tests_one( ftype, dim ) \
   tst<ftype,float,dim>( 0, 0 );
 
+#if defined(__SIZEOF_INT128__)
 #define run_dimension( dim ) \
   run_tests( int8_t, dim ); \
   run_tests( uint8_t, dim ); \
@@ -419,17 +457,28 @@ template <class T, class U, size_t size> T tst( T t, U u )
   run_tests( float, dim ); \
   run_tests( double, dim ); \
   run_tests( ldouble_t, dim );
-
-  #define run_dimensionz( dim ) \
-  run_testsz( uint64_t, dim ); \
-  run_testsz( int128_t, dim );
+#else
+#define run_dimension( dim ) \
+  run_tests( int8_t, dim ); \
+  run_tests( uint8_t, dim ); \
+  run_tests( int16_t, dim ); \
+  run_tests( uint16_t, dim ); \
+  run_tests( int32_t, dim ); \
+  run_tests( uint32_t, dim ); \
+  run_tests( int64_t, dim ); \
+  run_tests( uint64_t, dim ); \
+  run_tests( float, dim ); \
+  run_tests( double, dim ); \
+  run_tests( ldouble_t, dim );
+#endif  
 
 #define run_dimension_one( dim ) \
   run_tests_one( int64_t, dim );
 
 int main( int argc, char * argv[], char * env[] )
 {
-#if 1
+#if 1    
+#if defined(__SIZEOF_INT128__)
     printf( "UINT128_MAX = %llx\n", (unsigned long long) UINT128_MAX );
     printf( "INT128_MAX  = %llx\n", (long long) INT128_MAX );
     printf( "INT128_MIN  = %llx\n", (long long) INT128_MIN );
@@ -440,11 +489,21 @@ int main( int argc, char * argv[], char * env[] )
             typeid(int128_t).name(), typeid(uint128_t).name(), 
             typeid(float).name(), typeid(double).name(), typeid(ldouble_t).name() );
 
+#else
+
+    printf( "types: i8 %s, ui8 %s, i16 %s, ui16 %s, i32 %s, ui32 %s, i64 %s, ui64 %s, f %s, d %s, ld %s\n",
+            typeid(int8_t).name(), typeid(uint8_t).name(), typeid(int16_t).name(), typeid(uint16_t).name(),
+            typeid(int32_t).name(), typeid(uint32_t).name(), typeid(int64_t).name(), typeid(uint64_t).name(),
+            typeid(float).name(), typeid(double).name(), typeid(ldouble_t).name() );
+#endif            
+
     printf( "int8_t is signed: %d, uint8_t is signed: %d\n", is_signed_type<int8_t>(), is_signed_type<uint8_t>() );
     printf( "int16_t is signed: %d, uint16_t is signed: %d\n", is_signed_type<int16_t>(), is_signed_type<uint16_t>() );
     printf( "int32_t is signed: %d, uint32_t is signed: %d\n", is_signed_type<int32_t>(), is_signed_type<uint32_t>() );
     printf( "int64_t is signed: %d, uint64_t is signed: %d\n", is_signed_type<int64_t>(), is_signed_type<uint64_t>() );
+#if defined(__SIZEOF_INT128__)
     printf( "int128_t is signed: %d, uint128_t is signed: %d\n", is_signed_type<int128_t>(), is_signed_type<uint128_t>() );
+#endif    
     printf( "float is signed: %d, double is signed: %d, long double is signed: %d\n",
             is_signed_type<float>(), is_signed_type<double>(), is_signed_type<ldouble_t>() );
 
@@ -462,7 +521,7 @@ int main( int argc, char * argv[], char * env[] )
     run_dimension( 128 );
 #else        
     //run_dimensionz( 3 );    
-    tst<int32_t,uint32_t,2>( 0, 0 );
+    tst<int8_t,int16_t,4>( 0, 0 );
 #endif    
 
     printf( "test types completed with great success\n" );

@@ -17,8 +17,11 @@
 #define _perhaps_inline __attribute__((noinline))
 //#define _perhaps_inline
 
+#if defined(__SIZEOF_INT128__)
 typedef unsigned __int128 uint128_t;
 typedef __int128 int128_t;
+#endif
+
 typedef long double ldouble_t;
 
 template <class T> T do_abs( T x )
@@ -239,8 +242,11 @@ declare_matrix_tests( int32_t );
 declare_matrix_tests( uint32_t );
 declare_matrix_tests( int64_t );
 declare_matrix_tests( uint64_t );
+
+#if defined(__SIZEOF_INT128__)
 declare_matrix_tests( int128_t );
 declare_matrix_tests( uint128_t );
+#endif
 
 #define run_tests( type, format ) \
     run_##type##1(); \
@@ -287,7 +293,7 @@ declare_matrix_tests( uint128_t );
     printf( "matrix %s 20: " format "\n", #type, run_##type##20() );
 
 #define run_this_test( type ) \
-    run_##type##16();
+    run_##type##8();
 
 int main( int argc, char * argv[] )
 {

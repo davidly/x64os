@@ -44,11 +44,11 @@ int main( int argc, char * argv[] )
 
     long len = portable_filelen( FileA );
     if ( -1 != len )
-        error( "file A shouldn't exist" );
+        error( "file A shouldn't exist at point 1" );
 
     len = portable_filelen( FileB );
     if ( -1 != len )
-        error( "file B shouldn't exist" );
+        error( "file B shouldn't exist at point 1" );
 
     {
         FILE * fA = fopen( FileA, "w" );
@@ -75,7 +75,7 @@ int main( int argc, char * argv[] )
 
     len = portable_filelen( FileA );
     if ( -1 != len )
-        error( "file A shouldn't exist" );
+        error( "file A shouldn't exist after rename" );
 
     len = portable_filelen( FileB );
     if ( -1 == len )

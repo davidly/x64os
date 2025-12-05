@@ -21,11 +21,11 @@ int fl_cl_test()
 
     d = floor( -d1_8 );
     x = (int32_t) d;
-    printf( "floor of -1.8: %lf == %ld\n", d, x );
+    printf( "floor of -1.8: %lf == %d\n", d, x );
 
     d = ceil( -d1_8 );
     x = (int32_t) d;
-    printf( "ceil of -1.8: %lf == %ld\n", d, x );
+    printf( "ceil of -1.8: %lf == %d\n", d, x );
 
     return 0;
 }
@@ -39,19 +39,19 @@ int fl_cl_test_ld()
 
     d = floor( d1_1 );
     x = (int32_t) d;
-    printf( "floor of 1.1: %lf == %ld\n", (double) d, x );
+    printf( "floor of 1.1: %lf == %d\n", (double) d, x );
 
     d = ceil( d1_1 );
     x = (int32_t) d;
-    printf( "ceil of 1.1: %lf == %ld\n", (double) d, x );
+    printf( "ceil of 1.1: %lf == %d\n", (double) d, x );
 
     d = floor( -d1_8 );
     x = (int32_t) d;
-    printf( "floor of -1.8: %lf == %ld\n", (double) d, x );
+    printf( "floor of -1.8: %lf == %d\n", (double) d, x );
 
     d = ceil( -d1_8 );
     x = (int32_t) d;
-    printf( "ceil of -1.8: %lf == %ld\n", (double) d, x );
+    printf( "ceil of -1.8: %lf == %d\n", (double) d, x );
 
     return 0;
 }

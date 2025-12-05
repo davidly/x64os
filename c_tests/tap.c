@@ -42,15 +42,21 @@ int randi()
 
 // https://en.wikipedia.org/wiki/Ap%C3%A9ry%27s_theorem
 
+#if defined(__SIZEOF_INT128__)
+typedef unsigned __int128 tap_type;
+#else
+typedef uint64_t tap_type; 
+#endif
+
 void first_implementation()
 {
     // use 128 bit ints for testing but also because the loop can go futher without integer overflow
 
-    const unsigned __int128 total = 1000; //00;
+    const tap_type total = 1000; //00;
     double sofar = 0;
-    unsigned __int128 prev = 1;
+    tap_type prev = 1;
 
-    for ( unsigned __int128 i = 1; i <= total; i++ )
+    for ( tap_type i = 1; i <= total; i++ )
     {
         sofar += (double) 1.0 / (double) ( i * i * i );
 
