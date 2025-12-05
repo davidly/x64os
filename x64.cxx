@@ -2,6 +2,7 @@
     This is an AMD64 emulator. It supports just real mode, long mode, 64-bit mode.
     Integer, x87, and SSE2 are partially implemented. No other vector instructions are implemented at all (MMX/AVX/etc.).
     That's a tiny fraction of the CPU but enough to run the regression test static Linux binaries.
+    There is also a 32-bit x86 mode called controlled by member variable Mode32. This can be used to run 32-bit binaries.
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
     Also tested running nested emulators and their regression tests: this one (x64os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
     Builds and runs on both little and big endian machines for 32 and 64 bit. set TARGET_BIG_ENDIAN for those machines.
@@ -1610,8 +1611,8 @@ void x64::trace_state()
             tracer.Trace( "prefixDS_Branch  # ignored\n" );
             break;
         }
-        case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47: // REX prefix
-        case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f: // REX prefix
+        case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47: // REX prefix on x64 and inc on x32
+        case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f: // REX prefix on x64 and dec on x32
         {
             if ( mode32 )
                 tracer.Trace( "%s %s\n", ( op < 0x48 ) ? "inc" : "dec", register_name( op & 7, ( 0x66 == _prefix_size ) ? 2 : 4 ) );

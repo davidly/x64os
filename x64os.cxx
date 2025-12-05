@@ -1854,6 +1854,7 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 267, SYS_clock_nanosleep },
     { 270, SYS_tgkill },
     { 295, SYS_openat },
+    { 305, SYS_readlinkat },
     { 308, SYS_pselect6 },
     { 311, SYS_set_robust_list },
     { 355, SYS_getrandom },

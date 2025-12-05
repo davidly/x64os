@@ -29,6 +29,9 @@ x64os -h:100 bin\sparcos -p bin\tttusp.elf 10 >>%outputfile%
 echo ====== x64os test>>%outputfile%
 x64os -h:100 bin\x64os -p bin\tttu_x64.elf 10 >>%outputfile%
 
+echo ====== x32os test>>%outputfile%
+x64os -h:100 bin\x32os -p bin\tttx32.elf 10 >>%outputfile%
+
 echo %date% %time% >>%outputfile%
 dos2unix %outputfile%
 diff baseline_%outputfile% %outputfile%
