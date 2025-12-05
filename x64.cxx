@@ -3808,7 +3808,7 @@ _prefix_is_set:
                 emulator_hard_termination( *this, "rip is lower than memory:", rip.q );
             if ( rip.q >= ( base + mem_size - stack_size ) )
                 emulator_hard_termination( *this, "rip is higher than it should be:", rip.q );
-            #if 1 // off by default for performance
+            #if 0 // off by default for performance
             if ( mode32 ) // there is no impact if the high bits are set in mode32, but it's better to run clean
                 for ( uint32_t r = 0; r < 8; r++ )
                     if ( 0 != ( 0xffffffff00000000 & regs[ r ].q ) )
