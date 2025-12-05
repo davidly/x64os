@@ -1988,7 +1988,7 @@ void emulator_invoke_svc( CPUClass & cpu )
 #else
     #if !defined( OLDGCC )
         static DIR * g_FindFirst = 0;
-        static uint64_t g_FindFirstDescriptor = -1;
+        static REG_TYPE g_FindFirstDescriptor = -1;
     #endif
 #endif
 
@@ -2214,6 +2214,8 @@ void emulator_invoke_svc( CPUClass & cpu )
 
             if ( 1 == op ) // F_GETFD
                 ACCESS_REG( REG_RESULT ) = 1; // FD_CLOEXEC
+            else if ( 3 == op )
+                ACCESS_REG( REG_RESULT ) = 2; // O_RDWR
             else
                 tracer.Trace( "unhandled SYS_fcntl operation %d\n", op );
             break;
@@ -2731,7 +2733,7 @@ void emulator_invoke_svc( CPUClass & cpu )
             REG_TYPE descriptor = ACCESS_REG( REG_ARG0 );
             uint8_t * pentries = (uint8_t *) cpu.getmem( ACCESS_REG( REG_ARG1 ) );
             REG_TYPE count = ACCESS_REG( REG_ARG2 );
-            tracer.Trace( "  pentries: %p, count %u\n", pentries, (uint32_t) count );
+            tracer.Trace( "  pentries: %p, count %u, descriptor %p\n", pentries, (uint32_t) count, descriptor );
             struct linux_dirent64_syscall * pcur = (struct linux_dirent64_syscall *) pentries;
             memset( pentries, 0, count );
 
@@ -2838,7 +2840,7 @@ void emulator_invoke_svc( CPUClass & cpu )
             }
 #else
         #if !defined( OLDGCC )
-            tracer.Trace( "  g_FindFirstDescriptor: %d, g_FindFirst: %p\n", g_FindFirstDescriptor, g_FindFirst );
+            tracer.Trace( "  g_FindFirstDescriptor: %d, g_FindFirst: %p, descriptor: %p\n", g_FindFirstDescriptor, g_FindFirst, descriptor );
 
             if ( -1 == g_FindFirstDescriptor )
             {
@@ -2848,6 +2850,7 @@ void emulator_invoke_svc( CPUClass & cpu )
 
             if ( 0 == g_FindFirst )
             {
+                tracer.Trace( "  no g_FindFirst\n" );
                 errno = EBADF;
                 g_FindFirstDescriptor = -1;
                 update_result_errno( cpu, -1 );
@@ -3399,7 +3402,7 @@ void emulator_invoke_svc( CPUClass & cpu )
                     prusage->ru_utime.tv_usec = (uint32_t) ( utotal % 1000000 );
                     prusage->ru_utime.tv_sec = swap_endian64( prusage->ru_utime.tv_sec );
                     prusage->ru_utime.tv_usec = swap_endian32( prusage->ru_utime.tv_usec );
-#ifif defined( X32OS )
+#elif defined( X32OS )
                     prusage->ru_utime.tv_sec = (uint32_t) ( utotal / 1000000 );
                     prusage->ru_utime.tv_usec = (uint32_t) ( utotal % 1000000 );
                     prusage->ru_utime.tv_sec = swap_endian32( prusage->ru_utime.tv_sec );
