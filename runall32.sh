@@ -41,7 +41,7 @@ done
 echo test AN
 for opt in 0 1 2 3 fast;
 do
-    echo x32c_tests/bin$opt/an david lee >>$outputfile
+    echo c_tests/x32bin$opt/an david lee >>$outputfile
     $_x32oscmd c_tests/x32bin$opt/an david lee >>$outputfile
     echo c_tests/x32clangbin$opt/an david lee >>$outputfile
     $_x32oscmd c_tests/x32clangbin$opt/an david lee >>$outputfile
