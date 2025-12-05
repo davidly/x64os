@@ -1830,6 +1830,7 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 77, SYS_getrusage },
     { 85, emulator_sys_readlink },
     { 91, SYS_munmap },
+    { 116, SYS_sysinfo },
     { 118, SYS_fsync },
     { 122, SYS_uname },
     { 125, SYS_mprotect },
