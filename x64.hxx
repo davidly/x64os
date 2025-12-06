@@ -754,7 +754,7 @@ private:
         14    C3   Condition Code. used for comparision and test for branching
         13-11 TOP  Top of stack pointer. points to st(0). same as fp_sp
         10    C2
-         9    ES   error summary status. If any unmasked exciption bit is set, eS is set.
+         9    C1 / ES Either depending on the context. error summary status. If any unmasked exciption bit is set, eS is set.
          8    C0
          7    SF   stack fault flag. indicated fp stack overflow
          6    IF   interrupt request flag set. set if an unmasked exception is pending

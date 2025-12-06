@@ -97,7 +97,7 @@ void x64::trace_state()
     if ( ( 0x66 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
 
-//    tracer.TraceBinaryData( getmem( 0x82e4c7c ), 4, 2 );
+//    tracer.TraceBinaryData( getmem( 0x2cedde0 ), 8, 2 );
 
     uint64_t ip = ( 0 == _prefix_rex ) ? rip.q : ( rip.q - 1 );
     if ( 0 != _prefix_size )
@@ -320,7 +320,7 @@ void x64::trace_state()
                     decode_rm();
                     switch ( _reg )
                     {
-                        case 0: case 1: case 2: case 3: { tracer.Trace( "prefetch\n" ); }
+                        case 0: case 1: case 2: case 3: { tracer.Trace( "prefetch\n" ); break; }
                         default: { unhandled(); }
                     }
                     break;
@@ -2898,9 +2898,6 @@ template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 
 template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 {
-    if ( 0 == shift )
-        return;
-
     T original = *pval;
     T val = original;
     for ( uint8_t sh = 0; sh < shift; sh++ )
@@ -2919,9 +2916,6 @@ template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_ror( T * pval, uint8_t shift )
 {
-    if ( 0 == shift )
-        return;
-
     T val = *pval;
     for ( uint8_t sh = 0; sh < shift; sh++ )
     {
@@ -2939,9 +2933,6 @@ template <typename T> void x64::op_ror( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 {
-    if ( 0 == shift )
-        return;
-
     T val = *pval;
     for ( uint8_t sh = 0; sh < shift; sh++ )
     {
@@ -2959,9 +2950,6 @@ template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
 {
-    if ( 0 == shift )
-        return;
-
     T val = *pval;
     for ( uint8_t sh = 0; sh < shift; sh++ )
     {
@@ -2995,9 +2983,6 @@ template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
 
 template <typename T> void x64::op_shr( T * pval, uint8_t shift )
 {
-    if ( 0 == shift )
-        return;
-
     T x = *pval;
     if ( 1 == shift )
         setflag_o( val_signed( x ) );
@@ -3023,6 +3008,9 @@ template <typename T> void x64::op_sar( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_shift( T * pval, uint8_t operation, uint8_t shift )
 {
+    if ( 0 == shift )
+        return;
+
     assert( operation <= 7 );
     switch( operation )
     {
@@ -7050,7 +7038,7 @@ _prefix_is_set:
                     else // normal number
                         set_x87_status_c320( false, true, false );
 
-                    set_x87_status_c1( d < 0.0 );
+                    set_x87_status_c1( signbit( d ) );
                 }
                 else if ( op1 >= 0xe8 && op1 <= 0xee ) // load one of various constants
                     push_fp( float_d9_e8_constants[ offset ] );

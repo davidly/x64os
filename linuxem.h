@@ -117,6 +117,16 @@ extern uint64_t swap_endian64( uint64_t x );
 extern uint32_t swap_endian32( uint32_t x );
 extern uint16_t swap_endian16( uint16_t x );
 
+template <class T> T swap_endian( T x )
+{
+    if ( 2 == sizeof( T ) )
+        return swap_endian16( x );
+    if ( 4 == sizeof( T ) )
+        return swap_endian32( x );
+    assert( 8 == sizeof( T ) );
+    return swap_endian64( x );
+} //swap_endian
+
 struct linux_timeval
 {
     uint64_t tv_sec;       // time_t
@@ -186,7 +196,7 @@ struct linux_tms_syscall32
 struct stat_linux_syscall
 {
     /*
-        struct stat info run on a 64-bit RISC-V system
+      struct stat info run on a 64-bit RISC-V system
       sizeof s: 128
       offset      size field
            0         8 st_dev
@@ -196,6 +206,23 @@ struct stat_linux_syscall
           24         4 st_uid
           28         4 st_gid
           32         8 st_rdev
+          48         8 st_size
+          56         4 st_blksize
+          64         8 st_blocks
+          72        16 st_atim
+          88        16 st_mtim
+         104        16 st_ctim
+         120         8 st_mystery_spot_2
+
+      for AMD64:
+      offset      size field
+           0         8 st_dev
+           8         8 st_ino
+          16         4 st_nlink
+          24         4 st_mode
+          28         4 st_uid
+          32         4 st_gid
+          40         8 st_rdev
           48         8 st_size
           56         4 st_blksize
           64         8 st_blocks
@@ -216,6 +243,9 @@ struct stat_linux_syscall
 #endif
     uint32_t   st_uid;      /* User ID of owner */
     uint32_t   st_gid;      /* Group ID of owner */
+#ifdef X64OS
+    uint32_t   st_PADDING;  /* the default packing is different for gcc on Windows vs Linux, so be explicit with this padding */
+#endif
     uint64_t   st_rdev;     /* Device ID (if special file) */
 #ifndef X64OS
     uint64_t   st_mystery_spot;
@@ -469,7 +499,7 @@ struct statx_linux_syscall_x32 // for 32-bit intel. note the timestamps should n
         stx_nlink = swap_endian32( stx_nlink );
         stx_uid = swap_endian32( stx_uid );
         stx_gid = swap_endian32( stx_gid );
-        stx_mode = swap_endian16( stx_mode );
+        stx_mode = swap_endian( stx_mode );
         stx_ino = swap_endian64( stx_ino );
         stx_size = swap_endian64( stx_size );
         stx_blocks = swap_endian64( stx_blocks );
@@ -712,16 +742,23 @@ struct AuxProcessStart32
 
 struct linux_user_desc
 {
-    unsigned int  entry_number;
-    unsigned int  base_addr;
-    unsigned int  limit;
-    unsigned int  seg_32bit:1;
-    unsigned int  contents:2;
-    unsigned int  read_exec_only:1;
-    unsigned int  limit_in_pages:1;
-    unsigned int  seg_not_present:1;
-    unsigned int  useable:1;
+    uint32_t entry_number;
+    uint32_t base_addr;
+    uint32_t limit;
+    uint32_t seg_32bit:1;
+    uint32_t contents:2;
+    uint32_t read_exec_only:1;
+    uint32_t limit_in_pages:1;
+    uint32_t seg_not_present:1;
+    uint32_t useable:1;
     #ifdef __x86_64__
-        unsigned int  lm:1;
+        uint32_t lm:1;
     #endif
+
+    void swap_endianness()
+    {
+        entry_number = swap_endian32( entry_number );
+        base_addr = swap_endian32( base_addr );
+        limit = swap_endian32( limit );
+    }
 };
