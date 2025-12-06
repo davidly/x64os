@@ -6,6 +6,7 @@ if "%1" == "x32" (set _runcmd=x64osx32 -h:100 )
 if "%1" == "nested" (set _runcmd=x64os -h:160 bin\x64os -h:100 )
 if "%1" == "armos" (set _runcmd=..\armos\armos -h:160 ..\armos\bin\x64os -h:100 )
 if "%1" == "rvos" (set _runcmd=..\rvos\rvos -h:160 ..\rvos\linux\x64os -h:100 )
+if "%1" == "x32os" (set _runcmd=x32os -h:160 x32bin\x64os -h:100 )
 if "%1" == "m68" (set _runcmd=..\m68\m68 -h:160 ..\m68\x64os\x64os -h:100 )
 if "%1" == "sparcos" (set _runcmd=..\sparcos\sparcos -h:160 ..\sparcos\bin\x64os-sparc.elf -h:100 )
 
