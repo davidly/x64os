@@ -3949,7 +3949,7 @@ void emulator_invoke_svc( CPUClass & cpu )
                 tracer.TraceBinaryData( (uint8_t *) &local_stat, sizeof( local_stat ), 5 );
 
 #if defined( SPARCOS )
-                tracer.Trace( "  offsetof mode: %u\n", (int) offsetof( struct stat_sparc_linux_syscall32, st_mode ) );
+                tracer.Trace( "  offsetof mode: %u\n", (int) offsetof( struct statx_sparc_linux_syscall32, stx_mode ) );
                 struct statx_sparc_linux_syscall32 * pout32 = (struct statx_sparc_linux_syscall32 *) cpu.getmem( ACCESS_REG( REG_ARG4 ) );
                 pout32->stx_blksize = (uint32_t) local_stat.st_blksize;
                 pout32->stx_ino = local_stat.st_ino;

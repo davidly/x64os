@@ -117,16 +117,6 @@ extern uint64_t swap_endian64( uint64_t x );
 extern uint32_t swap_endian32( uint32_t x );
 extern uint16_t swap_endian16( uint16_t x );
 
-template <class T> T swap_endian( T x )
-{
-    if ( 2 == sizeof( T ) )
-        return swap_endian16( x );
-    if ( 4 == sizeof( T ) )
-        return swap_endian32( x );
-    assert( 8 == sizeof( T ) );
-    return swap_endian64( x );
-} //swap_endian
-
 struct linux_timeval
 {
     uint64_t tv_sec;       // time_t
@@ -499,7 +489,7 @@ struct statx_linux_syscall_x32 // for 32-bit intel. note the timestamps should n
         stx_nlink = swap_endian32( stx_nlink );
         stx_uid = swap_endian32( stx_uid );
         stx_gid = swap_endian32( stx_gid );
-        stx_mode = swap_endian( stx_mode );
+        stx_mode = swap_endian16( stx_mode );
         stx_ino = swap_endian64( stx_ino );
         stx_size = swap_endian64( stx_size );
         stx_blocks = swap_endian64( stx_blocks );
