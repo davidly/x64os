@@ -42,6 +42,21 @@
 
 using namespace std;
 
+#if defined( __mc68000__ ) && ( !NATIVE_LONG_DOUBLE ) // the compiler used for 68000 doesn't declare these in its math.h or have implementations. it does have a sqrtl() but that doesn't work correctly.
+    long double roundl( long double x ) { return round( (double) x ); }
+    long double floorl( long double x ) { return floor( (double) x ); }
+    long double ceill( long double x ) { return ceil( (double) x ); }
+    long double fabsl( long double x ) { return fabs( (double) x ); }
+    long double powl( long double x, long double ex ) { return pow( (double) x, (double) ex ); }
+    long double log2l( long double x ) { return log2( (double) x ); }
+    long double sinl( long double x ) { return sin( (double) x ); }
+    long double cosl( long double x ) { return cos( (double) x ); }
+    long double tanl( long double x ) { return tan( (double) x ); }
+    long double atan2l( long double x, long double y ) { return atan2( (double) x, (double) y ); }
+    long double ldexpl( long double x, int exp ) { return ldexp( (double) x, exp ); }
+    #define sqrtl( x ) sqrt( (double) x )
+#endif //__mc68000__
+
 static const uint64_t g_NAN = 0x7ff8000000000000;
 #define MY_NAN ( * (double *) & g_NAN )
 template <typename T> bool my_isnan( T x ) { return ( FP_NAN == fpclassify( x ) ); } // fpclassify instead of isnan because isnan() takes a double and we don't want type conversions here from long double
@@ -142,8 +157,9 @@ void x64::trace_state()
         len += snprintf( & reg_string[ len ], 32, "gs:%llx ", gs.q );
 #endif
 
-    tracer.Trace( "rip %8llx %s%s %02x %02x %02x %02x %02x %s%s => ", ip, symbol_name, symbol_offset,
-                  getui8( ip ), getui8( ip + 1 ), getui8( ip + 2 ), getui8( ip + 3 ), getui8( ip + 4 ), reg_string, render_flags() );
+    // for __mc68000__ this must be slit into two traces
+    tracer.Trace( "rip %8llx %s%s ", ip, symbol_name, symbol_offset );
+    tracer.Trace( "%02x %02x %02x %02x %02x %s%s => ", getui8( ip ), getui8( ip + 1 ), getui8( ip + 2 ), getui8( ip + 3 ), getui8( ip + 4 ), reg_string, render_flags() );
 
     switch( op )
     {
@@ -2606,8 +2622,7 @@ void x64::trace_fregs()
 
     for ( uint8_t spot = 0; spot < _countof( fregs ); spot++ )
     {
-        uint8_t offset = spot + fp_sp;
-        offset = offset % _countof( fregs );
+        uint32_t offset = ( spot + fp_sp ) % _countof( fregs );
         tracer.Trace( " f%u:%13.6lf", offset, (double) fregs[ offset ].getld() ); // msft C runtime can't trace 80-bit long double
     }
 
@@ -2620,7 +2635,12 @@ void x64::trace_fregs()
         offset = offset % _countof( fregs );
         long double ld = fregs[ offset ].getld();
         tracer.Trace( "  freg %u:  ", spot );
-        tracer.TraceBinaryData( (uint8_t *) &ld, 10, 5 );
+
+        #if NATIVE_LONG_DOUBLE
+            tracer.TraceBinaryData( (uint8_t *) &ld, 10, 5 );
+        #else
+            tracer.TraceBinaryData( (uint8_t *) &d, 8, 5 );
+        #endif
     }
 #endif
 } //trace_fregs
@@ -7124,7 +7144,27 @@ _prefix_is_set:
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
+                    {
+#if 0 // the m68000 compiler has different values for inf/nan so results can vary dramatically
+                        float f = getfloat( effective_address() );
+                        tracer.Trace( "  float loaded: %#x = %f\n", * (uint32_t *) &f, f );
+                        tracer.Trace( "    my_isnan: %u, my_isinf %u, signbit %u, value %f\n", my_isnan( f ), my_isinf( f ), signbit( f ), f );
+                        tracer.Trace( "    isnan: %u, isinf %u\n", isnan( f ), isinf( f ) );
+                        float fnan = std::numeric_limits<float>::quiet_NaN();
+                        float pos_inf_float = std::numeric_limits<float>::infinity();
+                        tracer.Trace( "    nan per the compiler: %f = %#x, pos inf %f = %#x\n", fnan, * (uint32_t *) & fnan, pos_inf_float, * (uint32_t *) &pos_inf_float );
+
+                        double d = (double) f;
+                        tracer.Trace( "  now as a double:\n" );
+                        tracer.Trace( "    my_isnan: %u, my_isinf %u, signbit %u, value %lf\n", my_isnan( d ), my_isinf( d ), signbit( d ), d );
+                        tracer.Trace( "    isnan: %u, isinf %u\n", isnan( d ), isinf( d ) );
+                        double dnan = std::numeric_limits<double>::quiet_NaN();
+                        double pos_inf_double = std::numeric_limits<double>::infinity();
+                        tracer.Trace( "    nan per the compiler: %lf = %#llx, pos inf %lf = %#llx\n", dnan, * (uint64_t *) & dnan, pos_inf_double, * (uint64_t *) &pos_inf_double );
+#endif
+
                         push_fp( (long double) getfloat( effective_address() ) );
+                    }
                     else if ( 2 == _reg ) // fst m32fp copy st to m32fp
                         set_rmfloat( peek_fp( 0 ).getf() );
                     else if ( 3 == _reg ) // fstp m32fp copy st to m32fp and pop register stack

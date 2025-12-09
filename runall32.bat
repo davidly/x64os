@@ -7,7 +7,7 @@ if "%1" == "x64os" (set _runcmd=x64os -h:160 bin\x32os -h:100 )
 if "%1" == "nested" (set _runcmd=x32os -h:160 x32bin\x32os -h:100 )
 if "%1" == "armos" (set _runcmd=..\armos\armos -h:160 ..\armos\bin\x32os -h:100 )
 if "%1" == "rvos" (set _runcmd=..\rvos\rvos -h:160 ..\rvos\linux\x32os -h:100 )
-if "%1" == "m68" (set _runcmd=..\m68\m68 -h:160 ..\m68\x32os\x32os -h:100 )
+if "%1" == "m68" (set _runcmd=..\m68\m68 -h:160 ..\m68\x64os\x32os -h:100 )
 if "%1" == "sparcos" (set _runcmd=..\sparcos\sparcos -h:160 ..\sparcos\bin\x32os-sparc.elf -h:100 )
 
 set outputfile=runall32_test.txt
