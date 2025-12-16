@@ -68,6 +68,13 @@ do
     $_x32oscmd c_tests/x32clangbin$opt/ff . ff.c >>$outputfile
 done
 
+echo test tgets
+for optflag in 0 1 2 3 fast;
+do
+    echo test c_tests/x32bin$optflag/tgets >>$outputfile
+    $_x32oscmd c_tests/x32bin$optflag/tgets <c_tests/tgets.txt >>$outputfile
+done    
+
 date_time=$(date)
 echo "$date_time" >>$outputfile
 diff baseline_$outputfile $outputfile

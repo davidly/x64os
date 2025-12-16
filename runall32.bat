@@ -58,6 +58,15 @@ echo test ff . ff.c
     %_runcmd% c_tests\%_folderprefix%clang%%f\ff . ff.c>>%outputfile%
 ) )
 
+echo test tgets
+set _folderlist=bin0 bin1 bin2 bin3 binfast
+( for %%f in (%_folderlist%) do (
+    echo test c_tests/%_folderprefix%%%f/tgets>>%outputfile%
+    %_runcmd% c_tests\%_folderprefix%%%f\tgets <c_tests\tgets.txt>>%outputfile%
+    echo test c_tests/%_folderprefix%clang%%f/tgets>>%outputfile%
+    %_runcmd% c_tests\%_folderprefix%clang%%f\tgets <c_tests\tgets.txt>>%outputfile%
+) )
+
 echo %date% %time% >>%outputfile%
 dos2unix %outputfile%
 diff baseline_%outputfile% %outputfile%

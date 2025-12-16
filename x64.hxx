@@ -392,7 +392,7 @@ private:
         return ( x ^ m ) - m;
     } //sign_extend16
 
-    inline bool is_parity_even8( uint8_t x ) // unused by apps and expensive to compute.
+    static inline bool is_parity_even8( uint8_t x ) // unused by apps and expensive to compute.
     {
 #if defined( _M_AMD64 ) || defined( _M_IX86 )
         return ( ! ( __popcnt16( x ) & 1 ) ); // less portable, but faster. Not on Q9650 CPU and other older Intel CPUs. use code below instead if needed.
@@ -406,7 +406,7 @@ private:
 #endif
     } //is_parity_even8
 
-    template <typename T> void set_PSZ( T val )
+    template <typename T> inline void set_PSZ( T val )
     {
         setflag_p( is_parity_even8( 0xff & val ) );
         setflag_z( 0 == val );

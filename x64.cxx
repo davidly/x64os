@@ -7451,7 +7451,7 @@ _prefix_is_set:
                     set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
                     pop_fp();
                 }
-                else if ( 0xe0 == op1 )
+                else if ( 0xe0 == op1 ) // fnstsw ax
                 {
                     update_x87_status_top();
                     regs[ rax ].w = x87_fpu_status_word;
@@ -7498,7 +7498,6 @@ _prefix_is_set:
             case 0xe3: // jcxz / jecxz / jrcxz rel8
             {
                 int64_t rel = (int8_t) get_rip8();
-
                 bool jump;
                 if ( _rexW )
                     jump = ( 0 == regs[ rcx ].q );

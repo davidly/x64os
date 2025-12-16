@@ -3,7 +3,7 @@
 apps=("tcmp" "t" "e" "printint" "sieve" "simple" "tmuldiv" "tpi" "ts" "tarray" "tbits" "trw" "trw2" "tmmap" "tstr" \
       "tdir" "fileops" "ttime" "tm" "glob" "tap" "tsimplef" "tphi" "tf" "ttt" "td" "terrno" "t_setjmp" "tex" \
       "tprintf" "pis" "mm" "tao" "ttypes" "nantst" "sleeptm" "tatomic" "lenum" "tregex" "trename" \
-      "nqueens" "ff" "an" "ba fopentst fact triangle mm_old hidave targs")
+      "nqueens" "ff" "an" "ba fopentst fact triangle mm_old hidave targs tgets")
 
 for arg in ${apps[@]}
 do
