@@ -3,11 +3,13 @@
 _x32oscmd="x32os"
 
 if [ "$1" = "nested" ]; then
-    _x32oscmd="x32os -h:200 bin/x32os"
+    _x32oscmd="x32os -h:200 x32bin/x32os"
 elif [ "$1" = "native" ]; then
     _x32oscmd=""
 elif [ "$1" = "x32oscl" ]; then
     _x32oscmd="x32oscl -h:200"
+elif [ "$1" = "x64os" ]; then
+    _x32oscmd="x64os -h:200 bin/x32os -h:100"
 elif [ "$1" = "m68" ]; then
     _x32oscmd="../m68/m68 -h:200 ../m68/x32os/x32os -h:100"
 elif [ "$1" = "sparcos" ]; then
@@ -73,6 +75,8 @@ for optflag in 0 1 2 3 fast;
 do
     echo test c_tests/x32bin$optflag/tgets >>$outputfile
     $_x32oscmd c_tests/x32bin$optflag/tgets <c_tests/tgets.txt >>$outputfile
+    echo test c_tests/x32clangbin$optflag/tgets >>$outputfile
+    $_x32oscmd c_tests/x32clangbin$optflag/tgets <c_tests/tgets.txt >>$outputfile
 done    
 
 date_time=$(date)
