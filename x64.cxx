@@ -4214,15 +4214,9 @@ _prefix_is_set:
                         if ( 0 == _prefix_sse2_repeat )
                         {
                             if ( 0x66 == _prefix_size )
-                            {
-                                uint32_t fcc = compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) );
-                                set_eflags_from_fcc( fcc );
-                            }
+                                set_eflags_from_fcc( compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) ) );
                             else
-                            {
-                                uint32_t fcc = compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) );
-                                set_eflags_from_fcc( fcc );
-                            }
+                                set_eflags_from_fcc( compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) ) );
                         }
                         else
                             unhandled();
@@ -4232,15 +4226,9 @@ _prefix_is_set:
                     {
                         decode_rm();
                         if ( 0x66 == _prefix_size )// comisd xmm1, xmm2/m32  compare low double scalar values and set eflags
-                        {
-                            uint32_t fcc = compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) );
-                            set_eflags_from_fcc( fcc );
-                        }
+                            set_eflags_from_fcc( compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) ) );
                         else if ( 0 == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
-                        {
-                            uint32_t fcc = compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) );
-                            set_eflags_from_fcc( fcc );
-                        }
+                            set_eflags_from_fcc( compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) ) );
                         else
                             unhandled();
                         break;
@@ -4829,8 +4817,8 @@ _prefix_is_set:
                     case 0x6f:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ||         // movdqa xmm1, xmm2/m128   move 128 bits of aligned packed integer values from xmm2/m128 to xmm1
-                             0xf3 == _prefix_sse2_repeat ) // movdqu xmm1, xmm2/m128   move 128 bits of unaligned packed integer values from xmm2/m128 to xmm1
+                        if ( 0x66 == _prefix_size ||        // movdqa xmm1, xmm2/m128   move 128 bits of aligned packed integer values from xmm2/m128 to xmm1
+                             0xf3 == _prefix_sse2_repeat )  // movdqu xmm1, xmm2/m128   move 128 bits of unaligned packed integer values from xmm2/m128 to xmm1
                         {
                             xregs[ _reg ].set64( 0, get_rmx64( 0 ) );
                             xregs[ _reg ].set64( 1, get_rmx64( 1 ) );
@@ -7460,8 +7448,7 @@ _prefix_is_set:
                 if ( ( op1 >= 0xe8 && op1 <= 0xef ) || // fucomip st, st(i)
                      ( op1 >= 0xf0 && op1 <= 0xf7 ) )  // fcomip st(0), st(i)
                 {
-                    uint32_t fcc = compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() );
-                    set_eflags_from_fcc( fcc );
+                    set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
                     pop_fp();
                 }
                 else if ( 0xe0 == op1 )
