@@ -2849,7 +2849,9 @@ void x64::op_movs( uint8_t width )
 
 template <typename T> T x64::op_sub( T a, T b, bool borrow )
 {
+#ifndef __APPLE__
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
+#endif
     T result = a - b - (T) borrow;
     set_PSZ( result );
     setflag_c( ( a < b ) || ( ( a - b ) < (T) borrow ) ); // borrow if a < (b + borrow).
@@ -2866,7 +2868,9 @@ template <typename T> T x64::op_sub( T a, T b, bool borrow )
 
 template <typename T> T x64::op_add( T a, T b, bool carry )
 {
+#ifndef __APPLE__
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
+#endif
     T result = a + b + (T) carry;
     set_PSZ( result );
     setflag_c( ( ( result < a || result < b ) ) || ( result < ( a + b ) ) );
@@ -2901,7 +2905,9 @@ template <typename T> T x64::op_or( T a, T b )
 
 template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 {
+#ifndef __APPLE__
     static_assert(std::is_unsigned_v<T>, "Template parameter must be an unsigned type.");
+#endif
     assert( math <= 7 );
     switch ( math )
     {
