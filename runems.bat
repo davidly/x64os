@@ -39,7 +39,7 @@ x32os -h:100 x32bin\x64os -p bin\tttu_x64.elf 10 >>%outputfile%
 
 echo ====== x32os test>>%outputfile%
 x64os -h:100 bin\x32os -p bin\tttx32.elf 10 >>%outputfile%
-xx32os -h:100 x32bin\x32os -p bin\tttx32.elf 10 >>%outputfile%
+x32os -h:100 x32bin\x32os -p bin\tttx32.elf 10 >>%outputfile%
 
 echo %date% %time% >>%outputfile%
 dos2unix %outputfile%

@@ -1879,6 +1879,7 @@ void x64::trace_state()
         }
         case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
         {
+            decode_rex();
             if ( _rexW )
                 tracer.Trace( "mov rax, moffs64  # %llx\n", get_rip64() );
             else if ( 0x66 == _prefix_size )
@@ -1894,6 +1895,7 @@ void x64::trace_state()
         }
         case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
         {
+            decode_rex();
             if ( _rexW )
                 tracer.Trace( "mov moffs64, rax\n" );
             else if ( 0x66 == _prefix_size )
@@ -1927,7 +1929,7 @@ void x64::trace_state()
         case 0xa9: // test ax, imm16    text eax, imm32   test rax, se(imm32)
         {
             decode_rex();
-            if ( 0 != _prefix_rex )
+            if ( _rexW )
                 tracer.Trace( "test rax, %#x\n", sign_extend( get_rip32(), 31 ) );
             else if ( 0x66 == _prefix_size )
                 tracer.Trace( "test ax, %#x\n", get_rip16() );
@@ -1937,13 +1939,14 @@ void x64::trace_state()
         }
         case 0xaa: // stos m8
         {
-            tracer.Trace( "stob rdi\n" );
+            tracer.Trace( "stosb rdi\n" );
             break;
         }
         case 0xab: // stos
         {
-            char w = ( 0 != _prefix_rex ) ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
-            tracer.Trace( "sto%c rdi\n", w ); // 32-bit edi addressing ignored
+            decode_rex();
+            char w = _rexW ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
+            tracer.Trace( "stos%c rdi\n", w ); // 32-bit edi addressing ignored
             break;
         }
         case 0xb0: case 0xb1: case 0xb2: case 0xb3: case 0xb4: case 0xb5: case 0xb6: case 0xb7: // mov r8, imm8
@@ -1951,6 +1954,18 @@ void x64::trace_state()
             _rm = ( op & 7 );
             decode_rex();
             tracer.Trace( "mov %s, %#x\n", register_name( _rm, 8 ), getui8( rip.q + 1 ) );
+            break;
+        }
+        case 0xae: // scasb  compare al with byte at edi/rdi then set status flags
+        {
+            tracer.Trace( "scasb\n" );
+            break;
+        }
+        case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
+        {
+            decode_rex();
+            char w = _rexW  ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
+            tracer.Trace( "scas%c\n", w );
             break;
         }
         case 0xb8: case 0xb9: case 0xba: case 0xbb: case 0xbc: case 0xbd: case 0xbe: case 0xbf: // mov reg, 64-bit immediate
@@ -2372,6 +2387,7 @@ void x64::trace_state()
         case 0xe3: // jcxz / jecxz / jrcxz rel8
         {
             int8_t rel = get_rip8();
+            decode_rex();
             if ( 0x66 == _prefix_size )
                 tracer.Trace( "jcxz %d\n", (int32_t) rel );
             else if ( _rexW )
@@ -2803,7 +2819,7 @@ template <typename T> T top2bits( T x )
     return ( 3 & ( x >> ( 6 + ( sizeof( T ) - 1 ) * 8 ) ) );
 } //top2bits
 
-void x64::op_sto( uint8_t width )
+void x64::op_stos( uint8_t width )
 {
     if ( 1 == width )
         setui8( regs[ rdi ].q, regs[ rax ].b );
@@ -2820,7 +2836,7 @@ void x64::op_sto( uint8_t width )
         regs[ rdi ].q -= width;
     else
         regs[ rdi ].q += width;
-} //_op_sto
+} //op_stos
 
 void x64::op_movs( uint8_t width )
 {
@@ -2845,7 +2861,26 @@ void x64::op_movs( uint8_t width )
         regs[ rdi ].q += width;
         regs[ rsi ].q += width;
     }
-} //_op_movs
+} //op_movs
+
+void x64::op_scas( uint8_t width )
+{
+    if ( 1 == width )
+        op_sub( regs[ rax ].b, getui8( regs[ rdi ].q ) );
+    else if ( 2 == width )
+        op_sub( regs[ rax ].w, getui16( regs[ rdi ].q ) );
+    else if ( 4 == width )
+        op_sub( regs[ rax ].d, getui32( regs[ rdi ].q ) );
+    else if ( 8 == width )
+        op_sub( regs[ rax ].q, getui64( regs[ rdi ].q ) );
+    else
+        unhandled();
+
+    if ( flag_d() )
+        regs[ rdi ].q -= width;
+    else
+        regs[ rdi ].q += width;
+} //op_scas
 
 template <typename T> T x64::op_sub( T a, T b, bool borrow )
 {
@@ -3257,7 +3292,7 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
         return xmm_names[ reg ];
     if ( 1 == byte_width )
     {
-        if ( 0 != _prefix_rex )
+        if ( _rexW )
             return register_names8[ reg ];
         return register_names8_old[ reg ];
     }
@@ -6695,6 +6730,7 @@ _prefix_is_set:
             case 0xa0: // mov al, moffs8
             {
                 uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                decode_rex();
                 if ( _rexW )
                     regs[ rax ].b = getui8( get_rip64() );
                 else if ( 0x66 == _prefix_size )
@@ -6706,6 +6742,7 @@ _prefix_is_set:
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
                 uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                decode_rex();
                 if ( _rexW )
                     regs[ rax ].q = getui64( get_rip64() );
                 else if ( 0x66 == _prefix_size )
@@ -6717,6 +6754,7 @@ _prefix_is_set:
             case 0xa2: // mov moffs8, al
             {
                 uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                decode_rex();
                 if ( _rexW )
                     setui8( get_rip64(), regs[ rax ].b );
                 else if ( 0x66 == _prefix_size )
@@ -6728,6 +6766,7 @@ _prefix_is_set:
             case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
             {
                 uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                decode_rex();
                 if ( _rexW )
                     setui64( get_rip64(), regs[ rax ].q );
                 else if ( 0x66 == _prefix_size )
@@ -6754,7 +6793,7 @@ _prefix_is_set:
             case 0xa5: // movs m, m  RSI to RDI 16/32/64
             {
                 decode_rex();
-                uint8_t width = ( 0 != _prefix_rex ) ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
+                uint8_t width = _rexW ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4;
 
                 if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
@@ -6776,7 +6815,7 @@ _prefix_is_set:
             case 0xa9: // test ax, imm16    text eax, imm32   test rax, se(imm32)
             {
                 decode_rex();
-                if ( 0 != _prefix_rex )
+                if ( _rexW )
                     op_and( regs[ rax ].q, (uint64_t) sign_extend( get_rip32(), 31 ) );
                 else if ( 0x66 == _prefix_size )
                     op_and( regs[ rax ].w, get_rip16() );
@@ -6784,34 +6823,78 @@ _prefix_is_set:
                     op_and( regs[ rax ].d, get_rip32() );
                 break;
             }
-            case 0xaa: // stoa
+            case 0xaa: // stosb
             {
                 if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
                     while ( 0 != regs[ rcx ].q )
                     {
-                        op_sto( 1 );
+                        op_stos( 1 );
                         regs[ rcx ].q--;
                     }
                 }
                 else
-                    op_sto( 1 );
+                    op_stos( 1 );
                 break;
             }
             case 0xab: // stos
             {
-                uint8_t width = ( 0 != _prefix_rex ) ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
+                decode_rex();
+                uint8_t width = _rexW ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
 
                 if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
                     while ( 0 != regs[ rcx ].q )
                     {
-                        op_sto( width );
+                        op_stos( width );
                         regs[ rcx ].q--;
                     }
                 }
                 else
-                    op_sto( width );
+                    op_stos( width );
+                break;
+            }
+            case 0xae: // scasb  compare al with byte at edi/rdi then set status flags
+            {
+                if ( 0xff != _prefix_sse2_repeat )
+                {
+                    while ( 0 != regs[ rcx ].w )
+                    {
+                        op_scas( 1 );
+                        regs[ rcx ].w--;
+                        if ( (  flag_z() && ( 0xf2 == _prefix_sse2_repeat ) ) ||
+                             ( !flag_z() && ( 0xf3 == _prefix_sse2_repeat ) ) )
+                            break;
+                    }
+                }
+                else
+                    op_scas( 1 );
+                break;
+            }
+            case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
+            {
+                decode_rex();
+                uint8_t width = _rexW  ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4;
+                if ( 0xff != _prefix_sse2_repeat )
+                {
+                    while ( 0 != ( ( 2 == width ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    {
+                        op_scas( width );
+
+                        if ( 2 == width )
+                            regs[ rcx ].w--;
+                        else if ( 4 == width )
+                            regs[ rcx ].d--;
+                        else
+                            regs[ rcx ].q--;
+
+                        if ( (  flag_z() && ( 0xf2 == _prefix_sse2_repeat ) ) ||
+                             ( !flag_z() && ( 0xf3 == _prefix_sse2_repeat ) ) )
+                            break;
+                    }
+                }
+                else
+                    op_scas( width );
                 break;
             }
             case 0xb0: case 0xb1: case 0xb2: case 0xb3: case 0xb4: case 0xb5: case 0xb6: case 0xb7: // mov r8, imm8
@@ -7505,6 +7588,7 @@ _prefix_is_set:
             {
                 int64_t rel = (int8_t) get_rip8();
                 bool jump;
+                decode_rex();
                 if ( _rexW )
                     jump = ( 0 == regs[ rcx ].q );
                 else if ( 0x66 == _prefix_size )
