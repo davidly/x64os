@@ -3,6 +3,7 @@
     Integer, x87, and SSE2 are partially implemented. No other vector instructions are implemented at all (MMX/AVX/etc.).
     That's a tiny fraction of the CPU but enough to run the regression test static Linux binaries.
     There is also a 32-bit x86 mode called controlled by member variable Mode32. This can be used to run 32-bit binaries.
+    Prefix code 0x67 to specify 32-bit addresses is not implemented (g++ and clang++ don't use this)
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
     Also tested running nested emulators and their regression tests: this one (x64os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
     Builds and runs on both little and big endian machines for 32 and 64 bit. set TARGET_BIG_ENDIAN for those machines.
@@ -2382,6 +2383,14 @@ void x64::trace_state()
             }
             else
                 unhandled();
+            break;
+        }
+        case 0xe0: // loopne rel8    decrement count, jump short if count != 0 and ZF is false
+        case 0xe1: // loope rel8     decrement count, jump short if count != 0 and ZF is true
+        case 0xe2: // loop rel8      decrement count, jump short if count != 0
+        {
+            int8_t rel = get_rip8();
+            tracer.Trace( "loop%s %d\n", ( op == 0xe2 ) ? "" : ( op == 0xe1 ) ? "e" : "ne", (int32_t) rel );
             break;
         }
         case 0xe3: // jcxz / jecxz / jrcxz rel8
@@ -7582,6 +7591,35 @@ _prefix_is_set:
                 }
                 else
                     unhandled();
+                break;
+            }
+            case 0xe0: // loopne rel8    decrement count, jump short if count != 0 and ZF is false
+            case 0xe1: // loope rel8     decrement count, jump short if count != 0 and ZF is true
+            case 0xe2: // loop rel8      decrement count, jump short if count != 0
+            {
+                int8_t rel = get_rip8();
+                bool count_zero;
+
+                // LOOP instructions assume 64-bit operands in 64-bit mode; no _rexW is required.
+
+                if ( 0x66 == _prefix_size )
+                {
+                    regs[ rcx ].w--;
+                    count_zero = ( 0 == regs[ rcx ].w );
+                }
+                else if ( mode32 )
+                {
+                    regs[ rcx ].d--;
+                    count_zero = ( 0 == regs[ rcx ].d );
+                }
+                else
+                {
+                    regs[ rcx ].q--;
+                    count_zero = ( 0 == regs[ rcx ].q );
+                }
+
+                if ( ( !count_zero ) && ( ( 0xe2 == op ) || ( ( 0xe1 == op ) && flag_z() ) || ( ( 0xe0 == op ) && !flag_z() ) ) )
+                    rip.q += rel;
                 break;
             }
             case 0xe3: // jcxz / jecxz / jrcxz rel8
