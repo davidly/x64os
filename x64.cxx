@@ -2,7 +2,7 @@
     This is an AMD64 emulator. It supports just real mode, long mode, 64-bit mode.
     Integer, x87, and SSE2 are partially implemented. No other vector instructions are implemented at all (MMX/AVX/etc.).
     That's a tiny fraction of the CPU but enough to run the regression test static Linux binaries.
-    There is also a 32-bit x86 mode called controlled by member variable Mode32. This can be used to run 32-bit binaries.
+    There is also a 32-bit x86 compatibility mode controlled by member variable Mode32. This can be used to run 32-bit binaries.
     Prefix code 0x67 to specify 32-bit addresses is not implemented (g++ and clang++ don't use this)
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
     Also tested running nested emulators and their regression tests: this one (x64os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
@@ -1663,7 +1663,7 @@ void x64::trace_state()
         }
         case 0x64: case 0x65: // prefix for fs: and gs:
         {
-            tracer.Trace( "prefix_segment %s  # %#llx\n", ( 0x64 == op ) ? "fs:" : "gs", ( 0x64 == op ) ? fs.q : gs.q );
+            tracer.Trace( "prefix_segment %s  # %#llx\n", ( 0x64 == op ) ? "fs:" : "gs", ( 0x64 == op ) ? rfs.q : rgs.q );
             break;
         }
         case 0x66: // prefix x66 make operands 16-bit or xmm
@@ -2927,7 +2927,7 @@ template <typename T> T x64::op_xor( T a, T b )
 {
     a ^= b;
     set_PSZ( a );
-    reset_carry_overflow();
+    reset_CO();
     return a;
 } //op_xor
 
@@ -2935,7 +2935,7 @@ template <typename T> T x64::op_and( T a, T b )
 {
     a &= b;
     set_PSZ( a );
-    reset_carry_overflow();
+    reset_CO();
     return a;
 } //op_xor
 
@@ -2943,7 +2943,7 @@ template <typename T> T x64::op_or( T a, T b )
 {
     a |= b;
     set_PSZ( a );
-    reset_carry_overflow();
+    reset_CO();
     return a;
 } //op_or
 
@@ -3369,9 +3369,9 @@ uint64_t x64::effective_address()
     if ( 0 != _prefix_segment )
     {
         if ( 0x64 == _prefix_segment )
-            ea += fs.q;
+            ea += rfs.q;
         else if ( 0x65 == _prefix_segment )
-            ea += gs.q;
+            ea += rgs.q;
         else
             unhandled();
     }
@@ -3999,7 +3999,7 @@ _prefix_is_set:
 
                 switch ( op1 )
                 {
-                    case 5: // syscall
+                    case 5: // syscall  64-bit linux
                     {
                         emulator_invoke_svc( *this );
                         break;
@@ -4162,7 +4162,7 @@ _prefix_is_set:
                         decode_rm();
                         switch ( _reg )
                         {
-                            case 0: case 1: case 2: case 3: { break; }
+                            case 0: case 1: case 2: case 3: { break; } // prefetch cache hints
                             default: { unhandled(); }
                         }
                         break;
@@ -5141,7 +5141,7 @@ _prefix_is_set:
                     }
                     case 0xa2: // cpuid
                     {
-                        if ( 0 == regs[ rax ].q )
+                        if ( 0 == regs[ rax ].q ) // if it's not GenuineIntel then sse2 won't be used in glibc for 32-bit apps
                         {
                             regs[ rbx ].q = 0x756e6547;  // Genu
                             regs[ rdx ].q = 0x49656e69;  // ineI
@@ -5151,7 +5151,8 @@ _prefix_is_set:
                         {
                             regs[ rax ].q = 0;
                             regs[ rcx ].q = 0;
-                            regs[ rdx ].q = 0x04000000; // sse2 is bit 26. without this set glibc for 32-bit will use x87 instead. for 64-bit sse2 is assumed.
+                            regs[ rdx ].q = 0x04000000; // sse2 is bit 26. without this set glibc for 32-bit will use x87 and integer ops instead. for 64-bit sse2 is assumed.
+                                                        // for 32-bit string operations in the emulator, sse2 is about 50% faster realtime and executes about half the instructions.
                         }
                         else if ( 0x80000000 == regs[ rax ].d )
                             regs[ rax ].q = 0;
@@ -6541,7 +6542,7 @@ _prefix_is_set:
             {
                 decode_rm();
                 set_PSZ( (uint8_t) ( get_rm8() & get_reg8() ) );
-                reset_carry_overflow();
+                reset_CO();
                 break;
             }
             case 0x85: // test r/m, reg
@@ -6553,7 +6554,7 @@ _prefix_is_set:
                     set_PSZ( (uint16_t) ( get_rm16() & regs[ _reg ].w ) );
                 else
                     set_PSZ( get_rm32() & regs[ _reg ].d );
-                reset_carry_overflow();
+                reset_CO();
                 break;
             }
             case 0x86: // xchg r/m8, r8
@@ -6637,18 +6638,18 @@ _prefix_is_set:
                 decode_rm();
                 uint16_t val = 0xffff & get_rm();
                 if ( 0 == _reg )
-                    es.q = val;
+                    res.q = val;
                 else if ( 1 == _reg )
-                    unhandled(); // cs = val; // not valid
+                    unhandled(); // rcs = val; // not valid
                 else if ( 2 == _reg )
-                    ss.q = val;
+                    rss.q = val;
                 else if ( 3 == _reg )
-                    ds.q = val;
+                    rds.q = val;
                 else if ( 4 == _reg )
-                    fs.q = val;
+                    rfs.q = val;
                 else if ( 5 == _reg )
                 {
-                    //gs.q = val;
+                    //rgs.q = val;
                 }
                 else
                     unhandled();
@@ -6738,7 +6739,7 @@ _prefix_is_set:
             }
             case 0xa0: // mov al, moffs8
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rexW )
                     regs[ rax ].b = getui8( get_rip64() );
@@ -6750,7 +6751,7 @@ _prefix_is_set:
             }
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rexW )
                     regs[ rax ].q = getui64( get_rip64() );
@@ -6762,7 +6763,7 @@ _prefix_is_set:
             }
             case 0xa2: // mov moffs8, al
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rexW )
                     setui8( get_rip64(), regs[ rax ].b );
@@ -6774,7 +6775,7 @@ _prefix_is_set:
             }
             case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? fs.q : ( 0x65 == _prefix_segment ) ? gs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rexW )
                     setui64( get_rip64(), regs[ rax ].q );
@@ -6853,6 +6854,7 @@ _prefix_is_set:
 
                 if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
                 {
+                    assert( ( 0xf2 == _prefix_sse2_repeat ) || ( 0xf3 == _prefix_sse2_repeat ) );
                     while ( 0 != regs[ rcx ].q )
                     {
                         op_stos( width );
@@ -6865,8 +6867,9 @@ _prefix_is_set:
             }
             case 0xae: // scasb  compare al with byte at edi/rdi then set status flags
             {
-                if ( 0xff != _prefix_sse2_repeat )
+                if ( 0 != _prefix_sse2_repeat )
                 {
+                    assert( ( 0xf2 == _prefix_sse2_repeat ) || ( 0xf3 == _prefix_sse2_repeat ) );
                     while ( 0 != regs[ rcx ].w )
                     {
                         op_scas( 1 );
@@ -6884,7 +6887,7 @@ _prefix_is_set:
             {
                 decode_rex();
                 uint8_t width = _rexW  ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4;
-                if ( 0xff != _prefix_sse2_repeat )
+                if ( 0 != _prefix_sse2_repeat )
                 {
                     while ( 0 != ( ( 2 == width ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
@@ -7000,7 +7003,7 @@ _prefix_is_set:
             }
             case 0xc9: // leave
             {
-                regs[ rsp ].q = regs[ rbp ].q;
+                regs[ rsp ].q = regs[ rbp ].q; // works for mode32 as well
                 regs[ rbp ].q = pop();
                 break;
             }

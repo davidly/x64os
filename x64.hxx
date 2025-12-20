@@ -263,7 +263,7 @@ struct x64
     vec16_t xregs[ 16 ];             // xmm0 through 15
     float80_t fregs[ 8 ];            // 80-bit numbers are stored in this fp stack, while math is done as 8-byte or 10-byte doubles depending on the compiler and ISA
     reg8_t rip;                      // instruction pointer
-    reg8_t es, cs, ss, ds, fs, gs;   // fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
+    reg8_t res, rcs, rss, rds, rfs, rgs; // fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
     uint32_t mxcsr;
     uint16_t x87_fpu_control_word;   // for fldcw, fstcw/fnstcw. applies to sse as well as x87
     uint16_t x87_fpu_status_word;    // for fstsw/fnstsw.
@@ -272,20 +272,19 @@ struct x64
 
     void Mode32( bool m32 ) { mode32 = m32; }
 
-    uint64_t & reg_fs() { return fs.q; }
-    uint64_t & reg_gs() { return gs.q; }
+    uint64_t & reg_fs() { return rfs.q; }
+    uint64_t & reg_gs() { return rgs.q; }
 
 private:
-    uint64_t rcs, rds, rss, rfs, rgs;
-                                      // 0                                        8                                    16
-    uint64_t rflags;                  // CF, n/a, PF, n/a, AF, n/a, ZF, SF,   :   TF, IF, DF, OF, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
+                      // 0                                        8                                    16
+    uint64_t rflags;  // CF, n/a, PF, n/a, AF, n/a, ZF, SF,   :   TF, IF, DF, OF, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
 
     void setflag_c( bool f ) { rflags &= ~( 1 << 0 );  rflags |= ( ( 0 != f ) << 0 );  } // carry
     void setflag_p( bool f ) { rflags &= ~( 1 << 2 );  rflags |= ( ( 0 != f ) << 2 );  } // parity even
     void setflag_a( bool f ) { rflags &= ~( 1 << 4 );  rflags |= ( ( 0 != f ) << 4 );  } // auxiliary carry
     void setflag_z( bool f ) { rflags &= ~( 1 << 6 );  rflags |= ( ( 0 != f ) << 6 );  } // zero
     void setflag_s( bool f ) { rflags &= ~( 1 << 7 );  rflags |= ( ( 0 != f ) << 7 );  } // signed
-    void setflag_i( bool f ) { rflags &= ~( 1 << 9 );  rflags |= ( ( 0 != f ) << 9 ); }  // interrupt
+    void setflag_i( bool f ) { rflags &= ~( 1 << 9 );  rflags |= ( ( 0 != f ) << 9 );  } // interrupt
     void setflag_d( bool f ) { rflags &= ~( 1 << 10 ); rflags |= ( ( 0 != f ) << 10 ); } // direction
     void setflag_o( bool f ) { rflags &= ~( 1 << 11 ); rflags |= ( ( 0 != f ) << 11 ); } // overflow
 
@@ -294,11 +293,9 @@ private:
     bool flag_a() { return ( 0 != ( rflags & ( 1 << 4 ) ) );  } // auxiliary carry
     bool flag_z() { return ( 0 != ( rflags & ( 1 << 6 ) ) );  } // zero
     bool flag_s() { return ( 0 != ( rflags & ( 1 << 7 ) ) );  } // signed
-    bool flag_i() { return ( 0 != ( rflags & ( 1 << 9 ) ) ); }  // interrupt
+    bool flag_i() { return ( 0 != ( rflags & ( 1 << 9 ) ) );  } // interrupt
     bool flag_d() { return ( 0 != ( rflags & ( 1 << 10 ) ) ); } // direction
     bool flag_o() { return ( 0 != ( rflags & ( 1 << 11 ) ) ); } // overflow
-
-    void reset_carry_overflow() { rflags &= ~( 0x801 ); }
 
     const char * render_flags()
     {
@@ -412,6 +409,8 @@ private:
         setflag_z( 0 == val );
         setflag_s( val_signed( val ) );
     } //set_PSZ
+
+    void reset_CO() { rflags &= ~( 0x801 ); }
 
     template <typename T> T op_add( T lhs, T rhs, bool carry = false );
     template <typename T> T op_sub( T lhs, T rhs, bool carry = false );
