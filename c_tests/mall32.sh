@@ -25,7 +25,6 @@ do
             $_clangbuild
             $_gnubuild
         fi
-
     done
 done
 

@@ -171,9 +171,9 @@ struct x64
     x64( vector<uint8_t> & memory, uint64_t base_address, uint64_t start, uint64_t stack_commit, uint64_t top_of_stack )
     {
         memset( this, 0, sizeof( *this ) );
-        mode32 = false;
-        x87_fpu_control_word = 0x37f;
-        rip.q = start;
+        mode32 = false;                            // start in 64-bit long mode
+        x87_fpu_control_word = 0x37f;              // hardware boots in this state
+        rip.q = start;                             // execution starts here
         stack_size = stack_commit;                 // remember how much of the top of RAM is allocated to the stack
         stack_top = top_of_stack;                  // where the stack started
         regs[ rsp ].q = top_of_stack;              // points at argc with argv, penv, and aux records above it
@@ -187,7 +187,7 @@ struct x64
     uint8_t * mem;
     uint8_t * beyond;
     uint64_t base;
-    uint8_t * membase;              // host pointer to base of vm's memory
+    uint8_t * membase;                             // host pointer to base of vm's memory
     uint64_t stack_size;
     uint64_t stack_top;
     uint64_t mem_size;
@@ -270,14 +270,14 @@ struct x64
     uint8_t fp_sp;                   // current stack pointer for fregs[]
     bool mode32;                     // true for 32-bit CPU vs 64-bit
 
-    void Mode32( bool m32 ) { mode32 = m32; }
+    void Mode32( bool m32 ) { mode32 = m32; } // flip from 64-bit long mode to 32-bit compatibility mode for running 32-bit apps. or back.
 
     uint64_t & reg_fs() { return rfs.q; }
     uint64_t & reg_gs() { return rgs.q; }
 
 private:
-                      // 0                                        8                                    16
-    uint64_t rflags;  // CF, n/a, PF, n/a, AF, n/a, ZF, SF,   :   TF, IF, DF, OF, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
+                      // 0                                   8                                16
+    uint64_t rflags;  // C, n/a, P, n/a, A, n/a, Z, S,   :   T, I, D, O, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
 
     void setflag_c( bool f ) { rflags &= ~( 1 << 0 );  rflags |= ( ( 0 != f ) << 0 );  } // carry
     void setflag_p( bool f ) { rflags &= ~( 1 << 2 );  rflags |= ( ( 0 != f ) << 2 );  } // parity even
@@ -311,7 +311,6 @@ private:
         return buf;
     } //render_flags
 
-    vec16_t vec_zeroes;
     uint8_t _prefix_rex;                // 0 for none. 0x4x
     uint8_t _prefix_size;               // 0 for none. can be 0x66 (operand size 16) or 0x67 (address size 32)
     uint8_t _prefix_sse2_repeat;        // 0 for none. f2 repne/repnz, f3 rep/repe/repz. f3 can also mean multibyte. f2 can also mean bnd (memory protection)
