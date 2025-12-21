@@ -96,8 +96,8 @@ done
 for arg in e sieve ttt primes mm
 do
    echo $arg
-     echo f_tests/$arg >>$outputfile
-    $_x64oscmd f_tests/$arg >>$outputfile
+     echo f_tests/bin/$arg >>$outputfile
+    $_x64oscmd f_tests/bin/$arg >>$outputfile
 done
 
 date_time=$(date)

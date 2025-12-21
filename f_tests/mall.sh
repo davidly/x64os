@@ -1,6 +1,9 @@
 #!/bin/bash
 #set -x
 
+mkdir bin 2> /dev/null
+mkdir /mnt/c/users/david/onedrive/x64os/f_tests/bin 2> /dev/null
+
 if [ "$1" == "" ]; then
     optflags="2"
 else

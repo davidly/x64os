@@ -79,6 +79,13 @@ do
     $_x32oscmd c_tests/x32clangbin$optflag/tgets <c_tests/tgets.txt >>$outputfile
 done    
 
+for arg in e sieve ttt primes mm
+do
+   echo $arg
+     echo f_tests/x32bin/$arg >>$outputfile
+    $_x32oscmd f_tests/x32bin/$arg >>$outputfile
+done
+
 date_time=$(date)
 echo "$date_time" >>$outputfile
 diff baseline_$outputfile $outputfile

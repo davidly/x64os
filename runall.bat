@@ -88,8 +88,8 @@ set _rustfolders=bin0 bin1 bin2 bin3
 set _fortranlist=e sieve ttt primes mm
 ( for %%a in (%_fortranlist%) do (
     echo %%a
-    echo f_tests/%%a>>%outputfile%
-    %_runcmd% f_tests\%%a >>%outputfile%
+    echo f_tests/bin/%%a>>%outputfile%
+    %_runcmd% f_tests\bin\%%a >>%outputfile%
 ) )
 
 echo %date% %time% >>%outputfile%

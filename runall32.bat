@@ -67,6 +67,13 @@ set _folderlist=bin0 bin1 bin2 bin3 binfast
     %_runcmd% c_tests\%_folderprefix%clang%%f\tgets <c_tests\tgets.txt>>%outputfile%
 ) )
 
+set _fortranlist=e sieve ttt primes mm
+( for %%a in (%_fortranlist%) do (
+    echo %%a
+    echo f_tests/x32bin/%%a>>%outputfile%
+    %_runcmd% f_tests\x32bin\%%a >>%outputfile%
+) )
+
 echo %date% %time% >>%outputfile%
 dos2unix %outputfile%
 diff baseline_%outputfile% %outputfile%
