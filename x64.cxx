@@ -2048,6 +2048,13 @@ void x64::trace_state()
                 tracer.Trace( "movd %s, %##x\n", rm_string( 4 ), get_rip32() );
             break;
         }
+        case 0xc8:
+        {
+            uint16_t alloc_size = get_rip16();
+            uint8_t nesting_level = get_rip8() % 32;
+            tracer.Trace( "enter %u, %u\n", alloc_size, nesting_level );
+            break;
+        }
         case 0xc9:
         {
             tracer.Trace( "leave\n" );
@@ -6958,6 +6965,40 @@ _prefix_is_set:
                     set_rm16( get_rip16() );
                 else
                     set_rm32z( get_rip32() );
+                break;
+            }
+            case 0xc8: // enter alloc_size, nesting_level
+            {
+                uint16_t alloc_size = get_rip16();
+                uint8_t nesting_level = get_rip8() % 32;
+
+                if ( 0x66 == _prefix_size )
+                    unhandled(); // I haven't found apps that use 16-bit stack elements yet. implement when it happens
+
+                push( regs[ rbp ].q );
+                uint64_t frame_temp = regs[ rsp ].q;
+
+                if ( nesting_level > 0 )
+                {
+                    for ( uint8_t i = 1; i < nesting_level; i++ )
+                    {
+                        if ( mode32 )
+                        {
+                            regs[ rbp ].q -= 4;
+                            push( getui32( regs[ rbp ].q ) );
+                        }
+                        else
+                        {
+                            regs[ rbp ].q -= 8;
+                            push( getui64( regs[ rbp ].q ) );
+                        }
+                    }
+
+                    push( frame_temp );
+                }
+
+                regs[ rbp ].q = frame_temp;
+                regs[ rsp ].q -= alloc_size;
                 break;
             }
             case 0xc9: // leave
