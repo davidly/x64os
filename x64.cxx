@@ -3309,7 +3309,7 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
         return xmm_names[ reg ];
     if ( 1 == byte_width )
     {
-        if ( 0 == _prefix_rex )
+        if ( 0 == _prefix_rex ) // both _rm and _reg change behavior if a REX prefix is specified and old h registers can't be expressed
             return register_names8_old[ reg ];
         return register_names8[ reg ];
     }
@@ -3658,9 +3658,6 @@ template <typename T> T x64::do_fmul( T a, T b )
     if ( ( ainf && bzero ) || ( azero && binf ) )
         return (T) -MY_NAN;
 
-    if ( ainf && binf )
-        return (T) set_double_sign( INFINITY, ( signbit( a ) != signbit( b ) ) );
-
     if ( ainf || binf )
         return (T) set_double_sign( INFINITY, signbit( a ) != signbit( b ) );
 
@@ -3689,10 +3686,7 @@ template <typename T> T x64::do_fdiv( T a, T b )
     if ( ainf )
         return (T) set_double_sign( INFINITY, signbit( a ) != signbit( b ) );
 
-    if ( binf )
-        return (T) set_double_sign( 0.0, signbit( a ) != signbit( b ) );
-
-    if ( azero )
+    if ( binf || azero )
         return (T) set_double_sign( 0.0, signbit( a ) != signbit( b ) );
 
     return a / b;
