@@ -90,6 +90,15 @@ typedef struct reg8_t // 8-byte register
     };
 } reg8_t;
 
+typedef struct REXInfo
+{
+    union // use a union because some compilers don't otherwise optimize setting all to 0 at once for each instruction in 32-bit mode
+    {
+        struct { uint8_t W, R, X, B; };
+        uint32_t All;
+    };
+} REXInfo_t;
+
 // gnu on amd64 has 10-byte long doubles with the same format as x87 floating point (ieee80).
 // msvc maps long double to 8-byte doubles. this emulator produces incorrect results when built with msvc.
 // gnu on non-amd64 ISAs claim to have 80-bit long doubles, but I haven't been able to get them to work. they use 8-byte doubles like msvc.
@@ -320,7 +329,7 @@ private:
 
     uint64_t _instruction_start;        // rip where decoding of the current instruction started
     int64_t _displacement;
-    uint8_t _rexW, _rexR, _rexX, _rexB; // aligned and consecutive so the compiler can 0 them all out at once
+    REXInfo _rex;
     uint8_t _rm, _reg, _mod;
     uint8_t _sibScale, _sibIndex, _sibBase;
 
@@ -329,7 +338,8 @@ private:
     void decode_rm();
     void clear_decoding()
     {
-        _rm = _reg = _mod = _rexW = _rexR = _rexX = _rexB = 0;
+        _rex.All = 0;
+        _rm = _reg = _mod = 0;
         _sibScale = _sibIndex = _sibBase = 0;
         _displacement = 0;
     } //clear_decoding
@@ -462,7 +472,7 @@ private:
         return & regs[ _rm ].b;
     } //get_rm_ptr8
 
-    inline uint64_t get_rm() { return _rexW ? get_rm64() : ( 0x66 == _prefix_size ) ? get_rm16() : get_rm32(); }
+    inline uint64_t get_rm() { return _rex.W ? get_rm64() : ( 0x66 == _prefix_size ) ? get_rm16() : get_rm32(); }
 
     inline uint8_t get_rm8()
     {
@@ -698,8 +708,8 @@ private:
         }
     } //set_rmx32
 
-    uint8_t op_width() { return ( _rexW ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4 ); }
-    const char * rm_displacement();
+    uint8_t op_width() { return ( _rex.W ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4 ); }
+    const char * rm_displacement_string();
     const char * rm_string( uint8_t width, bool is_xmm = false );
     const char * register_name( uint8_t reg, uint8_t width = 8, bool is_xmm = false );
 
@@ -736,8 +746,8 @@ private:
         ---------------
         11-10  rounding control. 00 = nearest, 01 = round down, 10 = round up, 11 = round towards 0 / trunc
          9-8   precision control. 00 = float, 01 = reserved, 10 = double, 11 = extended 80-bit. used for intermediate results.
-         7   
-         6   
+         7
+         6
          5     exception mask: PM inexact result/precision
          4     exception mask: UM underflow
          3     exception mask: OM overflow
