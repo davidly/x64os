@@ -44,7 +44,7 @@ for arg in e_x32 sieve_x32 tttu_x32;
 do
     echo $arg
     echo c_tests/$arg>>$outputfile
-    $_x64oscmd c_tests/$arg.elf>>$outputfile
+    $_x32oscmd c_tests/$arg.elf>>$outputfile
 done
 
 echo test AN
