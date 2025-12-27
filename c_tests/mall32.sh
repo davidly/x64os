@@ -31,7 +31,7 @@ done
 for arg in sieve_x32 e_x32 tttu_x32
 do
     echo $arg
-    ma.sh $arg
+    ma32.sh $arg
 done
 
 echo "Waiting for compilation to complete..."
