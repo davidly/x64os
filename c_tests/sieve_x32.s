@@ -27,11 +27,11 @@
 #           return 0;
 #           }
 #
-# k         ecx # r10
-# flags     esi # r11
-# prime     edi # r13
+# k         ecx
+# flags     esi
+# prime     edi
 # count     edx
-# i         ebx # r15
+# i         ebx
 
 .equ flags_size, 8190
 .equ size_full, 8192
@@ -56,15 +56,13 @@ _start:
     movl    $10, (_iterations)                # iter <= 10
 
   _next_iteration:
-    lea     [_flags], %esi                    # for (i = 0; i <= SIZE; i++)
-    mov     $0x01010101, %ecx                 # initialize 4 array entries at a time
-    mov     $size_full - 4, %ebx
+    lea     [_flags], %edi                    # for (i = 0; i <= SIZE; i++)
+    mov     $0x01010101, %eax                 # initialize 4 array entries at a time
+    mov     $size_full / 4, %ecx
+    cld
+    rep     stosl
 
-  _initialize_next:
-    movl    %ecx, (%esi, %ebx)               # flags[i] = TRUE
-    sub     $4, %ebx
-    jge     _initialize_next
-
+    lea     [_flags], %esi
     movl    $-1, %ebx                         # i = -1
     xor     %edx, %edx                        # count = 0
 

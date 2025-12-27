@@ -49,13 +49,11 @@ _start:
 
     mov     $10, %r10
     lea     [_array], %r12                    # for (n = N - 1; n > 0; --n); a[n] = 1;
-    mov     $0x0101010101010101, %rcx         # initialize 8 array entries at a time
-    mov     $array_size - 8, %rbx
-
-  _initialize_next:
-    movq    %rcx, (%r12, %rbx)
-    sub     $8, %rbx
-    jge     _initialize_next
+    mov     %r12, %rdi                        # for (i = 0; i <= SIZE; i++)
+    mov     $0x01010101, %rax                     # initialize 4 array entries at a time
+    mov     $array_size / 4, %rcx
+    cld
+    rep     stosl
 
     movb     $0, (%r12)                       # a[0] = 0;
     movb     $2, 1(%r12)                      # a[1] = 2;

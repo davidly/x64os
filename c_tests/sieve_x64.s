@@ -57,16 +57,13 @@ _start:
 
   _next_iteration:
     lea     [_flags], %r11                    # for (i = 0; i <= SIZE; i++)
-    mov     $0x0101010101010101, %rcx         # initialize 8 array entries at a time
-    mov     $size_full - 8, %rbx
+    mov     %r11, %rdi
+    mov     $0x0101010101010101, %rax         # initialize 8 array entries at a time
+    mov     $size_full / 8, %rcx
+    cld
+    rep     stosq
 
-  _initialize_next:
-    movq    %rcx, (%r11, %rbx)     # flags[i] = TRUE
-    sub     $8, %rbx
-    jge     _initialize_next
-
-    xor     %rcx, %rcx
-    xor     %rbx, %rbx
+    xor     %rax, %rax
     movq    $-1, %r15                         # i = -1
     xor     %rdx, %rdx                        # count = 0
 

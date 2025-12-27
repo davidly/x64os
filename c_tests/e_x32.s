@@ -24,11 +24,11 @@
 #      return 0;
 #    }
 #
-# array is in  edi # r12
-# N is in      ebx # r13
-# x is in      eax # rax
-# n is in      esi # r15
-# 10 is in     ecx # r10
+# array is in  edi
+# N is in      ebx
+# x is in      eax
+# n is in      esi
+# 10 is in     ecx
 
 .equ array_size, 200
 
@@ -44,14 +44,12 @@ done_string: .asciz "\ndone\n"
 .text
 _start:
     lea     [_array], %edi                    # for (n = N - 1; n > 0; --n); a[n] = 1;
-    mov     $0x01010101, %ecx                 # initialize 4 array entries at a time
-    mov     $array_size - 4, %ebx
+    mov     $0x01010101, %eax                 # initialize 4 array entries at a time
+    mov     $array_size / 4, %ecx
+    cld
+    rep     stosl
 
-  _initialize_next:
-    movl    %ecx, (%edi, %ebx)
-    sub     $4, %ebx
-    jge     _initialize_next
-
+    lea     [_array], %edi                    # for (n = N - 1; n > 0; --n); a[n] = 1;
     movb     $0, (%edi)                       # a[0] = 0;
     movb     $2, 1(%edi)                      # a[1] = 2;
 
