@@ -40,6 +40,13 @@ do
     done
 done
 
+for arg in e_x32 sieve_x32 tttu_x32;
+do
+    echo $arg
+    echo c_tests/$arg>>$outputfile
+    $_x64oscmd c_tests/$arg.elf>>$outputfile
+done
+
 echo test AN
 for opt in 0 1 2 3 fast;
 do

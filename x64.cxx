@@ -1097,18 +1097,6 @@ void x64::trace_state()
                         tracer.Trace( "cmpxchg %s, %s\n", rm_string( 4 ), register_names32[ _reg ] );
                     break;
                 }
-                case 0xb6: // movzbq reg, r/m8
-                {
-                    decode_rm();
-                    tracer.Trace( "movzxb %s, %s\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 1 ) );
-                    break;
-                }
-                case 0xb7: // movzbq reg, r/m16
-                {
-                    decode_rm();
-                    tracer.Trace( "movzxw %s, %s\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 2 ) );
-                    break;
-                }
                 case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                 {
                     if ( 0 != _prefix_sse2_repeat )
@@ -1121,6 +1109,32 @@ void x64::trace_state()
                     else
                         tracer.Trace( "btr %s, %s\n", rm_string( 4 ), register_name( _reg, 4 ) );
                     break;
+                }
+                case 0xb6: // movzbq reg, r/m8
+                {
+                    decode_rm();
+                    tracer.Trace( "movzxb %s, %s\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 1 ) );
+                    break;
+                }
+                case 0xb7: // movzbq reg, r/m16
+                {
+                    decode_rm();
+                    tracer.Trace( "movzxw %s, %s\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 2 ) );
+                    break;
+                }
+                case 0xb8:
+                {
+                    if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
+                    {
+                        if ( 0x66 == _prefix_size )
+                            tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 2 ), rm_string( 2 ) );
+                        else if ( _rex.W )
+                            tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 8 ), rm_string( 8 ) );
+                        else
+                            tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 4 ), rm_string( 4 ) );
+                    }
+                    else
+                        unhandled();
                 }
                 case 0xba:
                 {
@@ -3491,6 +3505,18 @@ uint64_t bitscan_reverse( uint64_t x )
     return 0; // undefined
 } //bitscan_reverse
 
+uint8_t bitcount( uint64_t x )
+{
+    uint8_t count = 0;
+    while ( 0 != x )
+    {
+        if ( x & 1 )
+            count++;
+        x >>= 1;
+    }
+    return count;
+} //bitcount
+
 uint8_t saturate_i16_to_ui8( int16_t x )
 {
     if ( x > UINT8_MAX )
@@ -3499,6 +3525,15 @@ uint8_t saturate_i16_to_ui8( int16_t x )
         return 0;
     return (uint8_t) x;
 } //saturate_i16_to_ui8
+
+int8_t saturate_i16_to_i8( int16_t x )
+{
+    if ( x > INT8_MAX )
+        return INT8_MAX;
+    if ( x < INT8_MIN )
+        return INT8_MIN;
+    return (int8_t) x;
+} //saturate_i16_to_i8
 
 int16_t saturate_ui32_to_i16( uint32_t x )
 {
@@ -3515,15 +3550,6 @@ int16_t saturate_i32_to_i16( int32_t x )
         return INT16_MIN;
     return (int16_t) x;
 } //saturate_i32_to_i16
-
-int8_t saturate_i16_to_i8( int16_t x )
-{
-    if ( x > INT8_MAX )
-        return INT8_MAX;
-    if ( x < INT8_MIN )
-        return INT8_MIN;
-    return (int8_t) x;
-} //saturate_i16_to_i8
 
 template <typename T> T do_fmin( T a, T b )
 {
@@ -5414,18 +5440,6 @@ _prefix_is_set:
                         }
                         break;
                     }
-                    case 0xb6: // movzbq reg, r/m8
-                    {
-                        decode_rm();
-                        regs[ _reg ].q = get_rm8();
-                        break;
-                    }
-                    case 0xb7: // movzbq reg, r/m16
-                    {
-                        decode_rm();
-                        regs[ _reg ].q = get_rm16();
-                        break;
-                    }
                     case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                     {
                         if ( 0 != _prefix_sse2_repeat )
@@ -5456,6 +5470,36 @@ _prefix_is_set:
                             set_rm32( val & ~bit );
                         }
                         break;
+                    }
+                    case 0xb6: // movzbq reg, r/m8
+                    {
+                        decode_rm();
+                        regs[ _reg ].q = get_rm8();
+                        break;
+                    }
+                    case 0xb7: // movzbq reg, r/m16
+                    {
+                        decode_rm();
+                        regs[ _reg ].q = get_rm16();
+                        break;
+                    }
+                    case 0xb8:
+                    {
+                        if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
+                        {
+                            uint8_t val = bitcount( get_rm() );
+                            if ( 0x66 == _prefix_size )
+                                regs[ _reg ].w = val; // don't 0-extend for 16-bit results
+                            else
+                                regs[ _reg ].q = val; // 0-extend
+                            reset_CO();
+                            setflag_s( false );
+                            setflag_a( false );
+                            setflag_p( false );
+                            setflag_z( 0 == val );
+                        }
+                        else
+                            unhandled();
                     }
                     case 0xba:
                     {
