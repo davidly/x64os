@@ -1126,6 +1126,7 @@ void x64::trace_state()
                 {
                     if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
                     {
+                        decode_rm();
                         if ( 0x66 == _prefix_size )
                             tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 2 ), rm_string( 2 ) );
                         else if ( _rex.W )
@@ -1135,6 +1136,7 @@ void x64::trace_state()
                     }
                     else
                         unhandled();
+                    break;
                 }
                 case 0xba:
                 {
@@ -5487,6 +5489,7 @@ _prefix_is_set:
                     {
                         if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
                         {
+                            decode_rm();
                             uint8_t val = bitcount( get_rm() );
                             if ( 0x66 == _prefix_size )
                                 regs[ _reg ].w = val; // don't 0-extend for 16-bit results
@@ -5500,6 +5503,7 @@ _prefix_is_set:
                         }
                         else
                             unhandled();
+                        break;
                     }
                     case 0xba:
                     {
