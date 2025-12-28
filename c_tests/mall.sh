@@ -3,7 +3,7 @@
 apps=("tcmp" "t" "e" "printint" "sieve" "simple" "tmuldiv" "tpi" "ts" "tarray" "tbits" "trw" "trw2" "tmmap" "tstr" \
       "tdir" "fileops" "ttime" "tm" "glob" "tap" "tsimplef" "tphi" "tf" "ttt" "td" "terrno" "t_setjmp" "tex" \
       "tprintf" "pis" "mm" "tao" "ttypes" "nantst" "sleeptm" "tatomic" "lenum" "tregex" "trename" \
-      "nqueens" "ff" "an" "ba fopentst fact triangle mm_old hidave targs tgets tscas")
+      "nqueens" "ff" "an" "ba fopentst fact triangle mm_old hidave targs tgets tscas tpopcnt")
 
 for arg in ${apps[@]}
 do
@@ -13,8 +13,8 @@ do
         mkdir /mnt/c/users/david/onedrive/x64os/c_tests/bin"$optflag" 2>/dev/null
         mkdir /mnt/c/users/david/onedrive/x64os/c_tests/clangbin"$optflag" 2>/dev/null
 
-        _clangbuild="clang-18 -x c++ "$arg".c -o clangbin"$optflag"/"$arg" -O"$optflag" -static -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
-        _gnubuild="g++ "$arg".c -o bin"$optflag"/"$arg" -O"$optflag" -static -fsigned-char -Wno-format -Wno-format-security"
+        _clangbuild="clang-18 -x c++ "$arg".c -o clangbin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+        _gnubuild="g++ "$arg".c -o bin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -fsigned-char -Wno-format -Wno-format-security"
 
         if [ "$optflag" != "fast" ]; then
             $_clangbuild &
