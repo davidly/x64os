@@ -1120,7 +1120,7 @@ void x64::trace_state()
                     tracer.Trace( "bsf %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
-                case 0xbd: // bsf r, r/m   16, 32, 64  bit scan reverse
+                case 0xbd: // bsr r, r/m   16, 32, 64  bit scan reverse
                 {
                     decode_rm();
                     tracer.Trace( "bsr %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
@@ -5490,7 +5490,7 @@ _prefix_is_set:
                         regs[ _reg ].q = bitscan( val );
                         break;
                     }
-                    case 0xbd: // bsf r, r/m   16, 32, 64  bit scan reverse
+                    case 0xbd: // bsr r, r/m   16, 32, 64  bit scan reverse
                     {
                         decode_rm();
                         uint64_t val = get_rm();
