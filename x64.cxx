@@ -170,38 +170,32 @@ void x64::trace_state()
 
     switch( op )
     {
-        case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38:  // math r/m8, r8. rex math r/m8, r8 sign-extended to 64 bits
+        case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38:  // math r/m8, r8.
         {
             decode_rm();
             uint8_t math = ( op >> 3 ) & 7;
             tracer.Trace( "%sb %s, %s\n", math_names[ math ], rm_string( 1 ), register_name( _reg, 1 ) );
             break;
         }
-        case 0x01: case 0x09: case 0x11: case 0x19: case 0x21: case 0x29: case 0x31: case 0x39:  // math r/m, r (32 or 64 bit depending on _rex.W)
+        case 0x01: case 0x09: case 0x11: case 0x19: case 0x21: case 0x29: case 0x31: case 0x39:  // math r/m, r
         {
             decode_rm();
             uint8_t math = ( op >> 3 ) & 7;
-            if ( 0x66 == _prefix_size )
-                tracer.Trace( "%s %s, %s\n", math_names[ math ], rm_string( 8 ), register_name( _reg, 2 ) );
-            else
-                tracer.Trace( "%s %s, %s\n", math_names[ math ], rm_string( _rex.W ? 8 : 4 ), register_name( _reg, ( _rex.W ? 8 : 4 ) ) );
+            tracer.Trace( "%s %s, %s\n", math_names[ math ], rm_string( op_width() ), register_name( _reg, op_width() ) );
             break;
         }
-        case 0x02: case 0x0a: case 0x12: case 0x1a: case 0x22: case 0x2a: case 0x32: case 0x3a:  // math r8, rm/8. rex math r/m8 sign-extended to 64 bits
+        case 0x02: case 0x0a: case 0x12: case 0x1a: case 0x22: case 0x2a: case 0x32: case 0x3a:  // math r8, rm/8.
         {
             decode_rm();
             uint8_t math = ( op >> 3 ) & 7;
-            tracer.Trace( "%sb %s, %s\n", math_names[ math ], register_name( _reg, 1 ), rm_string( 8 ) );
+            tracer.Trace( "%sb %s, %s\n", math_names[ math ], register_name( _reg, 1 ), rm_string( 1 ) );
             break;
         }
-        case 0x03: case 0x0b: case 0x13: case 0x1b: case 0x23: case 0x2b: case 0x33: case 0x3b: // math r, r/m (32 or 64 bit depending on _rex.W)
+        case 0x03: case 0x0b: case 0x13: case 0x1b: case 0x23: case 0x2b: case 0x33: case 0x3b: // math r, r/m
         {
             decode_rm();
             uint8_t math = ( op >> 3 ) & 7;
-            if ( 0x66 == _prefix_size )
-                tracer.Trace( "%s %s, %s\n", math_names[ math ], register_name( _reg, 2 ), rm_string( 2 ) );
-            else
-                tracer.Trace( "%s %s, %s\n", math_names[ math ], register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 8 ) );
+            tracer.Trace( "%s %s, %s\n", math_names[ math ], register_name( _reg, op_width() ), rm_string( op_width() ) );
             break;
         }
         case 0x04: case 0x0c: case 0x14: case 0x1c: case 0x24: case 0x2c: case 0x34: case 0x3c: // math al, imm8
@@ -1007,57 +1001,32 @@ void x64::trace_state()
                 {
                     decode_rm();
                     uint8_t imm = get_rip8();
-                    if ( _rex.W )
-                        tracer.Trace( "shld %s, %s, %u\n", rm_string( 8 ), register_name( _reg, 8 ), imm );
-                    else if ( 0x66 == _prefix_size )
-                        tracer.Trace( "shld %s, %s, %u\n", rm_string( 2 ), register_name( _reg, 2 ), imm );
-                    else
-                        tracer.Trace( "shld %s, %s, %u\n", rm_string( 4 ), register_name( _reg, 4 ), imm );
+                    tracer.Trace( "shld %s, %s, %u\n", rm_string( op_width() ), register_name( _reg, op_width() ), imm );
                     break;
                 }
                 case 0xa5: // shld r/m, r, cl   double precision left shift and fill with bits from r
                 {
                     decode_rm();
-                    if ( _rex.W )
-                        tracer.Trace( "shld %s, %s, cl\n", rm_string( 8 ), register_name( _reg, 8 ) );
-                    else if ( 0x66 == _prefix_size )
-                        tracer.Trace( "shld %s, %s, cl\n", rm_string( 2 ), register_name( _reg, 2 ) );
-                    else
-                        tracer.Trace( "shld %s, %s, cl\n", rm_string( 4 ), register_name( _reg, 4 ) );
+                    tracer.Trace( "shld %s, %s, cl\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
                 case 0xab: // bts r/m, r 16/32/64
                 {
                     decode_rm();
-                    if ( _rex.W )
-                        tracer.Trace( "bts %s %s\n", rm_string( 8 ), register_name( _reg, 8 ) );
-                    else if ( 0x66 == _prefix_size )
-                        tracer.Trace( "bts %s %s\n", rm_string( 2 ), register_name( _reg, 2 ) );
-                    else
-                        tracer.Trace( "bts %s %s\n", rm_string( 4 ), register_name( _reg, 4 ) );
+                    tracer.Trace( "bts %s %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
                 case 0xac: // shrd r/m, r, imm   double precision right shift and fill with bits from left
                 {
                     decode_rm();
                     uint8_t imm8 = get_rip8();
-                    if ( _rex.W )
-                        tracer.Trace( "shrd %s, %s, %u\n", rm_string( 8 ), register_name( _reg, 8 ), imm8 );
-                    else if ( 0x66 == _prefix_size )
-                        tracer.Trace( "shrd %s, %s, %u\n", rm_string( 2 ), register_name( _reg, 2 ), imm8 );
-                    else
-                        tracer.Trace( "shrd %s, %s, %u\n", rm_string( 4 ), register_name( _reg, 4 ), imm8 );
+                    tracer.Trace( "shrd %s, %s, %u\n", rm_string( op_width() ), register_name( _reg, op_width() ), imm8 );
                     break;
                 }
                 case 0xad: // shrd r/m, r, cl   double precision right shift and fill with bits from r
                 {
                     decode_rm();
-                    if ( _rex.W )
-                        tracer.Trace( "shrd %s, %s, cl\n", rm_string( 8 ), register_name( _reg, 8 ) );
-                    else if ( 0x66 == _prefix_size )
-                        tracer.Trace( "shrd %s, %s, cl\n", rm_string( 2 ), register_name( _reg, 2 ) );
-                    else
-                        tracer.Trace( "shrd %s, %s, cl\n", rm_string( 4 ), register_name( _reg, 4 ) );
+                    tracer.Trace( "shrd %s, %s, cl\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
                 case 0xae: // stmxcsr / ldmxcsr
@@ -1083,12 +1052,7 @@ void x64::trace_state()
                 case 0xaf: // imul r, r/m  in 16, 32, and 64
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
-                        tracer.Trace( "imul %s, %s\n", register_names16[ _reg ], rm_string( 2 ) );
-                    else if ( _rex.W )
-                        tracer.Trace( "imul %s, %s\n", register_names[ _reg ], rm_string( 8 ) );
-                    else
-                        tracer.Trace( "imul %s, %s\n", register_names32[ _reg ], rm_string( 4 ) );
+                    tracer.Trace( "imul %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
                 case 0xb0: // cmpxchg r/m8, r8
@@ -1100,12 +1064,7 @@ void x64::trace_state()
                 case 0xb1: // cmpxchg r/m, r   16, 32, 64 compare ax with r/m
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
-                        tracer.Trace( "cmpxchg %s, %s\n", rm_string( 2 ), register_names16[ _reg ] );
-                    else if ( _rex.W )
-                        tracer.Trace( "cmpxchg %s, %s\n", rm_string( 8 ), register_names[ _reg ] );
-                    else
-                        tracer.Trace( "cmpxchg %s, %s\n", rm_string( 4 ), register_names32[ _reg ] );
+                    tracer.Trace( "cmpxchg %s, %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
                 case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
@@ -1113,12 +1072,7 @@ void x64::trace_state()
                     if ( 0 != _prefix_sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
-                        tracer.Trace( "btr %s, %s\n", rm_string( 2 ), register_name( _reg, 2 ) );
-                    else if ( _rex.W )
-                        tracer.Trace( "btr %s, %s\n", rm_string( 8 ), register_name( _reg, 8 ) );
-                    else
-                        tracer.Trace( "btr %s, %s\n", rm_string( 4 ), register_name( _reg, 4 ) );
+                    tracer.Trace( "btr %s, %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
                 case 0xb6: // movzbq reg, r/m8
@@ -1138,12 +1092,7 @@ void x64::trace_state()
                     if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
-                            tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 2 ), rm_string( 2 ) );
-                        else if ( _rex.W )
-                            tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 8 ), rm_string( 8 ) );
-                        else
-                            tracer.Trace( "popcnt %s, %s\n", register_name( _reg, 4 ), rm_string( 4 ) );
+                        tracer.Trace( "popcnt %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
                     }
                     else
                         unhandled();
@@ -1154,41 +1103,13 @@ void x64::trace_state()
                     decode_rm();
                     uint8_t imm = get_rip8();
                     if ( 4 == _reg ) // bt r/m imm8 (16, 32, 64 bit bit test)
-                    {
-                        if ( 0x66 == _prefix_size )
-                            tracer.Trace( "bt %s, %u\n", rm_string( 2 ), imm );
-                        else if ( _rex.W )
-                            tracer.Trace( "bt %s, %u\n", rm_string( 8 ), imm );
-                        else
-                            tracer.Trace( "bt %s, %u\n", rm_string( 4 ), imm );
-                    }
+                        tracer.Trace( "bt %s, %u\n", rm_string( op_width() ), imm );
                     else if ( 5 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test and set)
-                    {
-                        if ( 0x66 == _prefix_size )
-                            tracer.Trace( "bts %s, %u\n", rm_string( 2 ), imm );
-                        else if ( _rex.W )
-                            tracer.Trace( "bts %s, %u\n", rm_string( 8 ), imm );
-                        else
-                            tracer.Trace( "bts %s, %u\n", rm_string( 4 ), imm );
-                    }
+                        tracer.Trace( "bts %s, %u\n", rm_string( op_width() ), imm );
                     else if ( 6 == _reg ) // btr r/m, imm8  (16, 32, 64 bit test and reset)
-                    {
-                        if ( 0x66 == _prefix_size )
-                            tracer.Trace( "btr %s, %u\n", rm_string( 2 ), imm );
-                        else if ( _rex.W )
-                            tracer.Trace( "btr %s, %u\n", rm_string( 8 ), imm );
-                        else
-                            tracer.Trace( "btr %s, %u\n", rm_string( 4 ), imm );
-                    }
+                        tracer.Trace( "btr %s, %u\n", rm_string( op_width() ), imm );
                     else if ( 7 == _reg ) // btc r/m, imm8  (16, 32, 64 bit test and complement)
-                    {
-                        if ( 0x66 == _prefix_size )
-                            tracer.Trace( "btc %s, %u\n", rm_string( 2 ), imm );
-                        else if ( _rex.W )
-                            tracer.Trace( "btc %s, %u\n", rm_string( 8 ), imm );
-                        else
-                            tracer.Trace( "btc %s, %u\n", rm_string( 4 ), imm );
-                    }
+                        tracer.Trace( "btc %s, %u\n", rm_string( op_width() ), imm );
                     else
                         unhandled();
                     break;
@@ -1196,34 +1117,19 @@ void x64::trace_state()
                 case 0xbc: // bsf r, r/m   16, 32, 64  bit scan forward
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
-                        tracer.Trace( "bsf %s, %s\n", register_names16[ _reg ], rm_string( 2 ) );
-                    else if ( _rex.W )
-                        tracer.Trace( "bsf %s, %s\n", register_names[ _reg ], rm_string( 8 ) );
-                    else
-                        tracer.Trace( "bsf %s, %s\n", register_names32[ _reg ], rm_string( 4 ) );
+                    tracer.Trace( "bsf %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
                 case 0xbd: // bsf r, r/m   16, 32, 64  bit scan reverse
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
-                        tracer.Trace( "bsr %s, %s\n", register_names16[ _reg ], rm_string( 2 ) );
-                    else if ( _rex.W )
-                        tracer.Trace( "bsr %s, %s\n", register_names[ _reg ], rm_string( 8 ) );
-                    else
-                        tracer.Trace( "bsr %s, %s\n", register_names32[ _reg ], rm_string( 4 ) );
+                    tracer.Trace( "bsr %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
                 case 0xbe: // movsx r, r/m. 16/32/64 from 8
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
-                        tracer.Trace( "movsx %s, %s\n", register_names16[ _reg ], rm_string( 1 ) );
-                    else if ( _rex.W )
-                        tracer.Trace( "movsx %s, %s\n", register_names[ _reg ], rm_string( 1 ) );
-                    else
-                        tracer.Trace( "movsx %s, %s\n", register_names32[ _reg ], rm_string( 1 ) );
+                    tracer.Trace( "movsx %s, %s\n", register_name( _reg, op_width() ), rm_string( 1 ) );
                     break;
                 }
                 case 0xbf: // movsx r, r/m16. 32/64 from 16
@@ -1231,10 +1137,7 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix_size )
                         unhandled();
-                    else if ( _rex.W )
-                        tracer.Trace( "movsx %s, %s\n", register_names[ _reg ], rm_string( 2 ) );
-                    else
-                        tracer.Trace( "movsx %s, %s\n", register_names32[ _reg ], rm_string( 2 ) );
+                    tracer.Trace( "movsx %s, %s\n", register_name( _reg, op_width() ), rm_string( 2 ) );
                     break;
                 }
                 case 0xc0: // xadd r/m8, r8
@@ -1246,12 +1149,7 @@ void x64::trace_state()
                 case 0xc1: // xadd r/m, r  16/32/64
                 {
                     decode_rm();
-                    if ( _rex.W )
-                        tracer.Trace( "xadd %s, %s\n", rm_string( 8 ), register_name( _reg, 8 ) );
-                    else if ( 0x66 == _prefix_size )
-                        tracer.Trace( "xadd %s, %s\n", rm_string( 2 ), register_name( _reg, 2 ) );
-                    else
-                        tracer.Trace( "xadd %s, %s\n", rm_string( 4 ), register_name( _reg, 4 ) );
+                    tracer.Trace( "xadd %s, %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
                 case 0xc2: // cmpps / cmppd / cmpsd / cmpss xmm1, xmm2/m128, imm8   compare floats/doubles using bits2:0 of imm8 as a comparison predicate
@@ -1716,11 +1614,11 @@ void x64::trace_state()
         {
             decode_rm();
             if ( 0x66 == _prefix_size )
-                tracer.Trace( "imul %s, %s, %d\n", register_names8[ _reg ], rm_string( 2 ), get_rip16() );
+                tracer.Trace( "imul %s, %s, %d\n", register_name( _reg, 2 ), rm_string( 2 ), get_rip16() );
             else if ( _rex.W )
-                tracer.Trace( "imul %s, %s, %d\n", register_names[ _reg ], rm_string( 8 ), get_rip32() );
+                tracer.Trace( "imul %s, %s, %d\n", register_name( _reg, 8 ), rm_string( 8 ), get_rip32() );
             else
-                tracer.Trace( "imul %s, %s, %d\n", register_names32[ _reg ], rm_string( 4 ), get_rip32() );
+                tracer.Trace( "imul %s, %s, %d\n", register_name( _reg, 4 ), rm_string( 4 ), get_rip32() );
             break;
         }
         case 0x6a: // push imm8. sign-extended to 64 bits
@@ -1732,12 +1630,7 @@ void x64::trace_state()
         {
             decode_rm();
             uint8_t imm = get_rip8();
-            if ( 0x66 == _prefix_size )
-                tracer.Trace( "imul %s, %s, %lld\n", register_names8[ _reg ], rm_string( 2 ), sign_extend( imm, 7 ) );
-            else if ( _rex.W )
-                tracer.Trace( "imul %s, %s, %lld\n", register_names[ _reg ], rm_string( 8 ), sign_extend( imm, 7 ) );
-            else
-                tracer.Trace( "imul %s, %s, %lld\n", register_names32[ _reg ], rm_string( 4 ), sign_extend( imm, 7 ) );
+            tracer.Trace( "imul %s, %s, %lld\n", register_name( _reg, op_width() ), rm_string( op_width() ), sign_extend( imm, 7 ) );
             break;
         }
         case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75: case 0x76: case 0x77: // jcc
@@ -1763,7 +1656,7 @@ void x64::trace_state()
             else
             {
                 uint64_t imm = get_rip32();
-                tracer.Trace( "%s%c %s, %#llx\n", math_names[ math ], _rex.W ? 'q' : 'd', rm_string( _rex.W ? 8 : 4 ), _rex.W ? sign_extend( imm, 31 ) : imm );
+                tracer.Trace( "%s%c %s, %#llx\n", math_names[ math ], _rex.W ? 'q' : 'd', rm_string( op_width() ), _rex.W ? sign_extend( imm, 31 ) : imm );
             }
             break;
         }
@@ -2037,12 +1930,7 @@ void x64::trace_state()
         {
             decode_rm();
             uint8_t val = get_rip8();
-            if ( 0x66 == _prefix_size )
-                tracer.Trace( "%s %s, %#x\n", shift_names[ _reg ], rm_string( 2 ), val );
-            else if ( _rex.W )
-                tracer.Trace( "%s %s, %#x\n", shift_names[ _reg ], rm_string( 8 ), val );
-            else
-                tracer.Trace( "%s %s, %#x\n", shift_names[ _reg ], rm_string( 4 ), val );
+            tracer.Trace( "%s %s, %#x\n", shift_names[ _reg ], rm_string( op_width() ), val );
             break;
         }
         case 0xc2: // ret imm16
@@ -2101,23 +1989,13 @@ void x64::trace_state()
         case 0xd1: // shift r/m (, 1)   16/32/64
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
-                tracer.Trace( "%s %s\n", shift_names[ _reg ], rm_string( 2 ) );
-            else if ( _rex.W )
-                tracer.Trace( "%s %s\n", shift_names[ _reg ], rm_string( 8 ) );
-            else
-                tracer.Trace( "%s %s\n", shift_names[ _reg ], rm_string( 4 ) );
+            tracer.Trace( "%s %s\n", shift_names[ _reg ], rm_string( op_width() ) );
             break;
         }
         case 0xd3: // shift r/m, cl   16/32/64
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
-                tracer.Trace( "%s %s, cl\n", shift_names[ _reg ], rm_string( 2 ) );
-            else if ( _rex.W )
-                tracer.Trace( "%s %s, cl\n", shift_names[ _reg ], rm_string( 8 ) );
-            else
-                tracer.Trace( "%s %s, cl\n", shift_names[ _reg ], rm_string( 4 ) );
+            tracer.Trace( "%s %s, cl\n", shift_names[ _reg ], rm_string( op_width() ) );
             break;
         }
         case 0xd8:
@@ -2505,14 +2383,7 @@ void x64::trace_state()
                     tracer.Trace( "testd %s, %#x\n", rm_string( 4 ), get_rip32() );
             }
             else if ( 2 == _reg )
-            {
-                if ( 0x66 == _prefix_size )
-                    tracer.Trace( "not %s\n", rm_string( 2 ) );
-                else if ( _rex.W )
-                    tracer.Trace( "not %s\n", rm_string( 8 ) );
-                else
-                    tracer.Trace( "not %s\n", rm_string( 4 ) );
-            }
+                tracer.Trace( "not %s\n", rm_string( op_width() ) );
             else if ( 3 == _reg )
             {
                 if ( 0x66 == _prefix_size )
@@ -6944,10 +6815,7 @@ _prefix_is_set:
             case 0xc0: // shift r8/m8, imm8
             {
                 decode_rm();
-                uint8_t shift = get_rip8();
-                if ( 0 == shift )
-                    break;
-                shift &= 7;
+                uint8_t shift = get_rip8() & 7;
                 op_shift( get_rm_ptr8(), _reg, shift );
                 break;
             }
@@ -6955,8 +6823,6 @@ _prefix_is_set:
             {
                 decode_rm();
                 uint8_t shift = get_rip8();
-                if ( 0 == shift )
-                    break;
 
                 if ( _rex.W )
                 {
