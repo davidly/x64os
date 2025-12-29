@@ -7,11 +7,13 @@
 #include <cerrno>
 #include <sys/times.h>
 #include <sys/resource.h>
+#include <x86intrin.h>
 
 using namespace std::chrono;
 
 int main( int argc, char * argv[] )
 {
+    unsigned long long start_cycles = __rdtsc();
     high_resolution_clock::time_point tStart = high_resolution_clock::now();
 
     //printf( "this test should take about 2.5 seconds to complete\n" );
@@ -84,6 +86,10 @@ int main( int argc, char * argv[] )
 
     if ( sleepMS < 1480 || sleepMS > 1520 || totalMS < 2480 || totalMS > 2520 )
         printf( "milliseconds sleeping (should be ~1500) %llu, milliseconds total (should be ~2500): %llu\n", sleepMS, totalMS );
+
+    unsigned long long end_cycles = __rdtsc();
+    if ( end_cycles <= start_cycles )
+        printf( "rdtsc end cycles %#llx not greater than start cycles %#llx\n", end_cycles, start_cycles );
 
     printf( "sleepy time ended with great success\n" );
     return 0;

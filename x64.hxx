@@ -297,6 +297,16 @@ private:
     void setflag_d( bool f ) { rflags &= ~( 1 << 10 ); rflags |= ( ( 0 != f ) << 10 ); } // direction
     void setflag_o( bool f ) { rflags &= ~( 1 << 11 ); rflags |= ( ( 0 != f ) << 11 ); } // overflow
 
+    template <typename T> inline void set_PSZ( T val )
+    {
+        setflag_p( is_parity_even8( 0xff & val ) );
+        setflag_z( 0 == val );
+        setflag_s( val_signed( val ) );
+    } //set_PSZ
+
+    void reset_CO() { rflags &= ~0x801; }
+    void reset_CPAZSO() { rflags &= ~0x8d5; }
+
     bool flag_c() { return ( 0 != ( rflags & ( 1 << 0 ) ) );  } // carry
     bool flag_p() { return ( 0 != ( rflags & ( 1 << 2 ) ) );  } // parity even
     bool flag_a() { return ( 0 != ( rflags & ( 1 << 4 ) ) );  } // auxiliary carry
@@ -398,15 +408,6 @@ private:
         return ( x ^ m ) - m;
     } //sign_extend16
 
-    template <typename T> inline void set_PSZ( T val )
-    {
-        setflag_p( is_parity_even8( 0xff & val ) );
-        setflag_z( 0 == val );
-        setflag_s( val_signed( val ) );
-    } //set_PSZ
-
-    void reset_CO() { rflags &= ~( 0x801 ); }
-
     template <typename T> T op_add( T lhs, T rhs, bool carry = false );
     template <typename T> T op_sub( T lhs, T rhs, bool carry = false );
     template <typename T> T op_or( T lhs, T rhs );
@@ -443,6 +444,17 @@ private:
         else
             regs[ _reg ].b = val;
     } //set_reg8
+
+    inline uint8_t * get_reg_ptr8()
+    {
+        if ( ( 0 == _prefix_rex ) && ( _reg >= 4 ) )
+        {
+            assert( _reg <= 7 );
+            return ( & regs[ _reg & 3 ].h ); // ah, ch, dh, bh
+        }
+
+        return & regs[ _reg ].b;
+    } //get_reg_ptr8
 
     inline uint8_t * get_rm_ptr8()
     {

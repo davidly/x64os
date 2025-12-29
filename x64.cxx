@@ -22,6 +22,12 @@
         * generally, only instructions used in the test suite are implemented to avoid having a bunch of untested code.
         * no attempt was made to emulate x87 80-bit floating point on non-AMD64 machines because there isn't a lot of code that requires long doubles.
         * the disassembler roughly uses Intel syntax, not GNU's syntax that reverses argument order, because that's what I grew up with.
+
+    Most 32-bit instructions are from the i386. Exceptions include:
+        * 486:                              cmpxchg, xadd, invlpg
+        * 586 (pentium):                    cmpxchg8b, rdtsc
+        * 686 (pentium pro, II, III, etc.): cpuid, cmov, fcmov, fcomi, fcomip, fucomi, fucomip, syscall, sysret
+        * later:                            mmx, sse, avx, amx, aes, sha, pclmulqdq, fma, x86-64
 */
 
 #define NOMINMAX
@@ -432,6 +438,11 @@ void x64::trace_state()
                         tracer.Trace( "comiss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
+                    break;
+                }
+                case 0x31: // rdtsc
+                {
+                    tracer.Trace( "rdtsc\n" );
                     break;
                 }
                 case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47: // cmovcc reg, r/m
@@ -2986,7 +2997,7 @@ template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
         case 4: *pdst = op_and( *pdst, src ); break;
         case 5: *pdst = op_sub( *pdst, src ); break;
         case 6: *pdst = op_xor( *pdst, src ); break;
-        default: op_sub( *pdst, src ); break; // 7 is cmp
+        default: op_sub( *pdst, src ); break; // 7 is cmp. ignore the result.
     }
 } //do_math
 
@@ -3797,7 +3808,7 @@ void x64::set_x87_status_compare( uint32_t fcc )
 
 // match table 3-1 comparison predicates for cmppd and cmpps instructions
 
-static const bool floating_comparison_results[ 32 ][ 4 ] =
+static const bool floating_comparison_results[ 32 ][ 4 ] =                  // G      L      E      U
 {
     /* EQ_OQ (EQ)  0H  Equal (ordered, non-signaling) */                    {  false, false, true,  false },
     /* LT_OS (LT)  1H  Less-than (ordered, signaling) */                    {  false, true,  false, false },
@@ -3836,6 +3847,7 @@ static const bool floating_comparison_results[ 32 ][ 4 ] =
 template <typename T> inline bool x64::floating_comparison_true( T a, T b, uint8_t predicate )
 {
     uint32_t fcc = compare_floating( a, b );
+    assert( fcc < 4 );
     return floating_comparison_results[ predicate & 0x1f ][ fcc ];
 } //floating_comparison_true
 
@@ -3921,7 +3933,7 @@ _prefix_is_set:
 
         switch( op )                // 20.7% of runtime setting up for the switch
         {
-            case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38:  // math r/m8, r8. rex math r/m8, r8 sign-extended to 64 bits
+            case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38:  // math r/m8, r8
             {
                 decode_rm();
                 uint8_t math = ( op >> 3 ) & 7;
@@ -3959,15 +3971,7 @@ _prefix_is_set:
             {
                 decode_rm();
                 uint8_t math = ( op >> 3 ) & 7;
-                if ( _rex.W ) // if wide/64-bit
-                    do_math( math, & regs[ _reg ].q, (uint64_t) sign_extend( get_rm8(), 7 ) );
-                else
-                {
-                    uint8_t val = get_reg8();
-                    do_math( math, &val, get_rm8() );
-                    if ( 7 != math )
-                        set_reg8( val );
-                }
+                do_math( math, get_reg_ptr8(), get_rm8() );
                 break;
             }
             case 0x03: case 0x0b: case 0x13: case 0x1b: case 0x23: case 0x2b: case 0x33: case 0x3b: // math r, r/m (32 or 64 bit depending on _rex.W)
@@ -3989,11 +3993,8 @@ _prefix_is_set:
             case 0x04: case 0x0c: case 0x14: case 0x1c: case 0x24: case 0x2c: case 0x34: case 0x3c: // math al, imm8
             {
                 uint8_t math = ( op >> 3 ) & 7;
-                uint8_t val = regs[ rax ].b;
                 uint8_t imm = get_rip8();
-                do_math( math, &val, imm );
-                if ( 7 != math ) // don't write on cmp
-                    regs[ rax ].b = val; // only modify the low byte
+                do_math( math, & regs[ rax ].b, imm );
                 break;
             }
             case 0x05: case 0x0d: case 0x15: case 0x1d: case 0x25: case 0x2d: case 0x35: case 0x3d: // math ax, imm16 / math eax, imm32 / math rax, se( imm32 )
@@ -4002,7 +4003,7 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                 {
-                    uint32_t imm = (int32_t) get_rip32();
+                    uint32_t imm = get_rip32();
                     do_math( math, & regs[ rax ].q, (uint64_t) sign_extend( imm, 31 ) );
                 }
                 else if ( 0x66 == _prefix_size )
@@ -4015,7 +4016,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    uint32_t imm = (int32_t) get_rip32();
+                    uint32_t imm = get_rip32();
                     uint32_t regval = regs[ rax ].d;
                     do_math( math, &regval, imm );
                     if ( 7 != math )
@@ -4313,6 +4314,12 @@ _prefix_is_set:
                             unhandled();
                         break;
                     }
+                    case 0x31: // rdtsc.  return cycle count in edx:eax. use instruction count instead, which is a reasonable proxy
+                    {
+                        regs[ rdx ].q = (uint32_t) ( instruction_count >> 32 );
+                        regs[ rax ].q = (uint32_t) ( instruction_count & 0xffffffff );
+                        break;
+                    }
                     case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47: // cmovcc reg, r/
                     case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f:
                     {
@@ -4332,7 +4339,7 @@ _prefix_is_set:
                             val |= ( val_signed( xregs[ _rm ].get64( 1 ) ) << 1 );
                             regs[ _reg ].q = val; // zero-extend the value
                         }
-                        else // movmkps reg, xmm    extract 4 bit sign mask from xmm and store in reg
+                        else // movmkps reg, xmm    extract 4-bit sign mask from xmm and store in reg
                         {
                             uint32_t val = val_signed( xregs[ _rm ].get32( 0 ) );
                             val |= ( val_signed( xregs[ _rm ].get32( 1 ) ) << 1 );
@@ -5495,10 +5502,7 @@ _prefix_is_set:
                                 regs[ _reg ].w = val; // don't 0-extend for 16-bit results
                             else
                                 regs[ _reg ].q = val; // 0-extend
-                            reset_CO();
-                            setflag_s( false );
-                            setflag_a( false );
-                            setflag_p( false );
+                            reset_CPAZSO();
                             setflag_z( 0 == val );
                         }
                         else
@@ -5510,7 +5514,7 @@ _prefix_is_set:
                         decode_rm();
                         uint8_t imm = get_rip8();
 
-                        if ( 4 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test
+                        if ( 4 == _reg ) // bt r/m, imm8  (16, 32, 64 bit test)
                         {
                             if ( _rex.W )
                             {
@@ -5531,7 +5535,7 @@ _prefix_is_set:
                                 setflag_c( val & bit );
                             }
                         }
-                        else if ( 5 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test and set
+                        else if ( 5 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test and set)
                         {
                             if ( _rex.W )
                             {
@@ -5555,7 +5559,7 @@ _prefix_is_set:
                                 set_rm32( val | bit );
                             }
                         }
-                        else if ( 6 == _reg ) // btr r/m, imm8  (16, 32, 64 bit test and set
+                        else if ( 6 == _reg ) // btr r/m, imm8  (16, 32, 64 bit test and set)
                         {
                             if ( _rex.W )
                             {
@@ -5579,7 +5583,7 @@ _prefix_is_set:
                                 set_rm32( val & ~bit );
                             }
                         }
-                        else if ( 7 == _reg ) // btc r/m, imm8  (16, 32, 64 bit test and complement
+                        else if ( 7 == _reg ) // btc r/m, imm8  (16, 32, 64 bit test and complement)
                         {
                             if ( _rex.W )
                             {
@@ -7384,22 +7388,22 @@ _prefix_is_set:
             {
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
-                if ( op1 >= 0xc0 && op1 <= 0xc7 ) // move if not below
+                if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fcmovnb  move if not below
                 {
                     if ( check_condition( ccNB ) )
                         poke_fp( 0, peek_fp( offset ) );
                 }
-                else if ( op1 >= 0xc8 && op1 <= 0xcf ) // move if not equal
+                else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fcmovne  move if not equal
                 {
                     if ( check_condition( ccNE ) )
                         poke_fp( 0, peek_fp( offset ) );
                 }
-                else if ( op1 >= 0xd0 && op1 <= 0xd7 ) // move if not below or equal
+                else if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fcmovnbe  move if not below or equal
                 {
                     if ( check_condition( ccNBE ) )
                         poke_fp( 0, peek_fp( offset ) );
                 }
-                else if ( op1 >= 0xd8 && op1 <= 0xdf ) // move if not unordered
+                else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fcmovnu  move if not unordered
                 {
                     if ( check_condition( ccNU ) )
                         poke_fp( 0, peek_fp( offset ) );
