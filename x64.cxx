@@ -3033,8 +3033,11 @@ void x64::unhandled()
           | AX    CX    DX    BX    | SP             | BP                 | SI    DI    R8    R9    R10   R11   | R12            | R13                | R14   R15   |
       Mod +-------------------------+----------------+--------------------+-------------------------------------+----------------+--------------------+-------------+
       00  | [r/m]                   | [sib]          | [rip + disp32]     | [r/m]                               | [sib]          | [rip + disp32]     | [r/m]       |
+          +-------------------------+----------------+--------------------+-------------------------------------+----------------+--------------------+-------------+
       01  | [r/m + disp8]           | [sib + disp8]  | [r/m + disp8]                                            | [sib + disp8]  | [r/m + disp8]                    |
+          +-------------------------+----------------+----------------------------------------------------------+----------------+----------------------------------+
       10  | [r/m + disp32]          | [sib + disp32] | [r/m + disp32]                                           | [sib + disp32] | [r/m + disp32]                   |
+          +-------------------------+----------------+----------------------------------------------------------+----------------+----------------------------------+
       11  | r/m                                                                                                                                                     |
           +---------------------------------------------------------------------------------------------------------------------------------------------------------+
 
@@ -3139,7 +3142,9 @@ void x64::unhandled()
       00       100     SIB byte required: The ModR/M byte is followed by a SIB byte to specify a complex memory address.
       00       101     RIP-relative addressing: This is a special case in 64-bit mode where the memory address is calculated relative to the instruction pointer (RIP).
                        The r/m=101 and mod=00 combination, which typically specifies a base register in other modes, is repurposed for this.
+                       For 32-bit compatibility mode, rip is ignored and just the displacement is used.
       01/10    100     SIB byte required, with 8-bit (mod=01) or 32-bit (mod=10) displacement.
+
 */
 
 void x64::decode_sib()
@@ -3247,7 +3252,7 @@ uint64_t x64::effective_address()
             {
                 if ( 4 == _sibIndex ) // [base + disp8]
                     ea = regs[ _sibBase ].q + _displacement;
-                else // [base + (index * s ) + disp8]
+                else // [base + (index * s) + disp8]
                     ea = regs[ _sibBase ].q + ( regs[ _sibIndex ].q << _sibScale ) + _displacement;
             }
         }
@@ -3762,12 +3767,15 @@ uint64_t x64::run()
 
     for ( ;; )
     {
-        _instruction_start = rip.q; // just for debugging; should probably remove for performance
+        #ifndef NDEBUG
+            _instruction_start = rip.q; // just for debugging; should probably remove for performance
+        #endif
+
         instruction_count++;        // 14.7% of runtime including _prefix initialization below
         _prefix_rex = 0;            // can be 0x40 through 0x4f to indicate high registers and 64-bit operands
         _prefix_size = 0;           // can be 0x66 (operand size 16). 0x67 for 32-bit addresses isn't required for test apps implemented
         _prefix_sse2_repeat = 0;    // can be 0xf2 or 0xf3 for SSE2 instructions or string repeat opcodes
-        _prefix_segment = 0;        // 0x64 for fs: or 0x65 for gs:
+        _prefix_segment = 0;        // can be 0x64 for fs: or 0x65 for gs:
 
 _prefix_is_set:
 
@@ -7943,7 +7951,7 @@ _prefix_is_set:
                             rip.q = get_rm64();
                         break;
                     }
-                    case 3: // call
+                    case 3: // call  (inter-segment)
                         unhandled();
                     case 4: // jmp near absolute indirect. rip = 64 bit offset from r/m
                     {
@@ -7953,7 +7961,7 @@ _prefix_is_set:
                             rip.q = get_rm64();
                         break;
                     }
-                    case 5: // jmp
+                    case 5: // jmp  (inter-segment)
                         unhandled();
                     case 6: // push
                     {
