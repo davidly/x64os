@@ -3158,9 +3158,9 @@ void x64::decode_sib()
     _sibBase = ( sib & 7 );
 
     if ( ( 2 == _mod ) || ( ( 0 == _mod ) && ( 5 == _sibBase ) ) ) // 32-bit displacement
-        _displacement = sign_extend( get_rip32(), 31 );
+        _displacement = (int32_t) get_rip32();
     else if ( 1 == _mod ) // 8-bit displacement
-        _displacement = sign_extend( get_rip8(), 7 );
+        _displacement = (int8_t) get_rip8();
 
     if ( _rex.B )
         _sibBase |= 8;
@@ -3200,9 +3200,9 @@ void x64::decode_rm()
         if ( 4 == saved_rm )
             decode_sib();
         else if ( ( 2 == _mod ) || ( ( 0 == _mod ) && ( 5 == saved_rm ) ) ) // 32-bit displacement
-            _displacement = sign_extend( get_rip32(), 31 );
+            _displacement = (int32_t) get_rip32();
         else if ( 1 == _mod ) // 8-bit displacement
-            _displacement = sign_extend( get_rip8(), 7 );
+            _displacement = (int8_t) get_rip8();
     }
 } //decode_rm
 
@@ -3368,9 +3368,9 @@ const char * x64::rm_string( uint8_t byte_width, bool is_xmm )
     return register_name( _rm, byte_width, is_xmm );
 } //rm_string
 
-uint64_t bitscan( uint64_t x )
+uint32_t bitscan( uint64_t x )
 {
-    uint64_t bit = 0;
+    uint32_t bit = 0;
     while ( 0 != x )
     {
         if ( x & 1 )
@@ -3381,9 +3381,9 @@ uint64_t bitscan( uint64_t x )
     return 0; // undefined
 } //bitscan
 
-uint64_t bitscan_reverse( uint64_t x )
+uint32_t bitscan_reverse( uint64_t x )
 {
-    uint64_t bit = 63;
+    uint32_t bit = 63;
     while ( 0 != x )
     {
         if ( x & 0x8000000000000000 )
@@ -4286,7 +4286,6 @@ _prefix_is_set:
                     case 0x54: // andpd xmm, xmm/m128   bitwise and. also andps
                     {
                         decode_rm();
-
                         if ( 0x66 == _prefix_size ) // movapd xmm1, xmm2/m128
                         {
                             vec16_t & dst = xregs[ _reg ];
@@ -5043,9 +5042,9 @@ _prefix_is_set:
                     case 0x80: case 0x81: case 0x82: case 0x83: case 0x84: case 0x85: case 0x86: case 0x87: // jcc rel32
                     case 0x88: case 0x89: case 0x8a: case 0x8b: case 0x8c: case 0x8d: case 0x8e: case 0x8f:
                     {
-                        uint32_t offset = get_rip32();
+                        int32_t offset = (int32_t) get_rip32();
                         if ( check_condition( op1 & 0xf ) )
-                            rip.q += sign_extend( offset, 31 );
+                            rip.q += offset;
                         break;
                     }
                     case 0x90: case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // setcc
@@ -5245,7 +5244,7 @@ _prefix_is_set:
                         }
                         else if ( 0x66 == _prefix_size )
                         {
-                            int32_t a = sign_extend32( regs[ _reg ].d, 15 );
+                            int32_t a = sign_extend32( regs[ _reg ].w, 15 );
                             int32_t b = sign_extend32( get_rm16(), 15 );
                             int32_t result32 = a * b;
                             uint16_t result16 = result32 & 0xffff;
@@ -5787,7 +5786,7 @@ _prefix_is_set:
                         if ( 0x66 == _prefix_size ) // pmovmskb reg, xmm
                         {
                             // move the high bits of each byte to create a mask 16 bits long in reg
-                            uint64_t mask = 0;
+                            uint32_t mask = 0;
                             for ( uint32_t b = 0; b < 16; b++ )
                                 if ( xregs[ _rm ].get8( b ) & 0x80 )
                                     mask |= ( 1ull << b );
