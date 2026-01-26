@@ -1,4 +1,4 @@
-Sat 12/27/2025 22:04:51.83 
+Mon 01/26/2026  7:47:00.35 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -12100,35 +12100,35 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 c_tests/x32bin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 8
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 8
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32clangbin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 8
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 8
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32bin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 8
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 8
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32clangbin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 8
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 8
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32bin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32clangbin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32bin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32clangbin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32binfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32clangbinfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2025, month 12, day 27, hour 22, min 5, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2025, month 12, day 28, hour 1, min 5, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 47, sec 29
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 47, sec 29
 c_tests/x32bin0/tm
 tm has completed with great success
 c_tests/x32clangbin0/tm
@@ -58795,7 +58795,6 @@ clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/x32clangbin0/sleeptm
 clk_tck / number of linux ticks per second: 100
-getrusage user time in ms: 1015, system time 0
 sleepy time ended with great success
 c_tests/x32bin1/sleeptm
 clk_tck / number of linux ticks per second: 100
@@ -59038,7 +59037,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59058,7 +59057,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59078,7 +59077,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59098,7 +59097,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59118,7 +59117,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59138,7 +59137,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59158,7 +59157,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59178,7 +59177,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59198,7 +59197,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 57
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59218,7 +59217,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2025, month 12, day 27, hour 22, min 5, sec 58
+tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 48, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -59491,6 +59490,756 @@ c_tests/x32clangbinfast/tpopcnt
 Popcount of 0xffffffffffffffff is 64
 Popcount of 0x2537188291a0c76d is 27
 Popcount of 0x101010101010101 is 8
+c_tests/x32bin0/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32clangbin0/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32bin1/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32clangbin1/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32bin2/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32clangbin2/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32bin3/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32clangbin3/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32binfast/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
+c_tests/x32clangbinfast/termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+ cmspar 0x40000000
+ crtscts 0x80000000
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x20
+termiosf completed with great success
 c_tests/e_x32
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
@@ -59940,7 +60689,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-657 ms for 1 iterations
+1,704 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -59989,7 +60738,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-195 ms for 1 iterations
+535 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60038,7 +60787,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-190 ms for 1 iterations
+568 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60087,7 +60836,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-207 ms for 1 iterations
+446 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60136,7 +60885,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-205 ms for 1 iterations
+428 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60371,4 +61120,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Sat 12/27/2025 22:06:16.24 
+Mon 01/26/2026  7:49:15.38 

@@ -81,6 +81,29 @@ int main( int argc, char * argv[] )
     if ( -1 == len )
         error( "file B should exist but apparently doesn't" );
 
+    // linux (unlike windows or cp/m) supports renaming a file over an existing file!\n" );
+    char acdir[ 100 ];
+    char * pcwd = getcwd( acdir, sizeof( acdir ) );
+    if ( 0 == pcwd )
+        error( "getcwd failed" );
+
+    if ( strcmp( acdir, "." ) ) // test this if we're not running on CP/M 68K, which has no directories 
+    {
+        FILE * fA = fopen( FileA, "w" );
+        if ( 0 == fA )
+            error( "can't create file A a second time" );
+
+        fprintf( fA, "fileA data I DONT CARE bdc\n" );
+
+        result = fclose( fA );
+        if ( 0 != result )
+            error( "can't close file A a second time" );
+    
+        result = rename( FileA, FileB );
+        if ( 0 != result )
+            error( "rename A to B a second time failed" );
+    }
+
     result = remove( FileB );
     if ( 0 != result )
         error( "can't remove file B" );

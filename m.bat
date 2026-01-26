@@ -1,4 +1,5 @@
 @echo off
+del *.pdb 2>nul
 
 rem: the msvc compiler produces a generally-working x64os, but "long double" is just 8 bytes not 10, so their usage will give unexpected results
 
