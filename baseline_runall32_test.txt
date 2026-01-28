@@ -1,4 +1,4 @@
-Mon 01/26/2026  7:43:43.36 
+Wed 01/28/2026  8:03:50.34 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -9809,6 +9809,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32clangbin0/tarray
 sum: 0xf8
@@ -9850,6 +9858,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32bin1/tarray
 sum: 0xf8
@@ -9891,6 +9907,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32clangbin1/tarray
 sum: 0xf8
@@ -9932,6 +9956,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32bin2/tarray
 sum: 0xf8
@@ -9973,6 +10005,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32clangbin2/tarray
 sum: 0xf8
@@ -10014,6 +10054,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32bin3/tarray
 sum: 0xf8
@@ -10055,6 +10103,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32clangbin3/tarray
 sum: 0xf8
@@ -10096,6 +10152,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32binfast/tarray
 sum: 0xf8
@@ -10137,6 +10201,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32clangbinfast/tarray
 sum: 0xf8
@@ -10178,6 +10250,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/x32bin0/tbits
 uint8_t:
@@ -58807,7 +58887,6 @@ clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/x32clangbin2/sleeptm
 clk_tck / number of linux ticks per second: 100
-getrusage user time in ms: 1046, system time 0
 sleepy time ended with great success
 c_tests/x32bin3/sleeptm
 clk_tck / number of linux ticks per second: 100
@@ -59038,7 +59117,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 51
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 56
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59058,7 +59137,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 51
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 56
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59078,7 +59157,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 51
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 56
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59098,7 +59177,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 56
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59118,7 +59197,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 56
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59138,7 +59217,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 57
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59158,7 +59237,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 57
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59178,7 +59257,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 57
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59198,7 +59277,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 57
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59218,7 +59297,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 44, sec 52
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 4, sec 57
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -60690,7 +60769,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-1,224 ms for 1 iterations
+587 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60739,7 +60818,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-229 ms for 1 iterations
+179 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60788,7 +60867,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-282 ms for 1 iterations
+164 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60837,7 +60916,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-315 ms for 1 iterations
+256 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60886,7 +60965,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-405 ms for 1 iterations
+181 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61121,4 +61200,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Mon 01/26/2026  7:45:27.55 
+Wed 01/28/2026  8:05:16.36 

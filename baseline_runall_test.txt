@@ -1,4 +1,4 @@
-Mon 01/26/2026  7:32:39.74 
+Wed 01/28/2026  8:01:32.34 
 c_tests/bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -10169,6 +10169,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/clangbin0/tarray
 sum: 0xf8
@@ -10210,6 +10218,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/bin1/tarray
 sum: 0xf8
@@ -10251,6 +10267,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/clangbin1/tarray
 sum: 0xf8
@@ -10292,6 +10316,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/bin2/tarray
 sum: 0xf8
@@ -10333,6 +10365,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/clangbin2/tarray
 sum: 0xf8
@@ -10374,6 +10414,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/bin3/tarray
 sum: 0xf8
@@ -10415,6 +10463,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/clangbin3/tarray
 sum: 0xf8
@@ -10456,6 +10512,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/binfast/tarray
 sum: 0xf8
@@ -10497,6 +10561,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/clangbinfast/tarray
 sum: 0xf8
@@ -10538,6 +10610,14 @@ sum: 0xf8
     0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
     0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
     0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 c_tests/bin0/tbits
 uint8_t:
@@ -12460,35 +12540,35 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 c_tests/bin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 48
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 48
 c_tests/clangbin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 48
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 48
 c_tests/bin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 48
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 48
 c_tests/clangbin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 48
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 48
 c_tests/bin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 48
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 48
 c_tests/clangbin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 48
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 48
 c_tests/bin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 49
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 49
 c_tests/clangbin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 49
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 49
 c_tests/binfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 49
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 49
 c_tests/clangbinfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 26, hour 7, min 33, sec 1
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 26, hour 10, min 33, sec 1
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 1, day 28, hour 8, min 1, sec 49
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 1, day 28, hour 11, min 1, sec 49
 c_tests/bin0/tm
 tm has completed with great success
 c_tests/clangbin0/tm
@@ -71148,6 +71228,7 @@ clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/clangbinfast/sleeptm
 clk_tck / number of linux ticks per second: 100
+getrusage user time in ms: 1015, system time 0
 sleepy time ended with great success
 c_tests/bin0/tatomic
 test atomic completed with great success
@@ -71366,7 +71447,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 1
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 41
 len in pfl: 0
 exiting fopentst with great success
 c_tests/clangbin0/fopentst
@@ -71386,7 +71467,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 1
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 41
 len in pfl: 0
 exiting fopentst with great success
 c_tests/bin1/fopentst
@@ -71406,7 +71487,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 1
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 41
 len in pfl: 0
 exiting fopentst with great success
 c_tests/clangbin1/fopentst
@@ -71426,7 +71507,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 1
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 41
 len in pfl: 0
 exiting fopentst with great success
 c_tests/bin2/fopentst
@@ -71446,7 +71527,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 2
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/clangbin2/fopentst
@@ -71466,7 +71547,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 2
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/bin3/fopentst
@@ -71486,7 +71567,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 2
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/clangbin3/fopentst
@@ -71506,7 +71587,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 2
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/binfast/fopentst
@@ -71526,7 +71607,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 2
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/clangbinfast/fopentst
@@ -71546,7 +71627,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 1, day 26, hour 7, min 34, sec 2
+tz: 'PST+8', year: 2026, month 1, day 28, hour 8, min 2, sec 42
 len in pfl: 0
 exiting fopentst with great success
 c_tests/bin0/fact
@@ -73028,7 +73109,7 @@ lade vied
 lead vied
 c_tests/bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-847 ms for 1 iterations
+712 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -73077,7 +73158,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-223 ms for 1 iterations
+191 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -73126,7 +73207,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-231 ms for 1 iterations
+187 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -73175,7 +73256,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-241 ms for 1 iterations
+215 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -73224,7 +73305,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-239 ms for 1 iterations
+205 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -73450,19 +73531,19 @@ rust_tests/bin3/td
 r64: 2.71828
 exiting real number testing with great success
 rust_tests/bin0/ttt
-serial runtime:   19.1176ms
+serial runtime:   15.8924ms
 moves:            6493
 iterations:       1
 rust_tests/bin1/ttt
-serial runtime:   5.6639ms
+serial runtime:   4.8411ms
 moves:            6493
 iterations:       1
 rust_tests/bin2/ttt
-serial runtime:   3.5045ms
+serial runtime:   3.0265ms
 moves:            6493
 iterations:       1
 rust_tests/bin3/ttt
-serial runtime:   2.5244ms
+serial runtime:   2.0778ms
 moves:            6493
 iterations:       1
 rust_tests/bin0/fileops
@@ -73787,4 +73868,4 @@ f_tests/bin/primes
 f_tests/bin/mm
     465880
 mm completed with great success
-Mon 01/26/2026  7:34:33.24 
+Wed 01/28/2026  8:03:09.13 
