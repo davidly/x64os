@@ -74,7 +74,7 @@ static X87_EXT80_FORCEINLINE void store_u64_le(uint8_t* p, uint64_t v) {
 //   - Native __uint128_t on GCC/Clang
 //   - Portable {hi,lo} on MSVC (and any compiler lacking __int128)
 // ------------------------
-#if !defined(_MSC_VER) && (defined(__GNUC__) || defined(__clang__))
+#if !defined(_MSC_VER) && !defined( __mc68000__ ) && !defined( sparc ) && (defined(__GNUC__) || defined(__clang__))
   #define X87_HAS_NATIVE_U128 1
   using u128 = __uint128_t;
 
@@ -841,14 +841,14 @@ static X87_EXT80_FORCEINLINE void apply_fp_control(ext80& v) {
   
     // Initial approximation using double
     double xd = a.to_double();
-    ext80 y = ext80::from_double(std::log2(xd));
+    ext80 y = ext80::from_double(::log2(xd));
   
     // Optional single Newton refinement:
     // Solve f(y) = 2^y - x = 0  =>  y' = y - (2^y - x)/(2^y * ln(2))
     // This greatly improves accuracy beyond double precision.
   
     const ext80 ln2 = ext80::from_double(std::log(2.0));
-    ext80 two_to_y = ext80::from_double(std::exp2(y.to_double()));
+    ext80 two_to_y = ext80::from_double(::exp2(y.to_double()));
     y = y - (two_to_y - a) / (two_to_y * ln2);
   
     y.normalize();
@@ -883,7 +883,7 @@ static X87_EXT80_FORCEINLINE void apply_fp_control(ext80& v) {
     ext80 t = b * a.log2();
   
     // Compute 2^t using double for initial, then one refinement step
-    ext80 result = ext80::from_double(std::exp2(t.to_double()));
+    ext80 result = ext80::from_double(::exp2(t.to_double()));
   
     // One Newton refinement for 2^t:  f(z)=log2(z)-t
     // z' = z - (log2(z) - t)/(1/(z*ln2)) = z * (1 - (log2(z)-t)*ln2)
