@@ -39,15 +39,19 @@
 #include <assert.h>
 #include <math.h>
 #include <limits>
-#include <chrono>
 #include <type_traits>
 
 #include <djl_128.hxx>
 #include <djltrace.hxx>
 
 #include "x64.hxx"
+#include "x87.hxx"
 
 using namespace std;
+using x87::ext80;
+
+#define f80_from_f float80_t::float80_from_f
+#define f80_from_d float80_t::float80_from_d
 
 #if defined( __mc68000__ ) && ( !NATIVE_LONG_DOUBLE ) // the compiler used for 68000 doesn't declare these in its math.h or have implementations. it does have a sqrtl() but that doesn't work correctly.
     long double roundl( long double x ) { return round( (double) x ); }
@@ -119,7 +123,7 @@ void x64::trace_state()
     if ( ( 0x66 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
 
-//    tracer.TraceBinaryData( getmem( 0x2cedde0 ), 8, 2 );
+//    tracer.TraceBinaryData( getmem( 0x5e8c80 ), 10, 2 );
 
     uint64_t ip = ( 0 == _prefix_rex ) ? rip.q : ( rip.q - 1 );
     if ( 0 != _prefix_size )
@@ -2562,16 +2566,13 @@ void x64::trace_fregs()
 #if 0
     for ( uint8_t spot = 0; spot < _countof( fregs ); spot++ )
     {
-        uint8_t offset = spot + fp_sp;
-        offset = offset % _countof( fregs );
-        long double ld = fregs[ offset ].getld();
-        tracer.Trace( "  freg %u:  ", spot );
-
-        #if NATIVE_LONG_DOUBLE
-            tracer.TraceBinaryData( (uint8_t *) &ld, 10, 5 );
-        #else
-            tracer.TraceBinaryData( (uint8_t *) &d, 8, 5 );
-        #endif
+        uint32_t offset = ( spot + fp_sp ) % _countof( fregs );
+        static uint8_t ten_zeroes[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        if ( memcmp( fregs[ offset ].get_bytes(), ten_zeroes, 10 ) )
+        {
+            tracer.Trace( "  freg %u:  ", offset );
+            tracer.TraceBinaryData( (uint8_t *) fregs[ offset ].get_bytes(), 10, 5 );
+        }
     }
 #endif
 } //trace_fregs
@@ -2698,7 +2699,7 @@ void x64::poke_fp( uint8_t offset, long double val )
 
 void x64::poke_fp( uint8_t offset, double val )
 {
-    poke_fp( offset, float80_t::float80_from_d( val ) );
+    poke_fp( offset, f80_from_d( val ) );
 } //poke_fp
 
 template <typename T> T absolute_difference( T a, T b )
@@ -3474,26 +3475,32 @@ double set_double_sign( double d, bool sign )
     return * (double *) &val;
 } //set_double_sign
 
-#if 0 // unused for now
-uint16_t get_x87_control_word()
-{
-    uint16_t cw;
-    __asm__ __volatile__("fnstcw %0" : "=m"(cw));
-    return cw;
-} //get_x87_control_word
-#endif
-
 #if NATIVE_LONG_DOUBLE
 
     void set_x87_control_word( uint16_t cw )
     {
+        tracer.Trace( "setting hardware x87 precision to %u\n", ( cw >> 8 ) & 3 );
         cw |= 0x7f; // never enable fp exceptions. glibc will try to set flags to 0x2400 when rounding long doubles on occasion
         __asm__ __volatile__("fldcw %0" : /* No outputs */ : "m"(cw) /* Input */);
     } //set_x87_control_word
 
+    #if 0 // unused for now
+    uint16_t get_x87_control_word()
+    {
+        uint16_t cw;
+        __asm__ __volatile__("fnstcw %0" : "=m"(cw));
+        return cw;
+    } //get_x87_control_word
+    #endif
+
 #else
 
-    #define set_x87_control_word( cw )
+    void set_x87_control_word( uint16_t cw )
+    {
+        tracer.Trace( "setting software x87 precision to %u\n", ( cw >> 8 ) & 3 );
+        cw |= 0x7f; // never enable fp exceptions. glibc will try to set flags to 0x2400 when rounding long doubles on occasion
+        ext80::control_word_ref() = cw;
+    } //set_x87_control_word
 
 #endif // NATIVE_LONG_DOUBLE x87 support
 
@@ -3516,6 +3523,300 @@ template <typename T> T x64::handle_math_nan( T a, T b )
     assert( my_isnan( b ) );
     return b;
 } //handle_math_nan
+
+float80_t x64::handle_f80_math_nan( float80_t a, float80_t b )
+{
+    float80_t r;
+    ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+    ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+
+    if ( ea.is_nan() )
+    {
+        if ( eb.is_nan() )
+        {
+            if ( ea.signbit() && eb.signbit() )
+            {
+                double_to_ieee80( -MY_NAN, r.get_bytes() );
+                return r;
+            }
+            if ( mode32 )            // an interesting difference between 32 and 64 bit
+            {
+                double_to_ieee80( MY_NAN, r.get_bytes() );
+                return r;
+            }
+            return a;
+        }
+        else
+            return a;
+    }
+
+    assert( eb.is_nan() );
+    return b;
+} //handle_f80_math_nan
+
+float80_t do_f80_chs( float80_t x ) // change the sign of the number
+{
+    #if NATIVE_LONG_DOUBLE
+        return float80_t::float80_from_ld( - x.getld() );
+    #else
+        ext80 er = ext80::from_bytes_le( x.get_bytes() ).negated();
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_chs
+
+float80_t do_f80_fabs( float80_t x ) // get the absolute value
+{
+    #if NATIVE_LONG_DOUBLE
+        return float80_t::float80_from_ld( fabsl( x.getld() ) );
+    #else
+        ext80 er = ext80::from_bytes_le( x.get_bytes() ).abs_self();
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_fabs
+
+float80_t do_f80_log2( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double r = log2l( x.getld() );
+        return float80_t::float80_from_ld( r );
+    #else
+        ext80 er = ext80::from_bytes_le( x.get_bytes() ).log2();
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_log2
+
+float80_t do_f80_atan2( float80_t y, float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double r = atan2l( y.getld(), x.getld() );
+        return float80_t::float80_from_ld( r );
+    #else
+        ext80 er = ext80::atan2( ext80::from_bytes_le( y.get_bytes() ), ext80::from_bytes_le( x.get_bytes() ) );
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_atan2
+
+float80_t do_f80_sqrt( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double r = sqrtl( x.getld() );
+        return float80_t::float80_from_ld( r );
+    #else
+        ext80 er = ext80::sqrt( ext80::from_bytes_le( x.get_bytes() ) );
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_sqrt
+
+float80_t do_f80_pow( float80_t a, float80_t b )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double r = powl( a.getld(), b.getld() );
+        return float80_t::float80_from_ld( r );
+    #else
+        ext80 er = ext80::from_bytes_le( a.get_bytes() ).pow( ext80::from_bytes_le( b.get_bytes() ) );
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_pow
+
+float80_t do_f80_trunc( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double r = truncl( x.getld() );
+        return float80_t::float80_from_ld( r );
+    #else
+        ext80 er = ext80::from_bytes_le( x.get_bytes() ).trunc();
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif    
+} //do_f80_trunc
+
+float80_t do_f80_round( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double r = roundl( x.getld() );
+        return float80_t::float80_from_ld( r );
+    #else
+        ext80 er = ext80::from_bytes_le( x.get_bytes() ).round();
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif    
+} //do_f80_round
+
+float80_t x64::do_f80_add( float80_t a, float80_t b )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double ld = do_fadd( a.getld(), b.getld() );
+        return float80_t::float80_from_ld( ld );
+    #else
+        float80_t r;
+        ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+        ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+
+        bool ainf = ea.is_inf();
+        bool binf = eb.is_inf();
+    
+        if ( ainf && binf )
+        {
+            if ( ea.signbit() == eb.signbit( ) )
+                return a;
+            double_to_ieee80( -MY_NAN, r.get_bytes() );
+            return r;
+        }
+    
+        if ( ea.is_nan() || eb.is_nan() )
+            return handle_f80_math_nan( a, b );
+    
+        if ( ainf )
+            return a;
+    
+        if ( binf )
+            return b;
+
+        ext80 result = ext80::from_bytes_le( a.get_bytes() ) + ext80::from_bytes_le( b.get_bytes() );
+        result.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_add
+
+float80_t x64::do_f80_sub( float80_t a, float80_t b )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double ld = do_fsub( a.getld(), b.getld() );
+        return float80_t::float80_from_ld( ld );
+    #else
+        float80_t r;
+        ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+        ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+
+        if ( ea.is_inf() && eb.is_inf() )
+        {
+            if ( ea.signbit() != eb.signbit() )
+                return a;
+            double_to_ieee80( -MY_NAN, r.get_bytes() );
+            return r;
+        }
+    
+        if ( ea.is_nan() || eb.is_nan() )
+            return handle_f80_math_nan( a, b );
+
+        ext80 result = ea - eb;
+        result.to_bytes_le( r.get_bytes() );
+        if ( result.is_nan() ) // never return -NAN
+        {
+            double_to_ieee80( MY_NAN, r.get_bytes() );
+            return r;
+        }
+        return r;
+    #endif
+} //do_f80_sub
+
+float80_t x64::do_f80_mul( float80_t a, float80_t b )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double ld = do_fmul( a.getld(), b.getld() );
+        return float80_t::float80_from_ld( ld );
+    #else
+        float80_t r;
+        ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+        ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+
+        if ( ea.is_nan() || eb.is_nan() )
+            return handle_f80_math_nan( a, b );
+
+        bool ainf = ea.is_inf();
+        bool binf = eb.is_inf();
+        bool azero = ea.is_zero();
+        bool bzero = eb.is_zero();
+
+        if ( ( ainf && bzero ) || ( azero && binf ) )
+        {
+            double_to_ieee80( -MY_NAN, r.get_bytes() );
+            return r;
+        }
+
+        if ( ainf || binf )
+        {
+            double d = set_double_sign( INFINITY, ea.signbit() != eb.signbit() );
+            double_to_ieee80( d, r.get_bytes() );
+            return r;
+        }
+
+        if ( azero || bzero )
+        {
+            double d = set_double_sign( 0.0, ea.signbit() != eb.signbit() );
+            double_to_ieee80( d, r.get_bytes() );
+            return r;
+        }
+
+        ext80 result = ea * eb;
+        result.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_mul
+
+float80_t x64::do_f80_div( float80_t a, float80_t b )
+{
+    #if NATIVE_LONG_DOUBLE
+        long double ld = do_fdiv( a.getld(), b.getld() );
+        return float80_t::float80_from_ld( ld );
+    #else
+        float80_t r;
+        ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+        ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+
+        if ( ea.is_nan() || eb.is_nan() )
+            return handle_f80_math_nan( a, b );
+
+        bool ainf = ea.is_inf();
+        bool binf = eb.is_inf();
+        bool azero = ea.is_zero();
+        bool bzero = eb.is_zero();
+
+        if ( ainf && binf )
+        {
+            double_to_ieee80( -MY_NAN, r.get_bytes() );
+            return r;
+        }
+
+        if ( azero && bzero )
+        {
+            double_to_ieee80( -MY_NAN, r.get_bytes() );
+            return r;
+        }
+
+        if ( ainf )
+        {
+            double d = set_double_sign( INFINITY, ea.signbit() != eb.signbit() );
+            double_to_ieee80( d, r.get_bytes() );
+            return r;
+        }
+
+        if ( binf || azero )
+        {
+            double d = set_double_sign( 0.0, ea.signbit() != eb.signbit() );
+            double_to_ieee80( d, r.get_bytes() );
+            return r;
+        }
+
+        ext80 result = ea / eb;
+        result.to_bytes_le( r.get_bytes() );
+        return r;
+    #endif
+} //do_f80_div
 
 template <typename T> T x64::do_fadd( T a, T b )
 {
@@ -3670,6 +3971,17 @@ template <typename T> inline uint32_t x64::compare_floating( T a, T b )
     return fccU;
 } //compare_floating
 
+inline uint32_t x64::compare_f80_floating( float80_t a, float80_t b )
+{
+    #if NATIVE_LONG_DOUBLE
+        return compare_floating( a.getld(), b.getld() );
+    #else
+        ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+        ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+        return ext80::compare( ea, eb );
+    #endif
+} //compare_f80_floating
+
 void x64::set_x87_status_compare( uint32_t fcc )
 {
     if ( fccG == fcc )
@@ -3726,6 +4038,13 @@ template <typename T> inline bool x64::floating_comparison_true( T a, T b, uint8
     assert( fcc < 4 );
     return floating_comparison_results[ predicate & 0x1f ][ fcc ];
 } //floating_comparison_true
+
+inline bool x64::floating_f80_comparison_true( float80_t a, float80_t b, uint8_t predicate )
+{
+    uint32_t fcc = compare_f80_floating( a, b );
+    assert( fcc < 4 );
+    return floating_comparison_results[ predicate & 0x1f ][ fcc ];
+} //floating_f80_comparison_true
 
 void x64::set_eflags_from_fcc( uint32_t fcc )
 {
@@ -6998,37 +7317,37 @@ _prefix_is_set:
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fadd st(0), st(i)
-                    poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( 0, do_f80_add( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(0), st(i)
-                    poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( 0, do_f80_mul( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsub st(0), st(i)
-                    poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( 0, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubr st(0), st(i)
-                    poke_fp( 0, do_fsub( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fdiv st(0), st(i)
-                    poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( 0, do_f80_div( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xf8 && op1 <= 0xff ) // fdivr st(0), st(i)
-                    poke_fp( 0, do_fdiv( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_div( peek_fp( offset ), peek_fp( 0 ) ) );
                 else
                 {
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fadd m32fp
-                        poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                        poke_fp( 0, do_f80_add( peek_fp( 0 ), f80_from_f( get_rmfloat() ) ) );
                     else if ( 1 == _reg ) // fmul m32fp
-                        poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                        poke_fp( 0, do_f80_mul( peek_fp( 0 ), f80_from_f( get_rmfloat() ) ) );
                     else if ( 2 == _reg ) // fcom m32fp
-                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                        set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), f80_from_f( get_rmfloat() ) ) );
                     else if ( 3 == _reg ) // fcomp m32fp
-                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) get_rmfloat() ) );
+                        set_x87_status_compare( compare_f80_floating( pop_fp(), f80_from_f( get_rmfloat() ) ) );
                     else if ( 4 == _reg ) // fsub m32fp
-                        poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                        poke_fp( 0, do_f80_sub( peek_fp( 0 ), f80_from_f( get_rmfloat() ) ) );
                     else if ( 5 == _reg ) // fsubr m32fp
-                        poke_fp( 0, do_fsub( (long double) get_rmfloat(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_sub( f80_from_f( get_rmfloat() ), peek_fp( 0 ) ) );
                     else if ( 6 == _reg ) // fdiv m32fp
-                        poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), (long double) get_rmfloat() ) );
+                        poke_fp( 0, do_f80_div( peek_fp( 0 ), f80_from_f( get_rmfloat() ) ) );
                     else if ( 7 == _reg ) // fdivr m32fp
-                        poke_fp( 0, do_fdiv( (long double) get_rmfloat(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_div( f80_from_f( get_rmfloat() ), peek_fp( 0 ) ) );
                     else
                         unhandled();
                 }
@@ -7049,11 +7368,11 @@ _prefix_is_set:
                 else if ( 0xd0 == op1 ) // fnop
                     {}
                 else if ( 0xe0 == op1 ) // fchs
-                    poke_fp( 0, - peek_fp( 0 ).getld() );
+                    poke_fp( 0, do_f80_chs( peek_fp( 0 ) ) );
                 else if ( 0xe1 == op1 ) // fabs
-                    poke_fp( 0, fabsl( peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_fabs( peek_fp( 0 ) ) );
                 else if ( 0xe4 == op1 ) // ftst
-                    set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), 0.0L ) );
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), f80_from_f( 0.0 ) ) );
                 else if ( 0xe5 == op1 ) // fxam
                 {
                     long double d = peek_fp( 0 ).getld();
@@ -7071,11 +7390,11 @@ _prefix_is_set:
                 else if ( op1 >= 0xe8 && op1 <= 0xee ) // load one of various constants
                     push_fp( float_d9_e8_constants[ offset ] );
                 else if ( 0xf0 == op1 ) // f2xm1 -- compute 2 to the x minus 1
-                    poke_fp( 0, do_fsub( powl( 2.0L, peek_fp( 0 ).getld() ), 1.0L ) );
+                    poke_fp( 0, do_f80_sub( do_f80_pow( f80_from_d( 2.0 ), peek_fp( 0 ) ), f80_from_d( 1.0 ) ) );
                 else if ( 0xf1 == op1 ) // fyl2x
                 {
-                    long double top = pop_fp().getld();
-                    poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), log2l( top ) ) );
+                    float80_t top = pop_fp();
+                    poke_fp( 0, do_f80_mul( peek_fp( 0 ), do_f80_log2( top ) ) );
                 }
                 else if ( 0xf2 == op1 ) // fptan
                 {
@@ -7085,7 +7404,7 @@ _prefix_is_set:
                 }
                 else if ( 0xf3 == op1 ) // fpatan. replace st(1) with arctan(st(1)/st(0)). must use atan2() (not atan()) to get the correct quadrant
                 {
-                    poke_fp( 1, atan2l( peek_fp( 1 ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( 1, do_f80_atan2( peek_fp( 1 ), peek_fp( 0 ) ) );
                     pop_fp();
                 }
                 else if ( 0xf4 == op1 ) // fxtract extract exponent and significand
@@ -7098,10 +7417,11 @@ _prefix_is_set:
                 }
                 else if ( 0xf5 == op1 ) // fprem1 ieee partial remainder; roundl() not truncl() for Q
                 {
-                    long double d0 = peek_fp( 0 ).getld();
-                    long double d1 = peek_fp( 1 ).getld();
-                    long double Q = roundl( do_fdiv( d0, d1 ) ); // fprem1 uses round() while fprem uses trunc()
-                    long double remainder = do_fsub( d0, do_fmul( Q, d1 ) );
+                    float80_t d0 = peek_fp( 0 );
+                    float80_t d1 = peek_fp( 1 );
+                    float80_t Q = float80_t::float80_from_ld( roundl( do_f80_div( d0, d1 ).getld() ) );
+                    float80_t remainder = do_f80_sub( d0, do_f80_mul( Q, d1 ) );
+
                     // to do set c0, c3, c1 to be least significant bits of Q: q2, q1, q0
                     set_x87_status_c2( false );
                     poke_fp( 0, remainder );
@@ -7117,22 +7437,24 @@ _prefix_is_set:
                     fp_sp = ( fp_sp + 1 ) % _countof( fregs );
                 else if ( 0xf8 == op1 ) // fprem
                 {
-                    long double d0 = peek_fp( 0 ).getld();
-                    long double d1 = peek_fp( 1 ).getld();
-                    long double Q = truncl( do_fdiv( d0, d1 ) );
-                    long double remainder = do_fsub( d0, do_fmul( Q, d1 ) );
-                    tracer.Trace( "remainder %lf = d0 (%.20lf) - ( Q (%.20lf) * d1 (%.20lf) )\n", (double) remainder, (double) d0, (double) Q, (double) d1 );
+                    float80_t d0 = peek_fp( 0 );
+                    float80_t d1 = peek_fp( 1 );
+                    float80_t r = do_f80_div( d0, d1 );
+                    float80_t Q = do_f80_trunc( r );
+                    float80_t remainder = do_f80_sub( d0, do_f80_mul( Q, d1 ) );
+                    tracer.Trace( "remainder %lf = d0 (%.20lf) - ( Q (%.20lf) * d1 (%.20lf) )\n", remainder.getld(), d0.getld(), Q.getld(), d1.getld() );
+
                     // to do: set c0, c3, c1 to be least significant bits of Q: q2, q1, q0
                     set_x87_status_c2( false ); // we always complete the remainder calculation
                     poke_fp( 0, remainder );
                 }
                 else if ( 0xf9 == op1 ) // fyl2xp1    replace st(1) with st(1) * log2( st(0) + 1.0 ) and pop
                 {
-                    long double top = pop_fp().getld();
-                    poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), log2l( do_fadd( top, 1.0L ) ) ) );
+                    float80_t top = pop_fp();
+                    poke_fp( 0, do_f80_mul( peek_fp( 0 ), do_f80_log2( do_f80_add( top, f80_from_d( 1.0 ) ) ) ) );
                 }
                 else if ( 0xfa == op1 ) // fsqrt
-                    poke_fp( 0, sqrtl( peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_sqrt( peek_fp( 0 ) ) );
                 else if ( 0xfb == op1 ) // fsincos
                 {
                     long double top = peek_fp( 0 ).getld();
@@ -7228,30 +7550,30 @@ _prefix_is_set:
                 }
                 else if ( 0xe9 == op1 ) // fucompp. compare st(0) with st(1) and pop register stack twice
                 {
-                    long double d0 = pop_fp().getld();
-                    long double d1 = pop_fp().getld();
-                    set_x87_status_compare( compare_floating( d0, d1 ) );
+                    float80_t f0 = pop_fp();
+                    float80_t f1 = pop_fp();
+                    set_x87_status_compare( compare_f80_floating( f0, f1 ) );
                 }
                 else
                 {
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m32int  add m32int to st(0) and store in st(0)
-                        poke_fp( 0, do_fadd( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_add( f80_from_d( (double) (int32_t) get_rm32() ), peek_fp( 0 ) ) );
                     else if ( 1 == _reg ) // fimul m32int  multiply st(0) by m32int and store in st(0)
-                        poke_fp( 0, do_fmul( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_mul( f80_from_d( (double) (int32_t) get_rm32() ), peek_fp( 0 ) ) );
                     else if ( 2 == _reg ) // ficom m32int  compare st(0) with m32int
-                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) (int32_t) get_rm32() ) );
+                        set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), f80_from_d( (double) (int32_t) get_rm32() ) ) );
                     else if ( 3 == _reg ) // ficomp m32int  compare st(0) with m32int and pop
-                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) (int32_t) get_rm32() ) );
+                        set_x87_status_compare( compare_f80_floating( pop_fp(), f80_from_d( (double) (int32_t) get_rm32() ) ) );
                     else if ( 4 == _reg ) // fisub m32int  subtract m32int from st(0) and store in st(0)
-                        poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) (int32_t) get_rm32() ) );
+                        poke_fp( 0, do_f80_sub( peek_fp( 0 ), f80_from_d( (double) (int32_t) get_rm32() ) ) );
                     else if ( 5 == _reg ) // fisubr m32int  subtract st(0) from m32int and store in st(0)
-                        poke_fp( 0, do_fsub( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_sub( f80_from_d( (double) (int32_t) get_rm32() ), peek_fp( 0 ) ) );
                     else if ( 6 == _reg ) // fidiv m32int  divide st(0) by m32int and store in st(0)
-                        poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), (long double) (int32_t) get_rm32() ) );
+                        poke_fp( 0, do_f80_div( peek_fp( 0 ), f80_from_d( (double) (int32_t) get_rm32() ) ) );
                     else if ( 7 == _reg ) // fidivr m32int  divide m32int by st(0) and store in st(0)
-                        poke_fp( 0, do_fdiv( (long double) (int32_t) get_rm32(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_div( f80_from_d( (double) (int32_t) get_rm32() ), peek_fp( 0 ) ) );
                     else
                         unhandled();
                 }
@@ -7282,9 +7604,9 @@ _prefix_is_set:
                         poke_fp( 0, peek_fp( offset ) );
                 }
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fcomi st, st(i)  compare st(0) with st(i) and set status flags
-                    set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomi st, st(i)
-                    set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( 0xe3 == op1 ) // finit
                 {
                     x87_fpu_control_word = 0x37f;
@@ -7308,16 +7630,16 @@ _prefix_is_set:
                         x87_fpu_control_word = 0x37f;
                         x87_fpu_status_word = 0;
                     }
-                    else if ( 5 == _reg ) // fld m80fp push m80fp onto the fpu register stack
+                    else if ( 5 == _reg ) // fld m80fp  push m80fp onto the fpu register stack
                     {
                         float80_t f80;
-                        memcpy( &f80, getmem( effective_address() ), 10 );
+                        memcpy( f80.get_bytes(), getmem( effective_address() ), 10 );
                         push_fp( f80 );
                     }
-                    else if ( 7 == _reg ) // fstp m80fp   copy top of stack to m80fp and pop it
+                    else if ( 7 == _reg ) // fstp m80fp  copy top of stack to m80fp and pop it
                     {
                         float80_t f80 = pop_fp();
-                        memcpy( getmem( effective_address() ), &f80, 10 );
+                        memcpy( getmem( effective_address() ), f80.get_bytes(), 10 );
                     }
                     else
                         unhandled();
@@ -7329,37 +7651,37 @@ _prefix_is_set:
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubr st(i), st(0)
-                    poke_fp( offset, do_fsub( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( offset, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsub st(i), st(0)
-                    poke_fp( offset, do_fsub( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( offset, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
                 else if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fadd st(i), st(0)
-                    poke_fp( offset, do_fadd( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( offset, do_f80_add( peek_fp( offset ), peek_fp( 0 ) ) );
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(i), st(0)
-                    poke_fp( offset, do_fmul( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( offset, do_f80_mul( peek_fp( offset ), peek_fp( 0 ) ) );
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fdivr st(i), st(0)
-                    poke_fp( offset, do_fdiv( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( offset, do_f80_div( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xf8 && op1 <= 0xff ) // fdiv st(i), st(0)
-                    poke_fp( offset, do_fdiv( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( offset, do_f80_div( peek_fp( offset ), peek_fp( 0 ) ) );
                 else
                 {
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fadd m64fp
-                        poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) get_rmdouble() ) );
+                        poke_fp( 0, do_f80_add( peek_fp( 0 ), f80_from_d( get_rmdouble() ) ) );
                     else if ( 1 == _reg ) // fmul m64fp
-                        poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), (long double) get_rmdouble() ) );
+                        poke_fp( 0, do_f80_mul( peek_fp( 0 ), f80_from_d( get_rmdouble() ) ) );
                     else if ( 2 == _reg ) // fcom m64fp
-                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) get_rmdouble() ) );
+                        set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), f80_from_d( get_rmdouble() ) ) );
                     else if ( 3 == _reg ) // fcomp m64fp
-                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) get_rmdouble() ) );
+                        set_x87_status_compare( compare_f80_floating( pop_fp(), f80_from_d( get_rmdouble() ) ) );
                     else if ( 4 == _reg ) // fsub m64fp
-                        poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) get_rmdouble() ) );
+                        poke_fp( 0, do_f80_sub( peek_fp( 0 ), f80_from_d( get_rmdouble() ) ) );
                     else if ( 5 == _reg ) // fsubr m64fp
-                        poke_fp( 0, do_fsub( (long double) get_rmdouble(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_sub( f80_from_d( get_rmdouble() ), peek_fp( 0 ) ) );
                     else if ( 6 == _reg ) // fdiv m64fp
-                        poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), (long double) get_rmdouble() ) );
+                        poke_fp( 0, do_f80_div( peek_fp( 0 ), f80_from_d( get_rmdouble() ) ) );
                     else if ( 7 == _reg ) // fdivr m64fp
-                        poke_fp( 0, do_fdiv( (long double) get_rmdouble(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_div( f80_from_d( get_rmdouble() ), peek_fp( 0 ) ) );
                     else
                         unhandled();
                 }
@@ -7376,7 +7698,7 @@ _prefix_is_set:
                 }
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomp st(i).  compare st(0) with st(i) and pop
                 {
-                    set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                     pop_fp();
                 }
                 else
@@ -7402,37 +7724,37 @@ _prefix_is_set:
                 uint8_t offset = op1 & 7;
                 if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubrp st(i), st(0)
                 {
-                    poke_fp( offset, do_fsub( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( offset, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubp st(i), st(0)
                 {
-                    poke_fp( offset, do_fsub( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( offset, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xc0 && op1 <= 0xc7 ) // faddp st(i), st(0)
                 {
-                    poke_fp( offset, do_fadd( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( offset, do_f80_add( peek_fp( 0 ), peek_fp( offset ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmulp st(i), st(0)
                 {
-                    poke_fp( offset, do_fmul( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( offset, do_f80_mul( peek_fp( 0 ), peek_fp( offset ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fdivrp st(i), st(0)
                 {
-                    poke_fp( offset, do_fdiv( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    poke_fp( offset, do_f80_div( peek_fp( 0 ), peek_fp( offset ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xf8 && op1 <= 0xff ) // fdivp st(i), st(0)
                 {
-                    poke_fp( offset, do_fdiv( peek_fp( offset ).getld(), peek_fp( 0 ).getld() ) );
+                    poke_fp( offset, do_f80_div( peek_fp( offset ), peek_fp( 0 ) ) );
                     pop_fp();
                 }
                 else if ( 0xd9 == op1 ) // fcompp  compare st(0) with st(1) and pop register stack twice
                 {
-                    set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), peek_fp( 1 ).getld() ) );
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( 1 ) ) );
                     pop_fp();
                     pop_fp();
                 }
@@ -7441,21 +7763,21 @@ _prefix_is_set:
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m16int
-                        poke_fp( 0, do_fadd( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                        poke_fp( 0, do_f80_add( peek_fp( 0 ), f80_from_d( (double) (int16_t) get_rm16() ) ) );
                     else if ( 1 == _reg ) // fimul m16int
-                        poke_fp( 0, do_fmul( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                        poke_fp( 0, do_f80_mul( peek_fp( 0 ), f80_from_d((double) (int16_t) get_rm16() ) ) );
                     else if ( 2 == _reg ) // ficom m16int  compare st(0) with m16int
-                        set_x87_status_compare( compare_floating( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                        set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), f80_from_d( (double) (int16_t) get_rm16() ) ) );
                     else if ( 3 == _reg ) // ficomp m16int  compare st(0) with m16int and pop
-                        set_x87_status_compare( compare_floating( pop_fp().getld(), (long double) (int16_t) get_rm16() ) );
+                        set_x87_status_compare( compare_f80_floating( pop_fp(), f80_from_d( (double) (int16_t) get_rm16() ) ) );
                     else if ( 4 == _reg ) // fisub m16int   subtract m16int from st(0) and store result in st(0)
-                        poke_fp( 0, do_fsub( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                        poke_fp( 0, do_f80_sub( peek_fp( 0 ), f80_from_d(( double) (int16_t) get_rm16() ) ) );
                     else if ( 5 == _reg ) // fisubr m16int   subtract st(0) from m16int and store result in st(0)
-                        poke_fp( 0, do_fsub( (long double) (int16_t) get_rm16(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_sub( f80_from_d( (double) (int16_t) get_rm16() ), peek_fp( 0 ) ) );
                     else if ( 6 == _reg ) // fidiv m16int  divide st(0) by m16int and store in st(0)
-                        poke_fp( 0, do_fdiv( peek_fp( 0 ).getld(), (long double) (int16_t) get_rm16() ) );
+                        poke_fp( 0, do_f80_div( peek_fp( 0 ), f80_from_d( (double) (int16_t) get_rm16() ) ) );
                     else if ( 7 == _reg ) // fidivr m16int  divide m16int by st(0) and store in st(0)
-                        poke_fp( 0, do_fdiv( (long double) (int16_t) get_rm16(), peek_fp( 0 ).getld() ) );
+                        poke_fp( 0, do_f80_div( f80_from_d( (double) (int16_t) get_rm16() ), peek_fp( 0 ) ) );
                     else
                         unhandled();
                 }
@@ -7468,7 +7790,7 @@ _prefix_is_set:
                 if ( ( op1 >= 0xe8 && op1 <= 0xef ) || // fucomip st, st(i)
                      ( op1 >= 0xf0 && op1 <= 0xf7 ) )  // fcomip st(0), st(i)
                 {
-                    set_eflags_from_fcc( compare_floating( peek_fp( 0 ).getld(), peek_fp( offset ).getld() ) );
+                    set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                     pop_fp();
                 }
                 else if ( 0xe0 == op1 ) // fnstsw ax
@@ -7505,9 +7827,18 @@ _prefix_is_set:
                         set_rm16( ival );
                     }
                     else if ( 5 == _reg ) // fild m64int   loads signed 64 bit integer converted to a float and pushed to fp stack
-                        push_fp( (long double) (int64_t) get_rm64() );
+                    {
+                        float80_t f;
+                        int64_to_ieee80( (int64_t) get_rm64(), f.get_bytes() );
+                        push_fp( f );
+                    }
                     else if ( 7 == _reg ) // fistp m64int store st(0) as an m64int and pop fp stack
-                        set_rm64( (int64_t) pop_fp().getld() );
+                    {
+                        float80_t f = pop_fp();
+                        int64_t i = 0;
+                        ieee80_to_int64( f.get_bytes(), &i, (i80_round_mode) get_x87_rounding_mode() );
+                        set_rm64( i );
+                    }
                     else
                         unhandled();
                 }
@@ -7577,7 +7908,7 @@ _prefix_is_set:
                 rip.q += (int64_t) (int8_t) get_rip8();
                 break;
             }
-            case 0xf0: // lock (do nothing since there is just one thread and core supported
+            case 0xf0: // lock (do nothing since there is just one thread and core supported)
             {
                 goto _prefix_is_set; // don't wipe other prefixes that may have been set
             }

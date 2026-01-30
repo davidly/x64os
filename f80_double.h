@@ -1,6 +1,7 @@
-/* f80_double.h Portable x87 80-bit <-> double
+/*
+   f80_double.h Portable x87 80-bit <-> double
    Works with MSVC, GCC, Clang. C99/C++11.
-   Written by ChatCPT. It seems to work but I haven't really tested it well.
+   coded by ChatGPT v5.2. vibe from David Lee
 */
 #include <stdint.h>
 #include <string.h>
@@ -159,7 +160,7 @@ inline double ieee80_to_double(const unsigned char in[10]) {
         mant53 += increment;
 
         /* Handle carry */
-        if (mant53 == (1ULL << 54)) { /* overflowed 53 bits -> renorm */
+        if (mant53 == (1ULL << 53)) { /* overflowed 53 bits -> renorm */
             mant53 >>= 1;
             e_d += 1;
         }
@@ -241,7 +242,7 @@ inline double ieee80_to_double(const unsigned char in[10]) {
     int increment = (lower > halfway) || (lower == halfway && (mant53 & 1));
     mant53 += increment;
 
-    if (mant53 == (1ULL << 54)) { /* carry */
+    if (mant53 == (1ULL << 53)) { /* carry */
         mant53 >>= 1;
         e_d += 1;
     }
@@ -366,6 +367,159 @@ inline void double_to_ieee80(double d, unsigned char out[10]) {
         u16_to_le(se,  out + 8);
         return;
     }
+}
+
+#define EXT80_EXP_BIAS 16383
+
+inline void int64_to_ieee80(int64_t v, unsigned char out[10])
+{
+    if (v == 0) {
+        memset(out, 0, 10);
+        return;
+    }
+
+    int sign = (v < 0);
+    uint64_t mag = (uint64_t)v;
+    if (sign) {
+        mag = ~mag + 1;   /* two's complement negate in unsigned domain */
+    }
+
+    /* Find position of highest 1 bit */
+    int lz = clz64(mag);
+    int msb_index = 63 - lz;          /* 0..63 */
+
+    /* Exponent is position of MSB */
+    int exp_unbiased = msb_index;
+    uint16_t exp_biased = (uint16_t)(exp_unbiased + EXT80_EXP_BIAS);
+
+    /* Shift so MSB lands in bit63 (explicit integer bit position) */
+    uint64_t sig = mag << (63 - msb_index);
+
+    /* Pack */
+    u64_to_le(sig, out);              /* significand */
+    uint16_t se = (uint16_t)((sign << 15) | exp_biased);
+    u16_to_le(se, out + 8);
+}
+
+#define EXT80_EXP_BIAS 16383
+
+typedef enum {     /* same values as x87's rounding mode in the fpu control word bits 10-11 RC field */
+    I80_RNE = 0,   /* round to nearest, ties to even */
+    I80_FLOOR = 1, /* floor */
+    I80_CEIL = 2,   /* ceil */
+    I80_RTZ = 3   /* round toward zero (C cast style) */
+} i80_round_mode;
+
+typedef enum {
+    I80I64_OK = 0,
+    I80I64_INEXACT = 1,   /* fractional bits were discarded or rounding changed value */
+    I80I64_INVALID = 2,   /* NaN */
+    I80I64_OVERFLOW = 3   /* does not fit in int64_t */
+} i80_to_i64_status;
+
+/* Convert x87 80-bit (10 bytes LE) -> int64_t with rounding.
+   - out_status can be NULL.
+   - Returns I80I64_OK/INEXACT/INVALID/OVERFLOW.
+*/
+inline i80_to_i64_status ieee80_to_int64(const unsigned char in[10],
+                                  int64_t *out,
+                                  i80_round_mode mode)
+{
+    uint64_t sig = u64_from_le(in + 0);
+    uint16_t se  = u16_from_le(in + 8);
+    int sign     = (se >> 15) & 1;
+    uint16_t e80 = se & 0x7FFF;
+
+    /* NaN/Inf */
+    if (e80 == 0x7FFF) {
+        uint64_t frac = sig & 0x7FFFFFFFFFFFFFFFULL;
+        int integer_bit = (int)(sig >> 63);
+        if (integer_bit && frac == 0) return I80I64_OVERFLOW; /* +/-inf */
+        return I80I64_INVALID; /* NaN */
+    }
+
+    /* Zero */
+    if (e80 == 0 && sig == 0) {
+        *out = 0;
+        return I80I64_OK;
+    }
+
+    /* Unbiased exponent */
+    int32_t e_unb = (e80 == 0) ? (1 - EXT80_EXP_BIAS) : ((int32_t)e80 - EXT80_EXP_BIAS);
+
+    /* If nonzero exponent but integer bit is 0, normalize non-canonical input */
+    if (e80 != 0 && (sig >> 63) == 0) {
+        if (sig == 0) { *out = 0; return I80I64_OK; }
+        int lz = clz64(sig);
+        sig <<= lz;
+        e_unb -= lz;
+    }
+
+    /* Magnitude: |value| = sig * 2^(e_unb - 63), with sig treated as fixed-point with binary point after bit63 */
+    if (e_unb < 0) {
+        /* |value| < 1 */
+        int has_frac = (sig != 0);
+        if (mode == I80_FLOOR && sign && has_frac) { /* floor(negative tiny) = -1 if not exactly -0 */
+            *out = -1;
+            return I80I64_INEXACT;
+        }
+        if (mode == I80_CEIL && !sign && has_frac) { /* ceil(positive tiny) = +1 if not exactly +0 */
+            *out = 1;
+            return I80I64_INEXACT;
+        }
+        *out = 0;
+        return has_frac ? I80I64_INEXACT : I80I64_OK;
+    }
+
+    /* If exponent too large, integer part is at least 2^e_unb, so e_unb > 63 always overflows int64 */
+    if (e_unb > 63) return I80I64_OVERFLOW;
+
+    /* Compute integer magnitude and remainder by shifting right as needed */
+    uint64_t mag_int = 0;
+    uint64_t rem = 0;
+    int inexact = 0;
+
+    if (e_unb >= 63) {
+        /* shift left by (e_unb - 63) but e_unb <= 63 here, so only e_unb==63 */
+        mag_int = sig;    /* integer bits are all of sig */
+        rem = 0;
+    } else {
+        int rshift = 63 - e_unb;          /* 1..63 */
+        mag_int = sig >> rshift;
+        rem = sig & ((rshift == 64) ? ~0ULL : ((1ULL << rshift) - 1ULL));
+        inexact = (rem != 0);
+    }
+
+    /* Apply rounding */
+    if (mode == I80_RTZ) {
+        /* nothing */
+    } else if (mode == I80_RNE) {
+        if (inexact) {
+            int rshift = 63 - e_unb;
+            if (rshift > 0) {
+                uint64_t half = 1ULL << (rshift - 1);
+                int inc = (rem > half) || (rem == half && (mag_int & 1ULL));
+                if (inc) mag_int += 1;
+            }
+        }
+    } else if (mode == I80_FLOOR) {
+        if (sign && inexact) mag_int += 1;   /* more negative */
+    } else if (mode == I80_CEIL) {
+        if (!sign && inexact) mag_int += 1;  /* more positive */
+    }
+
+    /* Overflow checks after rounding */
+    if (!sign) {
+        if (mag_int > (uint64_t)INT64_MAX) return I80I64_OVERFLOW;
+        *out = (int64_t)mag_int;
+    } else {
+        /* allow exactly 2^63 => INT64_MIN */
+        if (mag_int > (1ULL << 63)) return I80I64_OVERFLOW;
+        if (mag_int == (1ULL << 63)) *out = INT64_MIN;
+        else *out = -(int64_t)mag_int;
+    }
+
+    return inexact ? I80I64_INEXACT : I80I64_OK;
 }
 
 #ifdef __cplusplus

@@ -121,9 +121,12 @@ typedef struct REXInfo
 typedef struct float80_t // 10-byte x87 floating point register
 {
     public:
+        uint8_t * get_bytes() { return bytes; }
+
         #if NATIVE_LONG_DOUBLE
             static float80_t float80_from_ld( long double val ) { float80_t x; x.setld( val ); return x; }
             static float80_t float80_from_d( double val ) { float80_t x; x.setd( val ); return x; }
+            static float80_t float80_from_f( float val ) { float80_t x; x.setf( val ); return x; }
 
             long double getld() { return ld; }
             void setld( long double val ) { ld = val; }
@@ -134,6 +137,7 @@ typedef struct float80_t // 10-byte x87 floating point register
         #else
             static float80_t float80_from_ld( long double val ) { float80_t x; double_to_ieee80( (double) val, x.bytes ); return x; }
             static float80_t float80_from_d( double val ) { float80_t x; double_to_ieee80( val, x.bytes ); return x; }
+            static float80_t float80_from_f( float val ) { float80_t x; double_to_ieee80( (double) val, x.bytes ); return x; }
 
             long double getld() { return (long double) ieee80_to_double( bytes ); }
             void setld( long double val ) { double_to_ieee80( (double) val, bytes ); }
@@ -712,7 +716,9 @@ private:
     const char * register_name( uint8_t reg, uint8_t width = 8, bool is_xmm = false );
 
     bool check_condition( uint8_t condition );
+    uint32_t compare_f80_floating( float80_t a, float80_t b );
     template <typename T> inline uint32_t compare_floating( T a, T b );
+    bool floating_f80_comparison_true( float80_t a, float80_t b, uint8_t predicate );
     template <typename T> inline bool floating_comparison_true( T a, T b, uint8_t predicate );
     void set_eflags_from_fcc( uint32_t fcc );
 
@@ -738,6 +744,12 @@ private:
     template <typename T> T do_fsub( T a, T b );
     template <typename T> T do_fmul( T a, T b );
     template <typename T> T do_fdiv( T a, T b );
+
+    float80_t handle_f80_math_nan( float80_t a, float80_t b );
+    float80_t do_f80_add( float80_t a, float80_t b );
+    float80_t do_f80_sub( float80_t a, float80_t b );
+    float80_t do_f80_mul( float80_t a, float80_t b );
+    float80_t do_f80_div( float80_t a, float80_t b );
 
     /*
         fp control word
