@@ -45,39 +45,23 @@
 #include <djltrace.hxx>
 
 #include "x64.hxx"
-#include "x87.hxx"
+
+#if !NATIVE_LONG_DOUBLE
+    #include "x87.hxx"
+    using x87::ext80;
+#endif
 
 using namespace std;
-using x87::ext80;
 
 #define f80_from_f float80_t::float80_from_f
 #define f80_from_d float80_t::float80_from_d
 #define f80_from_ld float80_t::float80_from_ld
-
-#if defined( __mc68000__ ) && ( !NATIVE_LONG_DOUBLE ) // the compiler used for 68000 doesn't declare these in its math.h or have implementations. it does have a sqrtl() but that doesn't work correctly.
-    long double roundl( long double x ) { return round( (double) x ); }
-    long double floorl( long double x ) { return floor( (double) x ); }
-    long double ceill( long double x ) { return ceil( (double) x ); }
-    long double fabsl( long double x ) { return fabs( (double) x ); }
-    long double powl( long double x, long double ex ) { return pow( (double) x, (double) ex ); }
-    long double log2l( long double x ) { return log2( (double) x ); }
-    long double sinl( long double x ) { return sin( (double) x ); }
-    long double cosl( long double x ) { return cos( (double) x ); }
-    long double tanl( long double x ) { return tan( (double) x ); }
-    long double atan2l( long double x, long double y ) { return atan2( (double) x, (double) y ); }
-    long double ldexpl( long double x, int exp ) { return ldexp( (double) x, exp ); }
-    #define sqrtl( x ) sqrt( (double) x )
-#endif //__mc68000__
 
 static const uint64_t g_NAN = 0x7ff8000000000000;
 #define MY_NAN ( * (double *) & g_NAN )
 template <typename T> bool my_isnan( T x ) { return ( FP_NAN == fpclassify( x ) ); } // fpclassify instead of isnan because isnan() takes a double and we don't want type conversions here from long double
 template <typename T> bool my_isinf( T x ) { return ( FP_INFINITE == fpclassify( x ) ); }
 template <typename T> bool my_issubnormal( T x ) { return ( FP_SUBNORMAL == fpclassify( x ) ); }
-
-#if defined( __clang__ ) && defined( _WIN32 )  // clang 19.1.5 for Windows has a buggy implementation of truncl()
-#define truncl( x ) trunc( (double) x )
-#endif
 
 static uint32_t g_State = 0;
 
@@ -2628,29 +2612,34 @@ double round_double_from_double( double d, uint8_t rm )
     return trunc( d ); // towards 0 (truncate)
 } //round_double_from_double
 
-long double round_ldouble_from_ldouble( long double d, uint8_t rm )
-{
-    if ( my_isnan( d ) || isinf( d ) )
-        return d;
+#if NATIVE_LONG_DOUBLE
 
-    if ( ROUNDING_MODE_NEAREST == rm ) // nearest
-        return roundl( d );
-    if ( ROUNDING_MODE_FLOOR == rm ) // towards -infinity
-#if defined( __clang__ ) && defined( _WIN32 ) // clang version 19.1.5 Target: x86_64-pc-windows-msvc doesn't provide floorl or ceill
-        return floor( (double) d );
-#else
-        return floorl( d );
-#endif
-    if ( ROUNDING_MODE_CEILING == rm ) // towards +infinity
-#if defined( __clang__ ) && defined( _WIN32 )
-        return ceil( (double) d );
-#else
-        return ceill( d );
-#endif
+    long double round_ldouble_from_ldouble( long double d, uint8_t rm )
+    {
+        if ( my_isnan( d ) || isinf( d ) )
+            return d;
+    
+        if ( ROUNDING_MODE_NEAREST == rm ) // nearest
+            return roundl( d );
+        if ( ROUNDING_MODE_FLOOR == rm ) // towards -infinity
+            #if defined( __clang__ ) && defined( _WIN32 ) // clang version 19.1.5 Target: x86_64-pc-windows-msvc doesn't provide floorl or ceill
+                return floor( (double) d );
+            #else
+                return floorl( d );
+            #endif
 
-    assert( ROUNDING_MODE_TRUNCATE == rm );
-    return truncl( d ); // towards 0 (truncate)
-} //round_ldouble_from_ldouble
+        if ( ROUNDING_MODE_CEILING == rm ) // towards +infinity
+            #if defined( __clang__ ) && defined( _WIN32 )
+                return ceil( (double) d );
+            #else
+                return ceill( d );
+            #endif
+    
+        assert( ROUNDING_MODE_TRUNCATE == rm );
+        return truncl( d ); // towards 0 (truncate)
+    } //round_ldouble_from_ldouble
+
+#endif //NATIVE_LONG_DOUBLE
 
 void x64::push_fp( float80_t f80 )
 {
@@ -3494,7 +3483,7 @@ double set_double_sign( double d, bool sign )
     } //get_x87_control_word
     #endif
 
-#else
+#else // NATIVE_LONG_DOUBLE x87 support
 
     void set_x87_control_word( uint16_t cw )
     {
@@ -3503,7 +3492,44 @@ double set_double_sign( double d, bool sign )
         ext80::control_word_ref() = cw;
     } //set_x87_control_word
 
-#endif // NATIVE_LONG_DOUBLE x87 support
+    float80_t x64::handle_f80_math_nan( float80_t a, float80_t b )
+    {
+        float80_t r;
+        ext80 ea = ext80::from_bytes_le( a.get_bytes() );
+        ext80 eb = ext80::from_bytes_le( b.get_bytes() );
+    
+        if ( ea.is_nan() )
+        {
+            if ( eb.is_nan() )
+            {
+                if ( ea.signbit() && eb.signbit() )
+                {
+                    double_to_ieee80( -MY_NAN, r.get_bytes() );
+                    return r;
+                }
+                if ( mode32 )            // an interesting difference between 32 and 64 bit
+                {
+                    double_to_ieee80( MY_NAN, r.get_bytes() );
+                    return r;
+                }
+                return a;
+            }
+            else
+                return a;
+        }
+    
+        assert( eb.is_nan() );
+        return b;
+    } //handle_f80_math_nan
+    
+    inline float80_t ext80_to_float80_t( ext80 er )
+    {
+        float80_t r;
+        er.to_bytes_le( r.get_bytes() );
+        return r;
+    } //ext80_to_float80_t
+
+#endif //NATIVE_LONG_DOUBLE
 
 template <typename T> T x64::handle_math_nan( T a, T b )
 {
@@ -3524,43 +3550,6 @@ template <typename T> T x64::handle_math_nan( T a, T b )
     assert( my_isnan( b ) );
     return b;
 } //handle_math_nan
-
-float80_t x64::handle_f80_math_nan( float80_t a, float80_t b )
-{
-    float80_t r;
-    ext80 ea = ext80::from_bytes_le( a.get_bytes() );
-    ext80 eb = ext80::from_bytes_le( b.get_bytes() );
-
-    if ( ea.is_nan() )
-    {
-        if ( eb.is_nan() )
-        {
-            if ( ea.signbit() && eb.signbit() )
-            {
-                double_to_ieee80( -MY_NAN, r.get_bytes() );
-                return r;
-            }
-            if ( mode32 )            // an interesting difference between 32 and 64 bit
-            {
-                double_to_ieee80( MY_NAN, r.get_bytes() );
-                return r;
-            }
-            return a;
-        }
-        else
-            return a;
-    }
-
-    assert( eb.is_nan() );
-    return b;
-} //handle_f80_math_nan
-
-inline float80_t ext80_to_float80_t( ext80 er )
-{
-    float80_t r;
-    er.to_bytes_le( r.get_bytes() );
-    return r;
-} //ext80_to_float80_t
 
 float80_t do_f80_round( float80_t x, uint16_t rmode )
 {
