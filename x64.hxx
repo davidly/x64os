@@ -135,12 +135,9 @@ typedef struct float80_t // 10-byte x87 floating point register
             float getf() { return (float) ld; }
             void setf( float val ) { ld = (long double) val; }
         #else
-            static float80_t float80_from_ld( long double val ) { float80_t x; double_to_ieee80( (double) val, x.bytes ); return x; }
             static float80_t float80_from_d( double val ) { float80_t x; double_to_ieee80( val, x.bytes ); return x; }
             static float80_t float80_from_f( float val ) { float80_t x; double_to_ieee80( (double) val, x.bytes ); return x; }
 
-            long double getld() { return (long double) ieee80_to_double( bytes ); }
-            void setld( long double val ) { double_to_ieee80( (double) val, bytes ); }
             double getd() { return ieee80_to_double( bytes ); }
             void setd( double val ) { double_to_ieee80( val, bytes ); }
             float getf() { return (float) ieee80_to_double( bytes ); }
@@ -732,12 +729,10 @@ private:
     template <typename T> void op_sar( T * pval, uint8_t amount );
 
     void push_fp( float80_t f80 );
-    void push_fp( long double val );
+    void push_fp( double val );
     float80_t pop_fp();
     float80_t peek_fp( uint8_t offset );
     void poke_fp( uint8_t offset, float80_t f80 );
-    void poke_fp( uint8_t offset, long double val );
-    void poke_fp( uint8_t offset, double val );
 
     template <typename T> T handle_math_nan( T a, T b );
     template <typename T> T do_fadd( T a, T b );

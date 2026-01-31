@@ -2536,7 +2536,7 @@ void x64::trace_fregs()
     for ( uint8_t spot = 0; spot < _countof( fregs ); spot++ )
     {
         uint32_t offset = ( spot + fp_sp ) % _countof( fregs );
-        tracer.Trace( " f%u:%13.6lf", offset, (double) fregs[ offset ].getld() ); // msft C runtime can't trace 80-bit long double
+        tracer.Trace( " f%u:%13.6lf", offset, (double) fregs[ offset ].getd() ); // msft C runtime can't trace 80-bit long double
     }
 
     tracer.Trace( "\n" );
@@ -2645,10 +2645,10 @@ void x64::push_fp( float80_t f80 )
     trace_fregs();
 } //push_fp
 
-void x64::push_fp( long double val )
+void x64::push_fp( double val )
 {
     float80_t x;
-    x.setld( val );
+    x.setd( val );
     push_fp( x );
 } //push_fp
 
@@ -2673,16 +2673,6 @@ void x64::poke_fp( uint8_t offset, float80_t f80 )
     offset = offset % _countof( fregs );
     fregs[ offset ] = f80;
     trace_fregs();
-} //poke_fp
-
-void x64::poke_fp( uint8_t offset, long double val )
-{
-    poke_fp( offset, f80_from_ld( val ) );
-} //poke_fp
-
-void x64::poke_fp( uint8_t offset, double val )
-{
-    poke_fp( offset, f80_from_d( val ) );
 } //poke_fp
 
 template <typename T> T absolute_difference( T a, T b )
@@ -3547,7 +3537,7 @@ float80_t do_f80_round( float80_t x, uint16_t rmode )
         return f80_from_ld( round_ldouble_from_ldouble( x.getld(), (uint8_t) ( rmode >> 10 ) ) );
     #else
         float80_t f = ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
-        tracer.Trace( "rounding %lf using mode %#x gives %lf\n", x.getld(), rmode, f.getld() );
+        tracer.Trace( "rounding %lf using mode %#x gives %lf\n", x.getd(), rmode, f.getd() );
         return f;
     #endif
 } //do_f80_round
@@ -7514,7 +7504,7 @@ _prefix_is_set:
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
-                        push_fp( (long double) getfloat( effective_address() ) );
+                        push_fp( (double) getfloat( effective_address() ) );
                     else if ( 2 == _reg ) // fst m32fp copy st to m32fp
                         set_rmfloat( peek_fp( 0 ).getf() );
                     else if ( 3 == _reg ) // fstp m32fp copy st to m32fp and pop register stack
@@ -7638,7 +7628,7 @@ _prefix_is_set:
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fild m32int
-                        push_fp( (long double) (int32_t) get_rm32() );
+                        push_fp( (double) (int32_t) get_rm32() );
                     else if ( 1 == _reg ) // fisttp m32int
                         set_rm32( round_i_from_double<int32_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
                     else if ( 2 == _reg ) // fstp m32int   store st(0) in m32int
