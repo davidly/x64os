@@ -18,9 +18,7 @@
         http://ref.x86asm.net/coder64.html#two-byte
 
     Notes about why the code is the way it is:
-        * in some cases it looks like two lines can be combined into one, but immediate values must be read prior to r/m memory access.
         * generally, only instructions used in the test suite are implemented to avoid having a bunch of untested code.
-        * no attempt was made to emulate x87 80-bit floating point on non-AMD64 machines because there isn't a lot of code that requires long doubles.
         * the disassembler roughly uses Intel syntax, not GNU's syntax that reverses argument order, because that's what I grew up with.
 
     Most 32-bit instructions are from the i386. Exceptions include:
@@ -46,7 +44,7 @@
 
 #include "x64.hxx"
 
-#if !NATIVE_LONG_DOUBLE
+#if !NATIVE_X87_LONG_DOUBLE
     #include "x87.hxx"
     using x87::ext80;
 #endif
@@ -59,6 +57,7 @@ using namespace std;
 
 static const uint64_t g_NAN = 0x7ff8000000000000;
 #define MY_NAN ( * (double *) & g_NAN )
+
 template <typename T> bool my_isnan( T x ) { return ( FP_NAN == fpclassify( x ) ); } // fpclassify instead of isnan because isnan() takes a double and we don't want type conversions here from long double
 template <typename T> bool my_isinf( T x ) { return ( FP_INFINITE == fpclassify( x ) ); }
 template <typename T> bool my_issubnormal( T x ) { return ( FP_SUBNORMAL == fpclassify( x ) ); }
@@ -2491,19 +2490,13 @@ void x64::trace_state()
     clear_decoding();
 } //trace_state
 
-#ifdef _WIN32
-__declspec(noinline)
-#endif
-void x64::force_trace_xreg( uint32_t i)
+not_inlined void x64::force_trace_xreg( uint32_t i)
 {
     tracer.Trace( "    xmm%u: ", i );
     tracer.TraceBinaryData( (uint8_t *) & xregs[ i ], 16, 4 );
 } //force_trace_xreg
 
-#ifdef _WIN32
-__declspec(noinline)
-#endif
-void x64::force_trace_xregs()
+not_inlined void x64::force_trace_xregs()
 {
     for ( uint32_t i = 0; i < _countof( xregs ); i++ )
         if ( ( 0 != xregs[ i ].get64( 0 ) ) || ( 0 != xregs[ i ].get64( 1 ) ) )
@@ -2612,7 +2605,7 @@ double round_double_from_double( double d, uint8_t rm )
     return trunc( d ); // towards 0 (truncate)
 } //round_double_from_double
 
-#if NATIVE_LONG_DOUBLE
+#if NATIVE_X87_LONG_DOUBLE
 
     long double round_ldouble_from_ldouble( long double d, uint8_t rm )
     {
@@ -2639,7 +2632,7 @@ double round_double_from_double( double d, uint8_t rm )
         return truncl( d ); // towards 0 (truncate)
     } //round_ldouble_from_ldouble
 
-#endif //NATIVE_LONG_DOUBLE
+#endif //NATIVE_X87_LONG_DOUBLE
 
 void x64::push_fp( float80_t f80 )
 {
@@ -2992,10 +2985,7 @@ template <typename T> void x64::op_shift( T * pval, uint8_t operation, uint8_t s
     }
 } //op_shift
 
-#ifdef _WIN32
-__declspec(noinline)
-#endif
-void x64::unhandled()
+not_inlined void x64::unhandled()
 {
     printf( "\n  instruction_start: %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip.q, getui8( rip.q ), base, mem_size, stack_top, stack_size );
     printf( "_prefix_rex %#x, _prefix_size %#x, _prefix_sse2_repeat %#x, _prefix_segment %#x\n", _prefix_rex, _prefix_size, _prefix_sse2_repeat, _prefix_segment );
@@ -3465,7 +3455,7 @@ double set_double_sign( double d, bool sign )
     return * (double *) &val;
 } //set_double_sign
 
-#if NATIVE_LONG_DOUBLE
+#if NATIVE_X87_LONG_DOUBLE
 
     void set_x87_control_word( uint16_t cw )
     {
@@ -3483,7 +3473,7 @@ double set_double_sign( double d, bool sign )
     } //get_x87_control_word
     #endif
 
-#else // NATIVE_LONG_DOUBLE x87 support
+#else // NATIVE_X87_LONG_DOUBLE x87 support
 
     void set_x87_control_word( uint16_t cw )
     {
@@ -3529,7 +3519,7 @@ double set_double_sign( double d, bool sign )
         return r;
     } //ext80_to_float80_t
 
-#endif //NATIVE_LONG_DOUBLE
+#endif //NATIVE_X87_LONG_DOUBLE
 
 template <typename T> T x64::handle_math_nan( T a, T b )
 {
@@ -3553,7 +3543,7 @@ template <typename T> T x64::handle_math_nan( T a, T b )
 
 float80_t do_f80_round( float80_t x, uint16_t rmode )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( round_ldouble_from_ldouble( x.getld(), (uint8_t) ( rmode >> 10 ) ) );
     #else
         float80_t f = ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
@@ -3564,7 +3554,7 @@ float80_t do_f80_round( float80_t x, uint16_t rmode )
 
 float80_t do_f80_chs( float80_t x ) // change the sign of the number
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( - x.getld() );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).negated() );
@@ -3573,7 +3563,7 @@ float80_t do_f80_chs( float80_t x ) // change the sign of the number
 
 float80_t do_f80_fabs( float80_t x ) // get the absolute value
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( fabsl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).abs_self() );
@@ -3582,7 +3572,7 @@ float80_t do_f80_fabs( float80_t x ) // get the absolute value
 
 float80_t do_f80_ldexp( float80_t x, int n )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( ldexpl( x.getld(), n ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).ldexp( n ) );
@@ -3591,7 +3581,7 @@ float80_t do_f80_ldexp( float80_t x, int n )
 
 float80_t do_f80_frexp( float80_t x, int * exponent )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( frexpl( x.getld(), exponent ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).frexp( exponent ) );
@@ -3600,7 +3590,7 @@ float80_t do_f80_frexp( float80_t x, int * exponent )
 
 float80_t do_f80_log2( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( log2l( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).log2() );
@@ -3609,7 +3599,7 @@ float80_t do_f80_log2( float80_t x )
 
 float80_t do_f80_sin( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( sinl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::sin( ext80::from_bytes_le( x.get_bytes() ) ) );
@@ -3618,7 +3608,7 @@ float80_t do_f80_sin( float80_t x )
 
 float80_t do_f80_cos( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( cosl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::cos( ext80::from_bytes_le( x.get_bytes() ) ) );
@@ -3627,7 +3617,7 @@ float80_t do_f80_cos( float80_t x )
 
 float80_t do_f80_tan( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( tanl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::tan( ext80::from_bytes_le( x.get_bytes() ) ) );
@@ -3636,7 +3626,7 @@ float80_t do_f80_tan( float80_t x )
 
 bool do_f80_isnan( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return my_isnan( x.getld() );
     #else
         return ext80::from_bytes_le( x.get_bytes() ).is_nan();
@@ -3645,7 +3635,7 @@ bool do_f80_isnan( float80_t x )
 
 bool do_f80_isinf( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return my_isinf( x.getld() );
     #else
         return ext80::from_bytes_le( x.get_bytes() ).is_inf();
@@ -3654,7 +3644,7 @@ bool do_f80_isinf( float80_t x )
 
 bool do_f80_iszero( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return ( 0.0 == x.getld() ); // should work for both 0.0 and -0.0
     #else
         return ext80::from_bytes_le( x.get_bytes() ).is_zero();
@@ -3663,7 +3653,7 @@ bool do_f80_iszero( float80_t x )
 
 bool do_f80_signbit( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return signbit( x.getld() );
     #else
         return ext80::from_bytes_le( x.get_bytes() ).signbit();
@@ -3672,7 +3662,7 @@ bool do_f80_signbit( float80_t x )
 
 float80_t do_f80_atan2( float80_t y, float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( atan2l( y.getld(), x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::atan2( ext80::from_bytes_le( y.get_bytes() ), ext80::from_bytes_le( x.get_bytes() ) ) );
@@ -3681,7 +3671,7 @@ float80_t do_f80_atan2( float80_t y, float80_t x )
 
 float80_t do_f80_sqrt( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( sqrtl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::sqrt( ext80::from_bytes_le( x.get_bytes() ) ) );
@@ -3690,7 +3680,7 @@ float80_t do_f80_sqrt( float80_t x )
 
 float80_t do_f80_pow( float80_t a, float80_t b )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( powl( a.getld(), b.getld() ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( a.get_bytes() ).pow( ext80::from_bytes_le( b.get_bytes() ) ) );
@@ -3699,7 +3689,7 @@ float80_t do_f80_pow( float80_t a, float80_t b )
 
 float80_t do_f80_trunc( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( truncl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).trunc() );
@@ -3708,7 +3698,7 @@ float80_t do_f80_trunc( float80_t x )
 
 float80_t do_f80_round( float80_t x )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( roundl( x.getld() ) );
     #else
         return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round() );
@@ -3717,7 +3707,7 @@ float80_t do_f80_round( float80_t x )
 
 float80_t x64::do_f80_add( float80_t a, float80_t b )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fadd( a.getld(), b.getld() ) );
     #else
         float80_t r;
@@ -3750,7 +3740,7 @@ float80_t x64::do_f80_add( float80_t a, float80_t b )
 
 float80_t x64::do_f80_sub( float80_t a, float80_t b )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fsub( a.getld(), b.getld() ) );
     #else
         float80_t r;
@@ -3781,7 +3771,7 @@ float80_t x64::do_f80_sub( float80_t a, float80_t b )
 
 float80_t x64::do_f80_mul( float80_t a, float80_t b )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fmul( a.getld(), b.getld() ) );
     #else
         float80_t r;
@@ -3822,7 +3812,7 @@ float80_t x64::do_f80_mul( float80_t a, float80_t b )
 
 float80_t x64::do_f80_div( float80_t a, float80_t b )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fdiv( a.getld(), b.getld() ) );
     #else
         float80_t r;
@@ -4022,7 +4012,7 @@ template <typename T> inline uint32_t x64::compare_floating( T a, T b )
 
 inline uint32_t x64::compare_f80_floating( float80_t a, float80_t b )
 {
-    #if NATIVE_LONG_DOUBLE
+    #if NATIVE_X87_LONG_DOUBLE
         return compare_floating( a.getld(), b.getld() );
     #else
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -7466,7 +7456,7 @@ _prefix_is_set:
                     poke_fp( 0, f80_exponent );
                     push_fp( significand );
                 }
-                else if ( 0xf5 == op1 ) // fprem1 ieee partial remainder; roundl() not truncl() for Q
+                else if ( 0xf5 == op1 ) // fprem1  ieee partial remainder; round() not trunc() for Q
                 {
                     float80_t d0 = peek_fp( 0 );
                     float80_t d1 = peek_fp( 1 );
@@ -7486,14 +7476,13 @@ _prefix_is_set:
                 }
                 else if ( 0xf7 == op1 ) // fincstp increment stack top
                     fp_sp = ( fp_sp + 1 ) % _countof( fregs );
-                else if ( 0xf8 == op1 ) // fprem
+                else if ( 0xf8 == op1 ) // fprem  use trunc(), not round()
                 {
                     float80_t d0 = peek_fp( 0 );
                     float80_t d1 = peek_fp( 1 );
-                    float80_t r = do_f80_div( d0, d1 );
-                    float80_t Q = do_f80_trunc( r );
+                    float80_t Q = do_f80_trunc( do_f80_div( d0, d1 ) );
                     float80_t remainder = do_f80_sub( d0, do_f80_mul( Q, d1 ) );
-                    tracer.Trace( "remainder %lf = d0 (%.20lf) - ( Q (%.20lf) * d1 (%.20lf) )\n", remainder.getld(), d0.getld(), Q.getld(), d1.getld() );
+                    tracer.Trace( "remainder %lf = d0 (%.20lf) - ( Q (%.20lf) * d1 (%.20lf) )\n", remainder.getd(), d0.getd(), Q.getd(), d1.getd() );
 
                     // to do: set c0, c3, c1 to be least significant bits of Q: q2, q1, q0
                     set_x87_status_c2( false ); // we always complete the remainder calculation
@@ -7515,7 +7504,7 @@ _prefix_is_set:
                 else if ( 0xfc == op1 ) // frndint. round st(0) to an integer
                     poke_fp( 0, do_f80_round( peek_fp( 0 ), x87_fpu_control_word & 0xc00 ) );
                 else if ( 0xfd == op1 ) // fscale
-                    poke_fp( 0, do_f80_ldexp( peek_fp( 0 ), (int) truncl( peek_fp( 1 ).getld() ) ) );
+                    poke_fp( 0, do_f80_ldexp( peek_fp( 0 ), (int) do_f80_trunc( peek_fp( 1 ) ).getd() ) ); // in the range of -16382..16384, so using double is OK
                 else if ( 0xfe == op1 ) // fsin
                     poke_fp( 0, do_f80_sin( peek_fp( 0 ) ) );
                 else if ( 0xff == op1 ) // fcos
@@ -7525,27 +7514,7 @@ _prefix_is_set:
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
-                    {
-#if 0 // the m68000 compiler has different values for inf/nan so results can vary dramatically
-                        float f = getfloat( effective_address() );
-                        tracer.Trace( "  float loaded: %#x = %f\n", * (uint32_t *) &f, f );
-                        tracer.Trace( "    my_isnan: %u, my_isinf %u, signbit %u, value %f\n", my_isnan( f ), my_isinf( f ), signbit( f ), f );
-                        tracer.Trace( "    isnan: %u, isinf %u\n", isnan( f ), isinf( f ) );
-                        float fnan = std::numeric_limits<float>::quiet_NaN();
-                        float pos_inf_float = std::numeric_limits<float>::infinity();
-                        tracer.Trace( "    nan per the compiler: %f = %#x, pos inf %f = %#x\n", fnan, * (uint32_t *) & fnan, pos_inf_float, * (uint32_t *) &pos_inf_float );
-
-                        double d = (double) f;
-                        tracer.Trace( "  now as a double:\n" );
-                        tracer.Trace( "    my_isnan: %u, my_isinf %u, signbit %u, value %lf\n", my_isnan( d ), my_isinf( d ), signbit( d ), d );
-                        tracer.Trace( "    isnan: %u, isinf %u\n", isnan( d ), isinf( d ) );
-                        double dnan = std::numeric_limits<double>::quiet_NaN();
-                        double pos_inf_double = std::numeric_limits<double>::infinity();
-                        tracer.Trace( "    nan per the compiler: %lf = %#llx, pos inf %lf = %#llx\n", dnan, * (uint64_t *) & dnan, pos_inf_double, * (uint64_t *) &pos_inf_double );
-#endif
-
                         push_fp( (long double) getfloat( effective_address() ) );
-                    }
                     else if ( 2 == _reg ) // fst m32fp copy st to m32fp
                         set_rmfloat( peek_fp( 0 ).getf() );
                     else if ( 3 == _reg ) // fstp m32fp copy st to m32fp and pop register stack
@@ -7759,7 +7728,11 @@ _prefix_is_set:
                     if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
                         push_fp( get_rmdouble() );
                     else if ( 1 == _reg ) // fisttp m64int
-                        set_rm64( round_i_from_double<int64_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
+                    {
+                        int64_t i64 = 0;
+                        ieee80_to_int64( pop_fp().get_bytes(), & i64, (i80_round_mode) ROUNDING_MODE_TRUNCATE );
+                        set_rm64( i64 );
+                    }
                     else if ( 2 == _reg ) // fstp m64fp  copy st(0) to m64fp
                         set_rmdouble( peek_fp( 0 ).getd() );
                     else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
@@ -7859,7 +7832,7 @@ _prefix_is_set:
                         set_rm16( round_i_from_double<int16_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
                     else if ( 2 == _reg ) // fistp m16int   store st(0) in m16int
                     {
-                        long double val = peek_fp( 0 ).getld();
+                        double val = peek_fp( 0 ).getd();
                         int16_t ival;
                         if ( ( val > INT16_MAX ) || ( val < INT16_MIN ) )
                             ival = INT16_MIN; // integer indefinte value my CPU stores in this case
@@ -7869,7 +7842,7 @@ _prefix_is_set:
                     }
                     else if ( 3 == _reg ) // fistp m16int   store st(0) in m16int and pop register stack
                     {
-                        long double val = pop_fp().getld();
+                        double val = pop_fp().getd();
                         int16_t ival;
                         if ( ( val > INT16_MAX ) || ( val < INT16_MIN ) )
                             ival = INT16_MIN; // integer indefinte value my CPU stores in this case

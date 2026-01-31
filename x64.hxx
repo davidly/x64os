@@ -113,9 +113,9 @@ typedef struct REXInfo
 // clang++ v19.1.5 building with -mlong-double-80 exposes many bugs in their implementation and so is avoided here.
 
 #if defined( __GNUC__ ) && ( defined( __amd64__ ) || defined( __i386__ ) )
-#define NATIVE_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64
+#define NATIVE_X87_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64
 #else
-#define NATIVE_LONG_DOUBLE 0         // use 8-byte long double with a loss in precision
+#define NATIVE_X87_LONG_DOUBLE 0         // use 8-byte long double with a loss in precision
 #endif
 
 typedef struct float80_t // 10-byte x87 floating point register
@@ -123,7 +123,7 @@ typedef struct float80_t // 10-byte x87 floating point register
     public:
         uint8_t * get_bytes() { return bytes; }
 
-        #if NATIVE_LONG_DOUBLE
+        #if NATIVE_X87_LONG_DOUBLE
             static float80_t float80_from_ld( long double val ) { float80_t x; x.setld( val ); return x; }
             static float80_t float80_from_d( double val ) { float80_t x; x.setd( val ); return x; }
             static float80_t float80_from_f( float val ) { float80_t x; x.setf( val ); return x; }
@@ -149,7 +149,7 @@ typedef struct float80_t // 10-byte x87 floating point register
     private:
         union
         {
-            #if NATIVE_LONG_DOUBLE
+            #if NATIVE_X87_LONG_DOUBLE
                 long double ld; // may be padded to 16 bytes, but with gcc on amd64 the first 80 bits are in x87 ieee80 format
             #endif
 
