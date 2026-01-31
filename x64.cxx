@@ -52,6 +52,7 @@ using x87::ext80;
 
 #define f80_from_f float80_t::float80_from_f
 #define f80_from_d float80_t::float80_from_d
+#define f80_from_ld float80_t::float80_from_ld
 
 #if defined( __mc68000__ ) && ( !NATIVE_LONG_DOUBLE ) // the compiler used for 68000 doesn't declare these in its math.h or have implementations. it does have a sqrtl() but that doesn't work correctly.
     long double roundl( long double x ) { return round( (double) x ); }
@@ -2694,7 +2695,7 @@ void x64::poke_fp( uint8_t offset, float80_t f80 )
 
 void x64::poke_fp( uint8_t offset, long double val )
 {
-    poke_fp( offset, float80_t::float80_from_ld( val ) );
+    poke_fp( offset, f80_from_ld( val ) );
 } //poke_fp
 
 void x64::poke_fp( uint8_t offset, double val )
@@ -3554,113 +3555,181 @@ float80_t x64::handle_f80_math_nan( float80_t a, float80_t b )
     return b;
 } //handle_f80_math_nan
 
+inline float80_t ext80_to_float80_t( ext80 er )
+{
+    float80_t r;
+    er.to_bytes_le( r.get_bytes() );
+    return r;
+} //ext80_to_float80_t
+
+float80_t do_f80_round( float80_t x, uint16_t rmode )
+{
+    #if NATIVE_LONG_DOUBLE
+        return f80_from_ld( round_ldouble_from_ldouble( x.getld(), (uint8_t) ( rmode >> 10 ) ) );
+    #else
+        float80_t f = ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
+        tracer.Trace( "rounding %lf using mode %#x gives %lf\n", x.getld(), rmode, f.getld() );
+        return f;
+    #endif
+} //do_f80_round
+
 float80_t do_f80_chs( float80_t x ) // change the sign of the number
 {
     #if NATIVE_LONG_DOUBLE
-        return float80_t::float80_from_ld( - x.getld() );
+        return f80_from_ld( - x.getld() );
     #else
-        ext80 er = ext80::from_bytes_le( x.get_bytes() ).negated();
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).negated() );
     #endif
 } //do_f80_chs
 
 float80_t do_f80_fabs( float80_t x ) // get the absolute value
 {
     #if NATIVE_LONG_DOUBLE
-        return float80_t::float80_from_ld( fabsl( x.getld() ) );
+        return f80_from_ld( fabsl( x.getld() ) );
     #else
-        ext80 er = ext80::from_bytes_le( x.get_bytes() ).abs_self();
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).abs_self() );
     #endif
 } //do_f80_fabs
+
+float80_t do_f80_ldexp( float80_t x, int n )
+{
+    #if NATIVE_LONG_DOUBLE
+        return f80_from_ld( ldexpl( x.getld(), n ) );
+    #else
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).ldexp( n ) );
+    #endif
+} //do_f80_ldexp
+
+float80_t do_f80_frexp( float80_t x, int * exponent )
+{
+    #if NATIVE_LONG_DOUBLE
+        return f80_from_ld( frexpl( x.getld(), exponent ) );
+    #else
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).frexp( exponent ) );
+    #endif
+} //do_f80_ldexp
 
 float80_t do_f80_log2( float80_t x )
 {
     #if NATIVE_LONG_DOUBLE
-        long double r = log2l( x.getld() );
-        return float80_t::float80_from_ld( r );
+        return f80_from_ld( log2l( x.getld() ) );
     #else
-        ext80 er = ext80::from_bytes_le( x.get_bytes() ).log2();
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).log2() );
     #endif
 } //do_f80_log2
+
+float80_t do_f80_sin( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return f80_from_ld( sinl( x.getld() ) );
+    #else
+        return ext80_to_float80_t( ext80::sin( ext80::from_bytes_le( x.get_bytes() ) ) );
+    #endif
+} //do_f80_sin
+
+float80_t do_f80_cos( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return f80_from_ld( cosl( x.getld() ) );
+    #else
+        return ext80_to_float80_t( ext80::cos( ext80::from_bytes_le( x.get_bytes() ) ) );
+    #endif
+} //do_f80_cos
+
+float80_t do_f80_tan( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return f80_from_ld( tanl( x.getld() ) );
+    #else
+        return ext80_to_float80_t( ext80::tan( ext80::from_bytes_le( x.get_bytes() ) ) );
+    #endif
+} //do_f80_tan
+
+bool do_f80_isnan( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return my_isnan( x.getld() );
+    #else
+        return ext80::from_bytes_le( x.get_bytes() ).is_nan();
+    #endif
+} //do_f80_isnan
+
+bool do_f80_isinf( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return my_isinf( x.getld() );
+    #else
+        return ext80::from_bytes_le( x.get_bytes() ).is_inf();
+    #endif
+} //do_f80_isinf
+
+bool do_f80_iszero( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return ( 0.0 == x.getld() ); // should work for both 0.0 and -0.0
+    #else
+        return ext80::from_bytes_le( x.get_bytes() ).is_zero();
+    #endif
+} //do_f80_iszero
+
+bool do_f80_signbit( float80_t x )
+{
+    #if NATIVE_LONG_DOUBLE
+        return signbit( x.getld() );
+    #else
+        return ext80::from_bytes_le( x.get_bytes() ).signbit();
+    #endif
+} //do_f80_signbit
 
 float80_t do_f80_atan2( float80_t y, float80_t x )
 {
     #if NATIVE_LONG_DOUBLE
-        long double r = atan2l( y.getld(), x.getld() );
-        return float80_t::float80_from_ld( r );
+        return f80_from_ld( atan2l( y.getld(), x.getld() ) );
     #else
-        ext80 er = ext80::atan2( ext80::from_bytes_le( y.get_bytes() ), ext80::from_bytes_le( x.get_bytes() ) );
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::atan2( ext80::from_bytes_le( y.get_bytes() ), ext80::from_bytes_le( x.get_bytes() ) ) );
     #endif
 } //do_f80_atan2
 
 float80_t do_f80_sqrt( float80_t x )
 {
     #if NATIVE_LONG_DOUBLE
-        long double r = sqrtl( x.getld() );
-        return float80_t::float80_from_ld( r );
+        return f80_from_ld( sqrtl( x.getld() ) );
     #else
-        ext80 er = ext80::sqrt( ext80::from_bytes_le( x.get_bytes() ) );
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::sqrt( ext80::from_bytes_le( x.get_bytes() ) ) );
     #endif
 } //do_f80_sqrt
 
 float80_t do_f80_pow( float80_t a, float80_t b )
 {
     #if NATIVE_LONG_DOUBLE
-        long double r = powl( a.getld(), b.getld() );
-        return float80_t::float80_from_ld( r );
+        return f80_from_ld( powl( a.getld(), b.getld() ) );
     #else
-        ext80 er = ext80::from_bytes_le( a.get_bytes() ).pow( ext80::from_bytes_le( b.get_bytes() ) );
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::from_bytes_le( a.get_bytes() ).pow( ext80::from_bytes_le( b.get_bytes() ) ) );
     #endif
 } //do_f80_pow
 
 float80_t do_f80_trunc( float80_t x )
 {
     #if NATIVE_LONG_DOUBLE
-        long double r = truncl( x.getld() );
-        return float80_t::float80_from_ld( r );
+        return f80_from_ld( truncl( x.getld() ) );
     #else
-        ext80 er = ext80::from_bytes_le( x.get_bytes() ).trunc();
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
-    #endif    
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).trunc() );
+    #endif
 } //do_f80_trunc
 
 float80_t do_f80_round( float80_t x )
 {
     #if NATIVE_LONG_DOUBLE
-        long double r = roundl( x.getld() );
-        return float80_t::float80_from_ld( r );
+        return f80_from_ld( roundl( x.getld() ) );
     #else
-        ext80 er = ext80::from_bytes_le( x.get_bytes() ).round();
-        float80_t r;
-        er.to_bytes_le( r.get_bytes() );
-        return r;
-    #endif    
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round() );
+    #endif
 } //do_f80_round
 
 float80_t x64::do_f80_add( float80_t a, float80_t b )
 {
     #if NATIVE_LONG_DOUBLE
-        long double ld = do_fadd( a.getld(), b.getld() );
-        return float80_t::float80_from_ld( ld );
+        return f80_from_ld( do_fadd( a.getld(), b.getld() ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3668,7 +3737,7 @@ float80_t x64::do_f80_add( float80_t a, float80_t b )
 
         bool ainf = ea.is_inf();
         bool binf = eb.is_inf();
-    
+
         if ( ainf && binf )
         {
             if ( ea.signbit() == eb.signbit( ) )
@@ -3676,27 +3745,24 @@ float80_t x64::do_f80_add( float80_t a, float80_t b )
             double_to_ieee80( -MY_NAN, r.get_bytes() );
             return r;
         }
-    
+
         if ( ea.is_nan() || eb.is_nan() )
             return handle_f80_math_nan( a, b );
-    
+
         if ( ainf )
             return a;
-    
+
         if ( binf )
             return b;
 
-        ext80 result = ext80::from_bytes_le( a.get_bytes() ) + ext80::from_bytes_le( b.get_bytes() );
-        result.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ext80::from_bytes_le( a.get_bytes() ) + ext80::from_bytes_le( b.get_bytes() ) );
     #endif
 } //do_f80_add
 
 float80_t x64::do_f80_sub( float80_t a, float80_t b )
 {
     #if NATIVE_LONG_DOUBLE
-        long double ld = do_fsub( a.getld(), b.getld() );
-        return float80_t::float80_from_ld( ld );
+        return f80_from_ld( do_fsub( a.getld(), b.getld() ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3709,7 +3775,7 @@ float80_t x64::do_f80_sub( float80_t a, float80_t b )
             double_to_ieee80( -MY_NAN, r.get_bytes() );
             return r;
         }
-    
+
         if ( ea.is_nan() || eb.is_nan() )
             return handle_f80_math_nan( a, b );
 
@@ -3727,8 +3793,7 @@ float80_t x64::do_f80_sub( float80_t a, float80_t b )
 float80_t x64::do_f80_mul( float80_t a, float80_t b )
 {
     #if NATIVE_LONG_DOUBLE
-        long double ld = do_fmul( a.getld(), b.getld() );
-        return float80_t::float80_from_ld( ld );
+        return f80_from_ld( do_fmul( a.getld(), b.getld() ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3762,17 +3827,14 @@ float80_t x64::do_f80_mul( float80_t a, float80_t b )
             return r;
         }
 
-        ext80 result = ea * eb;
-        result.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ea * eb );
     #endif
 } //do_f80_mul
 
 float80_t x64::do_f80_div( float80_t a, float80_t b )
 {
     #if NATIVE_LONG_DOUBLE
-        long double ld = do_fdiv( a.getld(), b.getld() );
-        return float80_t::float80_from_ld( ld );
+        return f80_from_ld( do_fdiv( a.getld(), b.getld() ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3812,9 +3874,7 @@ float80_t x64::do_f80_div( float80_t a, float80_t b )
             return r;
         }
 
-        ext80 result = ea / eb;
-        result.to_bytes_le( r.get_bytes() );
-        return r;
+        return ext80_to_float80_t( ea / eb );
     #endif
 } //do_f80_div
 
@@ -7375,17 +7435,17 @@ _prefix_is_set:
                     set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), f80_from_f( 0.0 ) ) );
                 else if ( 0xe5 == op1 ) // fxam
                 {
-                    long double d = peek_fp( 0 ).getld();
-                    if ( my_isnan( d ) )
+                    float80_t f = peek_fp( 0 );
+                    if ( do_f80_isnan( f ) )
                         set_x87_status_c320( false, false, true );
-                    else if ( isinf( d ) )
+                    else if ( do_f80_isinf( f ) )
                         set_x87_status_c320( false, true, true );
-                    else if ( 0.0 == d )
+                    else if ( do_f80_iszero( f ) )
                         set_x87_status_c320( true, false, false );
                     else // normal number
                         set_x87_status_c320( false, true, false );
 
-                    set_x87_status_c1( signbit( d ) );
+                    set_x87_status_c1( do_f80_signbit( f ) );
                 }
                 else if ( op1 >= 0xe8 && op1 <= 0xee ) // load one of various constants
                     push_fp( float_d9_e8_constants[ offset ] );
@@ -7399,7 +7459,7 @@ _prefix_is_set:
                 else if ( 0xf2 == op1 ) // fptan
                 {
                     set_x87_status_c2( false );
-                    poke_fp( 0, tanl( peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_tan( peek_fp( 0 ) ) );
                     push_fp( 1.0L );
                 }
                 else if ( 0xf3 == op1 ) // fpatan. replace st(1) with arctan(st(1)/st(0)). must use atan2() (not atan()) to get the correct quadrant
@@ -7409,17 +7469,19 @@ _prefix_is_set:
                 }
                 else if ( 0xf4 == op1 ) // fxtract extract exponent and significand
                 {
-                    long double top = peek_fp( 0 ).getld();
+                    float80_t top = peek_fp( 0 );
                     int exponent;
-                    long double significand = frexpl( top, &exponent );
-                    poke_fp( 0, (long double) exponent );
+                    float80_t significand = do_f80_frexp( top, &exponent );
+                    float80_t f80_exponent;
+                    double_to_ieee80( (double) exponent, f80_exponent.get_bytes() );
+                    poke_fp( 0, f80_exponent );
                     push_fp( significand );
                 }
                 else if ( 0xf5 == op1 ) // fprem1 ieee partial remainder; roundl() not truncl() for Q
                 {
                     float80_t d0 = peek_fp( 0 );
                     float80_t d1 = peek_fp( 1 );
-                    float80_t Q = float80_t::float80_from_ld( roundl( do_f80_div( d0, d1 ).getld() ) );
+                    float80_t Q = do_f80_round( do_f80_div( d0, d1 ) );
                     float80_t remainder = do_f80_sub( d0, do_f80_mul( Q, d1 ) );
 
                     // to do set c0, c3, c1 to be least significant bits of Q: q2, q1, q0
@@ -7457,18 +7519,18 @@ _prefix_is_set:
                     poke_fp( 0, do_f80_sqrt( peek_fp( 0 ) ) );
                 else if ( 0xfb == op1 ) // fsincos
                 {
-                    long double top = peek_fp( 0 ).getld();
-                    poke_fp( 0, sinl( top ) );
-                    push_fp( cosl( top ) );
+                    float80_t top = peek_fp( 0 );
+                    poke_fp( 0, do_f80_sin( top ) );
+                    push_fp( do_f80_cos( top ) );
                 }
                 else if ( 0xfc == op1 ) // frndint. round st(0) to an integer
-                    poke_fp( 0, round_ldouble_from_ldouble( peek_fp( 0 ).getld(), get_x87_rounding_mode() ) );
+                    poke_fp( 0, do_f80_round( peek_fp( 0 ), x87_fpu_control_word & 0xc00 ) );
                 else if ( 0xfd == op1 ) // fscale
-                    poke_fp( 0, ldexpl( peek_fp( 0 ).getld(), (int) truncl( peek_fp( 1 ).getld() ) ) );
+                    poke_fp( 0, do_f80_ldexp( peek_fp( 0 ), (int) truncl( peek_fp( 1 ).getld() ) ) );
                 else if ( 0xfe == op1 ) // fsin
-                    poke_fp( 0, sinl( peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_sin( peek_fp( 0 ) ) );
                 else if ( 0xff == op1 ) // fcos
-                    poke_fp( 0, cosl( peek_fp( 0 ).getld() ) );
+                    poke_fp( 0, do_f80_cos( peek_fp( 0 ) ) );
                 else
                 {
                     rip.q--;

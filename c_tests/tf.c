@@ -10,6 +10,9 @@
 #if defined(__SIZEOF_INT128__)
 typedef unsigned __int128 uint128_t;
 typedef __int128 int128_t;
+typedef int128_t loop_t;
+#else
+typedef int64_t loop_t;
 #endif
 
 char *floattoa( char *buffer, double d, int precision )
@@ -52,7 +55,7 @@ char *floattoa( char *buffer, double d, int precision )
 // less than full precision because libc only provides this much precision in trig functions
 
 #define TRIG_FLT_EPSILON 0.00002  /* 0.00000011920928955078 */
-#define TRIG_DBL_EPSILON 0.000002 /* 0.00000000000000022204 */
+#define TRIG_DBL_EPSILON 0.00000002 /* 0.00000000000000022204 */
 #define TRIG_LDBL_EPSILON 0.0000000000000002 /* 0.0000000000000000000000000000000001925930 */
 
 void check_same_f( const char * operation, float a, float b, float dbgval )
@@ -112,9 +115,9 @@ int64_t factorial( int64_t n ) // should work for up to n=20
 long double my_sin_ld( long double x, int n = max_N_Iterations )
 {
     long double result = 0;
-    int sign = 1; // can't use an __int128 here because gnu at -O0 and -O1 generates code that requires 10-byte long doubles in x64os, which don't exist in msvc.
+    loop_t sign = 1;
 
-    for ( int64_t i = 1; i <= n; i++ ) 
+    for ( loop_t i = 1; i <= n; i++ ) 
     {
         result += sign * powl( x, ( 2 * i - 1 ) ) / factorial( 2 * i - 1 );
         sign *= -1;
@@ -126,9 +129,9 @@ long double my_sin_ld( long double x, int n = max_N_Iterations )
 double my_sin_d( double x, int n = max_N_Iterations )
 {
     double result = 0;
-    int sign = 1;
+    loop_t sign = 1;
 
-    for ( int64_t i = 1; i <= n; i++ ) 
+    for ( loop_t i = 1; i <= n; i++ ) 
     {
         result += sign * pow( x, ( 2 * i - 1 ) ) / factorial( 2 * i - 1 );
         sign *= -1;
@@ -140,9 +143,9 @@ double my_sin_d( double x, int n = max_N_Iterations )
 float my_sin_f( float x, int n = max_N_Iterations )
 {
     float result = 0;
-    int sign = 1;
+    loop_t sign = 1;
 
-    for ( int64_t i = 1; i <= n; i++ ) 
+    for ( loop_t i = 1; i <= n; i++ ) 
     {
         result += sign * powf( x, ( 2 * i - 1 ) ) / factorial( 2 * i - 1 );
         sign *= -1;
@@ -258,8 +261,7 @@ long double square_root_ld( long double num )
     long double x = num; 
     long double y = 1;
 
-    // the x64os emulator uses double precision for long double, so using DBL_EPSILON here
-    const long double e =  10.0f * DBL_EPSILON; // LDBL_EPSILON;
+    const long double e =  10.0f * LDBL_EPSILON;
 
     while ( ( x - y ) > e ) 
     {
