@@ -1,8 +1,6 @@
 #pragma once
 
-#include <bitset>
-#include <djl_os.hxx>
-#include "f80_double.h"
+#include <f80_double.h> // needed for x87 support built on on hardware or software
 
 struct x64;
 
@@ -99,23 +97,15 @@ typedef struct REXInfo
     };
 } REXInfo_t;
 
-// gnu on amd64 has 10-byte long doubles with the same format as x87 floating point (ieee80).
-// msvc maps long double to 8-byte doubles. this emulator produces incorrect results when built with msvc.
-// gnu on non-amd64 ISAs claim to have 80-bit long doubles, but I haven't been able to get them to work. they use 8-byte doubles like msvc.
-// In some cases, the difference is small -- a loss of precision that's not generally noticable.
-// In other cases, it's catastrophic. for example, multiplying a floating by -1 stored in an int128_t
-// turns into addition by 1 beyond the precision of the number as a double and then a subtraction leading
-// to completely different results for apps.
-// There are other changes in behavior that dramatically alter emulator behavor with doubles due to the
-// loss in precision when using various sqrtl(), fpreml() and other instructions. For example: 3.2 can't
-// be expressed exactly, so fpreml( 16.0, 3.2 ) results in 3.2 with 10-byte fp and 0.0 with 8-byte fp.
-// Obviously, apps not using long double (i.e. just use float and double) work fine when using 8-byte long doubles.
+// gnu on amd64 and x64 have 10-byte long doubles with the same format as x87 floating point (ieee80).
+// msvc maps long double to 8-byte doubles, so use x87 emulation instead.
+// gnu on non-amd64 ISAs claim to have 80-bit long doubles, but I haven't been able to get them to work. they use 8-byte long doubles like msvc.
 // clang++ v19.1.5 building with -mlong-double-80 exposes many bugs in their implementation and so is avoided here.
 
 #if defined( __GNUC__ ) && ( defined( __amd64__ ) || defined( __i386__ ) )
-#define NATIVE_X87_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64
+#define NATIVE_X87_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64 and x86
 #else
-#define NATIVE_X87_LONG_DOUBLE 0         // use 8-byte long double with a loss in precision
+#define NATIVE_X87_LONG_DOUBLE 0         // use x87 emulation
 #endif
 
 typedef struct float80_t // 10-byte x87 floating point register
@@ -151,7 +141,7 @@ typedef struct float80_t // 10-byte x87 floating point register
             #endif
 
             uint8_t bytes[ 10 ]; // little-endian x87 ieee80 80-bit
-            uint64_t alignment_bytes[ 2 ];
+            uint64_t alignment_bytes[ 2 ]; // waste some space to get fast array references
         };
 } float80_t;
 
@@ -733,6 +723,8 @@ private:
     float80_t pop_fp();
     float80_t peek_fp( uint8_t offset );
     void poke_fp( uint8_t offset, float80_t f80 );
+
+    // all of these math do_ and handle_ functions must be members because of differences between 32 and 64 bit nan handling
 
     template <typename T> T handle_math_nan( T a, T b );
     template <typename T> T do_fadd( T a, T b );

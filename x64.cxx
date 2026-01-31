@@ -37,23 +37,26 @@
 #include <assert.h>
 #include <math.h>
 #include <limits>
+#include <bitset>
 #include <type_traits>
+
+using namespace std;
 
 #include <djl_128.hxx>
 #include <djltrace.hxx>
+#include <djl_os.hxx>
 
 #include "x64.hxx"
 
-#if !NATIVE_X87_LONG_DOUBLE
+#if NATIVE_X87_LONG_DOUBLE
+    #define f80_from_ld float80_t::float80_from_ld
+#else
     #include "x87.hxx"
     using x87::ext80;
 #endif
 
-using namespace std;
-
 #define f80_from_f float80_t::float80_from_f
 #define f80_from_d float80_t::float80_from_d
-#define f80_from_ld float80_t::float80_from_ld
 
 static const uint64_t g_NAN = 0x7ff8000000000000;
 #define MY_NAN ( * (double *) & g_NAN )
