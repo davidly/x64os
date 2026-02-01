@@ -4775,10 +4775,10 @@ _prefix_is_set:
                         vec16_t & xmm1 = xregs[ _reg ];
                         if ( 0xf3 == _prefix_sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
                         {
-                            xmm1.set32( 0, (int32_t) trunc( get_rmxfloat( 0 ) ) );
-                            xmm1.set32( 1, (int32_t) trunc( get_rmxfloat( 1 ) ) );
-                            xmm1.set32( 2, (int32_t) trunc( get_rmxfloat( 2 ) ) );
-                            xmm1.set32( 3, (int32_t) trunc( get_rmxfloat( 3 ) ) );
+                            xmm1.set32( 0, round_i_from_double<int32_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE ) );
+                            xmm1.set32( 1, round_i_from_double<int32_t>( get_rmxfloat( 1 ), ROUNDING_MODE_TRUNCATE ) );
+                            xmm1.set32( 2, round_i_from_double<int32_t>( get_rmxfloat( 2 ), ROUNDING_MODE_TRUNCATE ) );
+                            xmm1.set32( 3, round_i_from_double<int32_t>( get_rmxfloat( 3 ), ROUNDING_MODE_TRUNCATE ) );
                         }
                         else if ( 0 == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
                         {
