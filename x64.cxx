@@ -20,6 +20,7 @@
     Notes about why the code is the way it is:
         * generally, only instructions used in the test suite are implemented to avoid having a bunch of untested code.
         * the disassembler roughly uses Intel syntax, not GNU's syntax that reverses argument order, because that's what I grew up with.
+        * much of the code could be optimized if it didn't have to run on big-endian machines.
 
     Most 32-bit instructions are from the i386. Exceptions include:
         * 486:                              cmpxchg, xadd, invlpg
@@ -2563,35 +2564,6 @@ void x64::trace_fregs()
 #define ROUNDING_MODE_CEILING  2
 #define ROUNDING_MODE_TRUNCATE 3
 
-template <typename T> T round_i_from_double( double d, uint8_t rm )
-{
-    static_assert(std::is_integral<T>::value, "Type must be an integral type.");
-    static_assert(std::is_signed<T>::value, "Type must be a signed type.");
-
-    T max_val = std::numeric_limits<T>::max();
-
-    if ( my_isnan( d ) || isinf( d ) )
-        return max_val;
-
-    if ( d > (double) max_val )
-        return max_val;
-
-    T min_val = std::numeric_limits<T>::min();
-
-    if ( d < (double) min_val )
-        return min_val;
-
-    if ( ROUNDING_MODE_NEAREST == rm ) // nearest
-        return (T) round( d );
-    if ( ROUNDING_MODE_FLOOR == rm ) // towards -infinity
-        return (T) floor( d );
-    if ( ROUNDING_MODE_CEILING == rm ) // towards +infinity
-        return (T) ceil( d );
-
-    assert( ROUNDING_MODE_TRUNCATE == rm );
-    return (T) trunc( d ); // towards 0 (truncate)
-} //round_i_from_double
-
 double round_double_from_double( double d, uint8_t rm )
 {
     if ( my_isnan( d ) || isinf( d ) )
@@ -2607,6 +2579,27 @@ double round_double_from_double( double d, uint8_t rm )
     assert( ROUNDING_MODE_TRUNCATE == rm );
     return trunc( d ); // towards 0 (truncate)
 } //round_double_from_double
+
+template <typename T> T round_i_from_double( double d, uint8_t rm )
+{
+    static_assert(std::is_integral<T>::value, "Type must be an integral type.");
+    static_assert(std::is_signed<T>::value, "Type must be a signed type.");
+
+    d = round_double_from_double( d, rm );
+    using UnsignedT = typename std::make_unsigned<T>::type;
+    T indefinite = (T) ( (UnsignedT) 1 << ( sizeof( T ) * 8 - 1 ) );
+
+    if ( my_isnan( d ) || isinf( d ) )
+        return indefinite;
+
+    if ( d > (double) std::numeric_limits<T>::max() )
+        return indefinite;
+
+    if ( d < (double) std::numeric_limits<T>::min() )
+        return indefinite;
+
+    return (T) d;
+} //round_i_from_double
 
 #if NATIVE_X87_LONG_DOUBLE
 
@@ -4511,10 +4504,12 @@ _prefix_is_set:
                     case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer
                     {
                         decode_rm();
-                        if ( 0xf2 == _prefix_sse2_repeat )
-                            regs[ _reg ].q = _rex.W ? ( (int64_t) get_rmxdouble( 0 ) ) : ( (uint32_t) (int32_t) get_rmxdouble( 0 ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat )
-                            regs[ _reg ].q = _rex.W ? ( (int64_t) get_rmxfloat( 0 ) ) : ( (uint32_t) (int32_t) get_rmxfloat( 0 ) );
+                        if ( 0xf2 == _prefix_sse2_repeat ) // cvttsd2si
+                            regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxdouble( 0 ), ROUNDING_MODE_TRUNCATE ) :
+                                                      round_i_from_double<int32_t>( get_rmxdouble( 0 ), ROUNDING_MODE_TRUNCATE );
+                        else if ( 0xf3 == _prefix_sse2_repeat ) // cvttss2si
+                            regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE ) :
+                                                      round_i_from_double<int32_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE );
                         else
                             unhandled();
                         break;
@@ -4524,9 +4519,9 @@ _prefix_is_set:
                         decode_rm();
                         if ( 0 == _prefix_sse2_repeat )
                         {
-                            if ( 0x66 == _prefix_size )
+                            if ( 0x66 == _prefix_size ) // ucomisd
                                 set_eflags_from_fcc( compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) ) );
-                            else
+                            else // ucomiss
                                 set_eflags_from_fcc( compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) ) );
                         }
                         else
