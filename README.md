@@ -15,11 +15,8 @@ and gfortran compilers at various optimization levels for the test cases that ar
 x64 emulation has similar limitations -- real-mode only and just the subset of instructions required
 to run the test suite.
 
-80-bit x87 floating point only works correctly when using GNU gcc (on Windows or Linux) and when
-running on AMD64 hardware. Other compilers and platforms fall back to 64-bit long doubles. For most
-long double floating point operations the impact is minimal, but for some seemingly innocuous code the
-impact is catastrophic. In theory using Clang on AMD64 with x87 support should work too, but I hit 3 bugs with their
-implamentation and gave up. Apps that don't use long double work fine with all compilers and platforms.
+80-bit x87 floating point works via software emulation or emulation built on native amd64/x64 x87
+if the gnu g++ compiler is used on x86 or amd64.
 
 Files:
 
@@ -29,6 +26,7 @@ Files:
   * m.bat, mr.bat, m32.bat m32r.bat: builds x64os and x32os for release and debug using msvc on Windows
   * mg.bat, mgr.bat, m32g.bat m32gr.bat: builds x64os and x32os for release and debug using gcc on Windows
   * m.sh, mr.sh, m32.sh m32r.sh: builds x64os and x32os for release and debug using gcc on Linux
+  * mrmac.sh and m32rmac.sh build on macOS
   
 Test folders:
 
@@ -38,14 +36,14 @@ Test folders:
 
 I've only validated x32os with the c_tests test cases, not Fortran or Rust.
 
-In addition to the test cases above, all of the test cases were run in x64os built for Sparc v8, 68000,
+In addition to the test cases above, all of the test cases were run in x64os and x32os built for Sparc v8, 68000,
 Arm64, and RISC-V64 in emulators for each of those ISAs. Those can be found in sister repos sparcos, m68,
-armos, and rvos. x64os was also tested recursively by running itself running each test case.
+armos, and rvos. x64os and x32os were also tested recursively by running itself running each test case.
 
-Also, each of the emulators mentioned above were built for AMD64 and run nested in x64os with all of their
-respective test cases for validation.
+Also, each of the emulators mentioned above were built for AMD64 and run nested in x64os and x32os with all
+of their respective test cases for validation.
 
-Next steps:
+These emulators were built and tested on AMD64, Arm64, x86, and RISC-V 64 physical hardware including standard
+Windows/Linux AMD64 machines, Arm64 Windows/Linux, Raspberry PI 5, an M3 macBook, and a RISC-V 64 SBC.
 
-   * Generate test cases that use instructions not yet implemented x64os can be more complete.
-   * Performance pass. x64os runs test binaries about 2x slower than other emulators mentioned above run equivalent binaries due to decoding complexity.
+This emulator is about 2x slower than other 64- and 32-bit emulators in sister repos because instruction decoding is complex.
