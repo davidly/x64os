@@ -725,7 +725,7 @@ struct ext80 {
     // If result is zero, preserve sign of input (std::round does)
     if (
       #if defined(X87_HAS_NATIVE_U128)
-        (ip == 0)
+        0 == ip
       #else
         u128_is_zero(ip)
       #endif

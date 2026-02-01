@@ -2587,7 +2587,7 @@ template <typename T> T round_i_from_double( double d, uint8_t rm )
 
     d = round_double_from_double( d, rm );
     using UnsignedT = typename std::make_unsigned<T>::type;
-    T indefinite = (T) ( (UnsignedT) 1 << ( sizeof( T ) * 8 - 1 ) );
+    const T indefinite = static_cast<T>( UnsignedT( 1 ) << (sizeof( T ) * 8 - 1 ) );
 
     if ( my_isnan( d ) || isinf( d ) )
         return indefinite;
