@@ -103,7 +103,7 @@ typedef struct REXInfo
 // clang++ v19.1.5 building with -mlong-double-80 exposes many bugs in their implementation and so is avoided here.
 
 #if defined( __GNUC__ ) && ( defined( __amd64__ ) || defined( __i386__ ) )
-#define NATIVE_X87_LONG_DOUBLE 0         // use native 10-byte x87 long doubles on amd64 and x86
+#define NATIVE_X87_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64 and x86
 #else
 #define NATIVE_X87_LONG_DOUBLE 0         // use x87 emulation
 #endif
