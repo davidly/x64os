@@ -3485,11 +3485,6 @@ double set_double_sign( double d, bool sign )
                     double_to_ieee80( -MY_NAN, r.get_bytes() );
                     return r;
                 }
-                if ( mode32 )            // an interesting difference between 32 and 64 bit
-                {
-                    double_to_ieee80( MY_NAN, r.get_bytes() );
-                    return r;
-                }
                 return a;
             }
             else
