@@ -1,6 +1,6 @@
 #pragma once
 
-#include <f80_double.h> // needed for x87 support built on on hardware or software
+#include <f80_double.h> // needed for x87 support built on on both hardware and software
 
 struct x64;
 
@@ -97,13 +97,13 @@ typedef struct REXInfo
     };
 } REXInfo_t;
 
-// gnu on amd64 and x64 have 10-byte long doubles with the same format as x87 floating point (ieee80).
+// gnu on amd64 and x86 has 10-byte long doubles with the same format as x87 floating point (ieee80).
 // msvc maps long double to 8-byte doubles, so use x87 emulation instead.
-// gnu on non-amd64 ISAs claim to have 80-bit long doubles, but I haven't been able to get them to work. they use 8-byte long doubles like msvc.
+// gnu on non-amd64/x86 ISAs claim to have 80-bit long doubles, but I haven't been able to get them to work. they use 8-byte long doubles like msvc.
 // clang++ v19.1.5 building with -mlong-double-80 exposes many bugs in their implementation and so is avoided here.
 
 #if defined( __GNUC__ ) && ( defined( __amd64__ ) || defined( __i386__ ) )
-#define NATIVE_X87_LONG_DOUBLE 1         // use native 10-byte x87 long doubles on amd64 and x86
+#define NATIVE_X87_LONG_DOUBLE 0         // use native 10-byte x87 long doubles on amd64 and x86
 #else
 #define NATIVE_X87_LONG_DOUBLE 0         // use x87 emulation
 #endif
@@ -137,7 +137,7 @@ typedef struct float80_t // 10-byte x87 floating point register
         union
         {
             #if NATIVE_X87_LONG_DOUBLE
-                long double ld; // may be padded to 16 bytes, but with gcc on amd64 the first 80 bits are in x87 ieee80 format
+                long double ld; // may be padded to 16 bytes, but with gcc on amd64/x86 the first 80 bits are in x87 ieee80 format
             #endif
 
             uint8_t bytes[ 10 ]; // little-endian x87 ieee80 80-bit
@@ -240,8 +240,8 @@ struct x64
         void setui64( uint64_t o, uint64_t val ) { * (uint64_t *) getmem( o ) = flip_endian64( val ); }
         void setui32( uint64_t o, uint32_t val ) { * (uint32_t *) getmem( o ) = flip_endian32( val ); }
         void setui16( uint64_t o, uint16_t val ) { * (uint16_t *) getmem( o ) = flip_endian16( val ); }
-        void setfloat( uint64_t o, float val ) { uint32_t x = * (uint32_t *) & val; setui32( o, x ); }
-        void setdouble( uint64_t o, double val ) { uint64_t x = * (uint64_t *) & val; setui64( o, x ); }
+        void setfloat( uint64_t o, float val ) { setui32( o, * (uint32_t *) & val ); }
+        void setdouble( uint64_t o, double val ) { setui64( o, * (uint64_t *) & val ); }
     #else
         uint64_t getui64( uint64_t o ) { return * (uint64_t *) getmem( o ); }
         uint32_t getui32( uint64_t o ) { return * (uint32_t *) getmem( o ); }

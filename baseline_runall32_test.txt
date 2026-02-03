@@ -1,4 +1,4 @@
-Sun 02/01/2026  8:18:45.38 
+Tue 02/03/2026 11:37:29.54 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -12180,35 +12180,35 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 c_tests/x32bin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32binfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbinfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 1, hour 8, min 19, sec 9
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 1, hour 11, min 19, sec 9
+before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin0/tm
 tm has completed with great success
 c_tests/x32clangbin0/tm
@@ -15465,20 +15465,20 @@ int8_t dim 3: sum -28.0, mag -28.0, min, 13.0 max 47.0, fmodsum 9.000, dotsum 71
 int8_t dim 4: sum -62.0, mag -62.0, min, 19.0 max 96.0, fmodsum 18.000, dotsum -94.0, sqrtsum 95.0
 int8_t dim 5: sum -117.0, mag 7.0, min, -126.0 max 110.0, fmodsum 22.000, dotsum 47.0, sqrtsum -74.0
 int8_t dim 6: sum -83.0, mag -31.0, min, -119.0 max 122.0, fmodsum 31.000, dotsum 10.0, sqrtsum 21.0
-int8_t dim 7: sum 40.0, mag -66.0, min, -128.0 max 127.0, fmodsum 30.000, dotsum 47.0, sqrtsum -108.0
+int8_t dim 7: sum 40.0, mag -66.0, min, -128.0 max 127.0, fmodsum 30.000, dotsum 47.0, sqrtsum 20.0
 int8_t dim 8: sum 52.0, mag 34.0, min, -126.0 max 124.0, fmodsum 8.000, dotsum -65.0, sqrtsum 34.0
 int8_t dim 9: sum -127.0, mag -7.0, min, -128.0 max 127.0, fmodsum -14.000, dotsum -67.0, sqrtsum -116.0
 int8_t dim 10: sum -37.0, mag -83.0, min, -125.0 max 127.0, fmodsum -26.000, dotsum 68.0, sqrtsum 4.0
-int8_t dim 11: sum -108.0, mag 108.0, min, -128.0 max 127.0, fmodsum -29.000, dotsum 70.0, sqrtsum 89.0
+int8_t dim 11: sum -108.0, mag 108.0, min, -128.0 max 127.0, fmodsum -29.000, dotsum 70.0, sqrtsum -39.0
 int8_t dim 12: sum -126.0, mag 78.0, min, -127.0 max 126.0, fmodsum -35.000, dotsum 13.0, sqrtsum -37.0
 int8_t dim 13: sum -69.0, mag -43.0, min, -127.0 max 126.0, fmodsum 8.000, dotsum 105.0, sqrtsum -124.0
 int8_t dim 14: sum 119.0, mag 33.0, min, -125.0 max 127.0, fmodsum -17.000, dotsum -118.0, sqrtsum 71.0
-int8_t dim 15: sum -78.0, mag -64.0, min, -128.0 max 127.0, fmodsum -16.000, dotsum 126.0, sqrtsum 16.0
-int8_t dim 16: sum 64.0, mag 72.0, min, -128.0 max 127.0, fmodsum -42.000, dotsum 106.0, sqrtsum -14.0
+int8_t dim 15: sum -78.0, mag -64.0, min, -128.0 max 127.0, fmodsum -16.000, dotsum 126.0, sqrtsum -112.0
+int8_t dim 16: sum 64.0, mag 72.0, min, -128.0 max 127.0, fmodsum -42.000, dotsum 106.0, sqrtsum 114.0
 int8_t dim 17: sum 20.0, mag 102.0, min, -126.0 max 127.0, fmodsum 16.000, dotsum 30.0, sqrtsum -6.0
 int8_t dim 18: sum -62.0, mag -90.0, min, -128.0 max 127.0, fmodsum -12.000, dotsum 1.0, sqrtsum -25.0
 int8_t dim 19: sum 14.0, mag 32.0, min, -128.0 max 127.0, fmodsum 13.000, dotsum -58.0, sqrtsum -64.0
-int8_t dim 20: sum -40.0, mag 12.0, min, -128.0 max 127.0, fmodsum -15.000, dotsum -35.0, sqrtsum 55.0
+int8_t dim 20: sum -40.0, mag 12.0, min, -128.0 max 127.0, fmodsum -15.000, dotsum -35.0, sqrtsum -73.0
 uint8_t dim 1: sum 4.0, mag 4.0, min, 4.0 max 4.0, fmodsum 0.000, dotsum 4.0, sqrtsum 2.0
 uint8_t dim 2: sum 50.0, mag 50.0, min, 8.0 max 18.0, fmodsum 3.000, dotsum 24.0, sqrtsum 12.0
 uint8_t dim 3: sum 228.0, mag 228.0, min, 13.0 max 47.0, fmodsum 9.000, dotsum 71.0, sqrtsum 41.0
@@ -47804,10 +47804,10 @@ testing with NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -47931,10 +47931,10 @@ testing with -NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -50288,10 +50288,10 @@ testing with NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -50415,10 +50415,10 @@ testing with -NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -52772,10 +52772,10 @@ testing with NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -52899,10 +52899,10 @@ testing with -NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -55256,10 +55256,10 @@ testing with NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -55383,10 +55383,10 @@ testing with -NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         *:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         /:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         +:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
-         -:  nan = 0x7ff8000000000000, isnan true, isinf false, iszero false, signbit false
+         *:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         /:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         +:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
+         -:  -nan = 0xfff8000000000000, isnan true, isinf false, iszero false, signbit true
        cmp:  lt 0 le 0 eq 0 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -56498,10 +56498,10 @@ testing with NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         *:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         /:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         *:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
+         /:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
+         +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
+         -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -56625,10 +56625,10 @@ testing with -NAN:
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         *:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         /:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         *:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
+         /:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
+         +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
+         -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -57731,9 +57731,9 @@ testing with NAN:
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
-         *:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         *:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          /:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 1 le 1 eq 1 ge 0 gt 0
     minmax:  min -nan, max -nan
@@ -57741,9 +57741,9 @@ testing with NAN:
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          *:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         /:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         /:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 1 le 1 eq 1 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
@@ -57868,17 +57868,17 @@ testing with -NAN:
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          *:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         /:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         /:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 1 le 1 eq 1 ge 0 gt 0
     minmax:  min nan, max nan
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
-         *:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         *:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          /:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
-         +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
+         +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 1 le 1 eq 1 ge 0 gt 0
     minmax:  min -nan, max -nan
@@ -58884,12 +58884,14 @@ clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/x32bin2/sleeptm
 clk_tck / number of linux ticks per second: 100
+getrusage user time in ms: 1062, system time 0
 sleepy time ended with great success
 c_tests/x32clangbin2/sleeptm
 clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/x32bin3/sleeptm
 clk_tck / number of linux ticks per second: 100
+getrusage user time in ms: 1031, system time 0
 sleepy time ended with great success
 c_tests/x32clangbin3/sleeptm
 clk_tck / number of linux ticks per second: 100
@@ -59117,7 +59119,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59137,7 +59139,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59157,7 +59159,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59177,7 +59179,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59197,7 +59199,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59217,7 +59219,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59237,7 +59239,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59257,7 +59259,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59277,7 +59279,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59297,7 +59299,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 1, hour 8, min 20, sec 11
+tz: 'PST+8', year: 2026, month 2, day 3, hour 11, min 38, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -60769,7 +60771,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-1,521 ms for 1 iterations
+542 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60818,7 +60820,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-417 ms for 1 iterations
+158 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60867,7 +60869,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-422 ms for 1 iterations
+159 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60916,7 +60918,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-428 ms for 1 iterations
+168 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60965,7 +60967,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-414 ms for 1 iterations
+164 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61200,4 +61202,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Sun 02/01/2026  8:20:38.72 
+Tue 02/03/2026 11:38:52.44 

@@ -3445,7 +3445,8 @@ double set_double_sign( double d, bool sign )
 
     void set_x87_control_word( uint16_t cw )
     {
-        tracer.Trace( "setting hardware x87 precision to %u\n", ( cw >> 8 ) & 3 );
+        if ( ( g_State & stateTraceInstructions ) && tracer.IsEnabled() )
+            tracer.Trace( "setting hardware x87 precision to %u\n", ( cw >> 8 ) & 3 );
         cw |= 0x7f; // never enable fp exceptions. glibc will try to set flags to 0x2400 when rounding long doubles on occasion
         __asm__ __volatile__("fldcw %0" : /* No outputs */ : "m"(cw) /* Input */);
     } //set_x87_control_word
@@ -3463,7 +3464,8 @@ double set_double_sign( double d, bool sign )
 
     void set_x87_control_word( uint16_t cw )
     {
-        tracer.Trace( "setting software x87 precision to %u\n", ( cw >> 8 ) & 3 );
+        if ( ( g_State & stateTraceInstructions ) && tracer.IsEnabled() )
+            tracer.Trace( "setting software x87 precision to %u\n", ( cw >> 8 ) & 3 );
         cw |= 0x7f; // never enable fp exceptions. glibc will try to set flags to 0x2400 when rounding long doubles on occasion
         ext80::control_word_ref() = cw;
     } //set_x87_control_word
@@ -3507,6 +3509,26 @@ double set_double_sign( double d, bool sign )
 
 #endif //NATIVE_X87_LONG_DOUBLE
 
+double float_to_double( float f ) // platforms including RISC-V 64 don't have the notion of -nan. They convert a float 0xffc00000 (-nan) to 0x7ff8000000000000 (nan).
+{
+    const uint64_t neg_nan = 0xfff8000000000000;
+
+    if ( 0xffc00000 == * (uint32_t *) &f ) // -nan
+        return * (double *) &neg_nan;
+
+    return (double) f; // casting works for other cases
+} //float_to_double
+
+float double_to_float( double d ) // platforms including RISC-V 64 don't have the notion of -nan.
+{
+    const uint32_t neg_nan = 0xffc00000;
+
+    if ( 0xfff8000000000000 == * (uint64_t *) &d ) // -nan
+        return * (float *) &neg_nan;
+
+    return (float) d; // casting works for other cases
+} //double_to_float
+
 template <typename T> T x64::handle_math_nan( T a, T b )
 {
     if ( my_isnan( a ) )
@@ -3515,8 +3537,6 @@ template <typename T> T x64::handle_math_nan( T a, T b )
         {
             if ( signbit( a ) && signbit( b ) )
                 return (T) -MY_NAN;
-            if ( mode32 )            // an interesting difference between 32 and 64 bit
-                return (T) MY_NAN;
             return a;
         }
         else
@@ -3532,9 +3552,7 @@ float80_t do_f80_round( float80_t x, uint16_t rmode )
     #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( round_ldouble_from_ldouble( x.getld(), (uint8_t) ( rmode >> 10 ) ) );
     #else
-        float80_t f = ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
-        tracer.Trace( "rounding %lf using mode %#x gives %lf\n", x.getd(), rmode, f.getd() );
-        return f;
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
     #endif
 } //do_f80_round
 
@@ -4750,19 +4768,19 @@ _prefix_is_set:
                         {
                             double val0 = get_rmxdouble( 0 );
                             double val1 = get_rmxdouble( 1 );
-                            xregs[ _reg ].setf( 0, (float) val0 );
-                            xregs[ _reg ].setf( 1, (float) val1 );
+                            xregs[ _reg ].setf( 0, double_to_float( val0 ) );
+                            xregs[ _reg ].setf( 1, double_to_float( val1 ) );
                         }
                         else if ( 0xf3 == _prefix_sse2_repeat ) // cvtss2sd xmm1, xmm2/m32   convert scalar float to scalar double
-                            xregs[ _reg ].setd( 0, (double) get_rmxfloat( 0 ) );
+                            xregs[ _reg ].setd( 0, float_to_double( get_rmxfloat( 0 ) ) );
                         else if ( 0xf2 == _prefix_sse2_repeat ) // cvtsd2ss xmm1, xmm2/m32   convert scalar double to scalar float
-                            xregs[ _reg ].setf( 0, (float) get_rmxdouble( 0 ) );
+                            xregs[ _reg ].setf( 0, double_to_float( get_rmxdouble( 0 ) ) );
                         else // cvtps2pd xmm1, xmm2/m64 convert two packed floats in 2 to two packed doubles in 1
                         {
                             float val0 = get_rmxfloat( 0 );
                             float val1 = get_rmxfloat( 1 );
-                            xregs[ _reg ].setd( 0, (double) val0 );
-                            xregs[ _reg ].setd( 1, (double) val1 );
+                            xregs[ _reg ].setd( 0, float_to_double( val0 ) );
+                            xregs[ _reg ].setd( 1, float_to_double( val1 ) );
                         }
                         trace_xreg( _reg );
                         break;
@@ -5357,10 +5375,12 @@ _prefix_is_set:
                     }
                     case 0x7e:
                     {
-                        if ( 0xf3 == _prefix_sse2_repeat ) // movq r/m64, xmm
+                        if ( 0xf3 == _prefix_sse2_repeat ) // movq xmm, xmm
                         {
                             decode_rm();
                             xregs[ _reg ].set64( 0, get_rmx64( 0 ) );
+                            xregs[ _reg ].set64( 1, 0 ); // clear the high qword
+                            trace_xreg( _reg );
                         }
                         else if ( 0x66 == _prefix_size ) // mov r/m, xmm
                         {
@@ -5452,7 +5472,7 @@ _prefix_is_set:
                         if ( 0xa5 == op1 )
                             count = regs[ rcx ].b;
                         else
-                           count = get_rip8();
+                            count = get_rip8();
 
                         if ( _rex.W )
                         {
@@ -5523,7 +5543,7 @@ _prefix_is_set:
                         if ( 0xad == op1 )
                             count = regs[ rcx ].b;
                         else
-                           count = get_rip8();
+                            count = get_rip8();
 
                         if ( _rex.W )
                         {
@@ -7470,7 +7490,8 @@ _prefix_is_set:
                     float80_t d1 = peek_fp( 1 );
                     float80_t Q = do_f80_trunc( do_f80_div( d0, d1 ) );
                     float80_t remainder = do_f80_sub( d0, do_f80_mul( Q, d1 ) );
-                    tracer.Trace( "remainder %lf = d0 (%.20lf) - ( Q (%.20lf) * d1 (%.20lf) )\n", remainder.getd(), d0.getd(), Q.getd(), d1.getd() );
+                    if ( ( g_State & stateTraceInstructions ) && tracer.IsEnabled() )
+                        tracer.Trace( "remainder %lf = d0 (%.20lf) - ( Q (%.20lf) * d1 (%.20lf) )\n", remainder.getd(), d0.getd(), Q.getd(), d1.getd() );
 
                     // to do: set c0, c3, c1 to be least significant bits of Q: q2, q1, q0
                     set_x87_status_c2( false ); // we always complete the remainder calculation
@@ -7502,7 +7523,7 @@ _prefix_is_set:
                     rip.q--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
-                        push_fp( (double) getfloat( effective_address() ) );
+                        push_fp( float_to_double( getfloat( effective_address() ) ) );
                     else if ( 2 == _reg ) // fst m32fp copy st to m32fp
                         set_rmfloat( peek_fp( 0 ).getf() );
                     else if ( 3 == _reg ) // fstp m32fp copy st to m32fp and pop register stack
@@ -7819,25 +7840,9 @@ _prefix_is_set:
                     else if ( 1 == _reg ) // fisttp m16int
                         set_rm16( round_i_from_double<int16_t>( pop_fp().getd(), ROUNDING_MODE_TRUNCATE ) );
                     else if ( 2 == _reg ) // fistp m16int   store st(0) in m16int
-                    {
-                        double val = peek_fp( 0 ).getd();
-                        int16_t ival;
-                        if ( ( val > INT16_MAX ) || ( val < INT16_MIN ) )
-                            ival = INT16_MIN; // integer indefinte value my CPU stores in this case
-                        else
-                            ival = (int16_t) val;
-                        set_rm16( ival );
-                    }
+                        set_rm16( round_i_from_double<int16_t>( peek_fp( 0 ).getd(), get_x87_rounding_mode() ) );
                     else if ( 3 == _reg ) // fistp m16int   store st(0) in m16int and pop register stack
-                    {
-                        double val = pop_fp().getd();
-                        int16_t ival;
-                        if ( ( val > INT16_MAX ) || ( val < INT16_MIN ) )
-                            ival = INT16_MIN; // integer indefinte value my CPU stores in this case
-                        else
-                            ival = (int16_t) val;
-                        set_rm16( ival );
-                    }
+                        set_rm16( round_i_from_double<int16_t>( pop_fp().getd(), get_x87_rounding_mode() ) );
                     else if ( 5 == _reg ) // fild m64int   loads signed 64 bit integer converted to a float and pushed to fp stack
                     {
                         float80_t f;
