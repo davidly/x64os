@@ -2769,7 +2769,7 @@ void x64::op_scas( uint8_t width )
 
 template <typename T> T x64::op_sub( T a, T b, bool borrow )
 {
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__mc68000__)
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
 #endif
     T result = a - b - (T) borrow;
@@ -2788,7 +2788,7 @@ template <typename T> T x64::op_sub( T a, T b, bool borrow )
 
 template <typename T> T x64::op_add( T a, T b, bool carry )
 {
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__mc68000__)
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
 #endif
     T result = a + b + (T) carry;
@@ -2825,7 +2825,7 @@ template <typename T> T x64::op_or( T a, T b )
 
 template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 {
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__mc68000__)
     static_assert(std::is_unsigned_v<T>, "Template parameter must be an unsigned type.");
 #endif
     assert( math <= 7 );
@@ -3485,6 +3485,13 @@ double set_double_sign( double d, bool sign )
                     double_to_ieee80( -MY_NAN, r.get_bytes() );
                     return r;
                 }
+#if 0 // there is some additional factor that needs to be included here
+                if ( mode32 )            // an interesting difference between 32 and 64 bit
+                {
+                    double_to_ieee80( MY_NAN, r.get_bytes() );
+                    return r;
+                }
+#endif
                 return a;
             }
             else
@@ -3532,6 +3539,10 @@ template <typename T> T x64::handle_math_nan( T a, T b )
         {
             if ( signbit( a ) && signbit( b ) )
                 return (T) -MY_NAN;
+#if 0 // there is some additional factor that needs to be included here
+            if ( mode32 )            // an interesting difference between 32 and 64 bit
+                return (T) MY_NAN;
+#endif
             return a;
         }
         else
@@ -4505,6 +4516,8 @@ _prefix_is_set:
                         decode_rm();
                         if ( 0x66 == _prefix_size )
                             unhandled();
+
+                        xregs[ _reg ].zero();
                         if ( 0xf2 == _prefix_sse2_repeat )  // cvtsi2sd xmm1, r32/m32   convert dword or qword to scalar double
                             xregs[ _reg ].setd( 0, (double) ( _rex.W ? (int64_t) get_rm64() : (int32_t) get_rm32() ) );
                         else if ( 0xf3 == _prefix_sse2_repeat ) // cvtsi2ss xmm1, r32/m32
