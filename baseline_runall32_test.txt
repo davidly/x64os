@@ -1,4 +1,4 @@
-Tue 02/03/2026 13:07:37.02 
+Tue 02/03/2026 15:55:57.93 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -56404,7 +56404,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 0.000000, max 0.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56413,7 +56413,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min 0.000000, max 0.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56422,7 +56422,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -0.000000, max -0.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56431,7 +56431,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -0.000000, max -0.000000
   in do_math()
          a:  3.000000 = 0x4008000000000000, isnan false, isinf false, iszero false, signbit false
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56440,7 +56440,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min 3.000000, max 3.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  3.000000 = 0x4008000000000000, isnan false, isinf false, iszero false, signbit false
@@ -56449,7 +56449,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 3.000000, max 3.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  -3.000000 = 0xc008000000000000, isnan false, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56458,7 +56458,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -3.000000, max -3.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -3.000000 = 0xc008000000000000, isnan false, isinf false, iszero false, signbit true
@@ -56467,7 +56467,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -3.000000, max -3.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56494,7 +56494,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min nan, max nan
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56503,7 +56503,7 @@ testing with NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -nan, max -nan
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -56512,7 +56512,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min inf, max inf
+    minmax:  min nan, max nan
   in do_math()
          a:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56521,7 +56521,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min inf, max inf
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
@@ -56530,7 +56530,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -inf, max -inf
+    minmax:  min nan, max nan
   in do_math()
          a:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56539,7 +56539,7 @@ testing with NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -inf, max -inf
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56558,7 +56558,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 0.000000, max 0.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56567,7 +56567,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min 0.000000, max 0.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56576,7 +56576,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -0.000000, max -0.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56585,7 +56585,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min -0.000000, max -0.000000
   in do_math()
          a:  3.000000 = 0x4008000000000000, isnan false, isinf false, iszero false, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56594,7 +56594,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min 3.000000, max 3.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  3.000000 = 0x4008000000000000, isnan false, isinf false, iszero false, signbit false
@@ -56603,7 +56603,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 3.000000, max 3.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -3.000000 = 0xc008000000000000, isnan false, isinf false, iszero false, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56612,7 +56612,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min -3.000000, max -3.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -3.000000 = 0xc008000000000000, isnan false, isinf false, iszero false, signbit true
@@ -56621,7 +56621,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -3.000000, max -3.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
@@ -56630,7 +56630,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -nan, max -nan
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56639,7 +56639,7 @@ testing with -NAN:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min nan, max nan
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56666,7 +56666,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min inf, max inf
+    minmax:  min -nan, max -nan
   in do_math()
          a:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56675,7 +56675,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min inf, max inf
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
@@ -56684,7 +56684,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -inf, max -inf
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56693,7 +56693,7 @@ testing with -NAN:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min -inf, max -inf
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56784,7 +56784,7 @@ testing with INFINITY:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min inf, max inf
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -56793,7 +56793,7 @@ testing with INFINITY:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min inf, max inf
+    minmax:  min nan, max nan
   in do_math()
          a:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56802,7 +56802,7 @@ testing with INFINITY:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min inf, max inf
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -56811,7 +56811,7 @@ testing with INFINITY:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min inf, max inf
+    minmax:  min -nan, max -nan
   in do_math()
          a:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -56938,7 +56938,7 @@ testing with -INFINITY:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -inf, max -inf
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
@@ -56947,7 +56947,7 @@ testing with -INFINITY:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -inf, max -inf
+    minmax:  min nan, max nan
   in do_math()
          a:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -56956,7 +56956,7 @@ testing with -INFINITY:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min -inf, max -inf
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
@@ -56965,7 +56965,7 @@ testing with -INFINITY:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -inf, max -inf
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -inf = 0xfff0000000000000, isnan false, isinf false, iszero false, signbit true
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -57092,7 +57092,7 @@ testing with 69:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min 69.000000, max 69.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  69.000000 = 0x4051400000000000, isnan false, isinf false, iszero false, signbit false
@@ -57101,7 +57101,7 @@ testing with 69:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 69.000000, max 69.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  69.000000 = 0x4051400000000000, isnan false, isinf false, iszero false, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57110,7 +57110,7 @@ testing with 69:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min 69.000000, max 69.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  69.000000 = 0x4051400000000000, isnan false, isinf false, iszero false, signbit false
@@ -57119,7 +57119,7 @@ testing with 69:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 69.000000, max 69.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  69.000000 = 0x4051400000000000, isnan false, isinf false, iszero false, signbit false
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -57246,7 +57246,7 @@ testing with -69:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -69.000000, max -69.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -69.000000 = 0xc051400000000000, isnan false, isinf false, iszero false, signbit true
@@ -57255,7 +57255,7 @@ testing with -69:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -69.000000, max -69.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  -69.000000 = 0xc051400000000000, isnan false, isinf false, iszero false, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57264,7 +57264,7 @@ testing with -69:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min -69.000000, max -69.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -69.000000 = 0xc051400000000000, isnan false, isinf false, iszero false, signbit true
@@ -57273,7 +57273,7 @@ testing with -69:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -69.000000, max -69.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -69.000000 = 0xc051400000000000, isnan false, isinf false, iszero false, signbit true
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -57346,7 +57346,7 @@ testing with 0.0:
          +:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          -:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 1 eq 1 ge 1 gt 0
-    minmax:  min -0.000000, max -0.000000
+    minmax:  min 0.000000, max 0.000000
   in do_math()
          a:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
          b:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
@@ -57355,7 +57355,7 @@ testing with 0.0:
          +:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          -:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 1 eq 1 ge 1 gt 0
-    minmax:  min 0.000000, max 0.000000
+    minmax:  min -0.000000, max -0.000000
   in do_math()
          a:  3.000000 = 0x4008000000000000, isnan false, isinf false, iszero false, signbit false
          b:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
@@ -57400,7 +57400,7 @@ testing with 0.0:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min 0.000000, max 0.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
@@ -57409,7 +57409,7 @@ testing with 0.0:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 0.000000, max 0.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57418,7 +57418,7 @@ testing with 0.0:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min 0.000000, max 0.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
@@ -57427,7 +57427,7 @@ testing with 0.0:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min 0.000000, max 0.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -57482,7 +57482,7 @@ testing with -0.0:
          +:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          -:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 1 eq 1 ge 1 gt 0
-    minmax:  min 0.000000, max 0.000000
+    minmax:  min -0.000000, max -0.000000
   in do_math()
          a:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          b:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57491,7 +57491,7 @@ testing with -0.0:
          +:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
          -:  0.000000 = 0, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 1 eq 1 ge 1 gt 0
-    minmax:  min -0.000000, max -0.000000
+    minmax:  min 0.000000, max 0.000000
   in do_math()
          a:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57554,7 +57554,7 @@ testing with -0.0:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min nan, max nan
+    minmax:  min -0.000000, max -0.000000
   in do_math()
          a:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          b:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57563,7 +57563,7 @@ testing with -0.0:
          +:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
          -:  nan = 0x7ff8000000000000, isnan false, isinf false, iszero true, signbit false
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -0.000000, max -0.000000
+    minmax:  min nan, max nan
   in do_math()
          a:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57572,7 +57572,7 @@ testing with -0.0:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -nan, max -nan
+    minmax:  min -0.000000, max -0.000000
   in do_math()
          a:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          b:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
@@ -57581,7 +57581,7 @@ testing with -0.0:
          +:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
          -:  -nan = 0xfff8000000000000, isnan false, isinf false, iszero true, signbit true
        cmp:  lt 0 le 0 eq 1 ge 0 gt 0
-    minmax:  min -0.000000, max -0.000000
+    minmax:  min -nan, max -nan
   in do_math()
          a:  -0.000000 = 0x8000000000000000, isnan false, isinf false, iszero true, signbit true
          b:  inf = 0x7ff0000000000000, isnan false, isinf false, iszero false, signbit false
@@ -58881,6 +58881,7 @@ clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/x32clangbin1/sleeptm
 clk_tck / number of linux ticks per second: 100
+getrusage user time in ms: 1062, system time 0
 sleepy time ended with great success
 c_tests/x32bin2/sleeptm
 clk_tck / number of linux ticks per second: 100
@@ -59117,7 +59118,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 40
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59137,7 +59138,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 40
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59157,7 +59158,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 40
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59177,7 +59178,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 40
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59197,7 +59198,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 40
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59217,7 +59218,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 41
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59237,7 +59238,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 41
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59257,7 +59258,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 41
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 56, sec 59
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59277,7 +59278,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 41
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 57, sec 0
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59297,7 +59298,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 3, hour 13, min 8, sec 41
+tz: 'PST+8', year: 2026, month 2, day 3, hour 15, min 57, sec 0
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -60769,7 +60770,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-603 ms for 1 iterations
+611 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60818,7 +60819,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-206 ms for 1 iterations
+162 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60867,7 +60868,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-163 ms for 1 iterations
+170 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -60965,7 +60966,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-233 ms for 1 iterations
+173 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61200,4 +61201,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Tue 02/03/2026 13:09:00.02 
+Tue 02/03/2026 15:57:17.93 
