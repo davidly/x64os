@@ -726,11 +726,11 @@ private:
 
     // all of these math do_ and handle_ functions must be members because of differences between 32 and 64 bit nan handling
 
-    template <typename T> T handle_math_nan( T a, T b );
-    template <typename T> T do_fadd( T a, T b );
-    template <typename T> T do_fsub( T a, T b );
-    template <typename T> T do_fmul( T a, T b );
-    template <typename T> T do_fdiv( T a, T b );
+    template <typename T> T handle_math_nan( T a, T b, bool x87 = false );
+    template <typename T> T do_fadd( T a, T b, bool x87 = false );
+    template <typename T> T do_fsub( T a, T b, bool x87 = false );
+    template <typename T> T do_fmul( T a, T b, bool x87 = false );
+    template <typename T> T do_fdiv( T a, T b, bool x87 = false );
 
     float80_t handle_f80_math_nan( float80_t a, float80_t b );
     float80_t do_f80_add( float80_t a, float80_t b );

@@ -16,8 +16,9 @@ do
         mkdir /mnt/c/users/david/onedrive/x64os/c_tests/x32bin"$optflag" 2>/dev/null
         mkdir /mnt/c/users/david/onedrive/x64os/c_tests/x32clangbin"$optflag" 2>/dev/null
 
+        # have clang generate code that uses the x87 and g++ generate code that uses sse2 to get more test coverage
         _clangbuild="clang-18 -m32 -x c++ "$arg".c -o x32clangbin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
-        _gnubuild="g++ "$arg".c -m32 -o x32bin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -fsigned-char -Wno-format -Wno-format-security"
+        _gnubuild="g++ "$arg".c -m32 -msse2 -mfpmath=sse -o x32bin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -fsigned-char -Wno-format -Wno-format-security"
 
         if [ "$optflag" != "fast" ]; then
             $_clangbuild &

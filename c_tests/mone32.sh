@@ -22,8 +22,9 @@ do
     mkdir x32bin"$optflag" 2>/dev/null
     mkdir x32clangbin"$optflag" 2>/dev/null
 
-    _clangbuild="clang-18 -x c++ "$1".c -m32 -mpopcnt -msse2 -o x32clangbin"$optflag"/"$1" -O"$optflag" -static -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
-    _gnubuild="g++ "$1".c -m32 -mpopcnt -msse2 -U_FORTIFY_SOURCE -o x32bin"$optflag"/"$1" -O"$optflag" -static -fsigned-char -Wno-format -Wno-format-security"
+    # have clang generate code that uses the x87 and g++ generate code that uses sse2 to get more test coverage
+    _clangbuild="clang-18 -x c++ "$1".c -m32 -mpopcnt -o x32clangbin"$optflag"/"$1" -O"$optflag" -static -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+    _gnubuild="g++ "$1".c -m32 -mpopcnt -msse2 -mfpmath=sse -U_FORTIFY_SOURCE -o x32bin"$optflag"/"$1" -O"$optflag" -static -fsigned-char -Wno-format -Wno-format-security"
 
     if [ "$optflag" != "fast" ]; then
         $_clangbuild &

@@ -3475,7 +3475,7 @@ double set_double_sign( double d, bool sign )
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
         ext80 eb = ext80::from_bytes_le( b.get_bytes() );
-    
+
         if ( ea.is_nan() )
         {
             if ( eb.is_nan() )
@@ -3485,13 +3485,11 @@ double set_double_sign( double d, bool sign )
                     double_to_ieee80( -MY_NAN, r.get_bytes() );
                     return r;
                 }
-#if 0 // there is some additional factor that needs to be included here
-                if ( mode32 )            // an interesting difference between 32 and 64 bit
+                if ( mode32 )    // an interesting difference between 32 and 64 bit when doing x87 math
                 {
                     double_to_ieee80( MY_NAN, r.get_bytes() );
                     return r;
                 }
-#endif
                 return a;
             }
             else
@@ -3531,7 +3529,7 @@ float double_to_float( double d ) // platforms including RISC-V 64 don't have th
     return (float) d; // casting works for other cases
 } //double_to_float
 
-template <typename T> T x64::handle_math_nan( T a, T b )
+template <typename T> T x64::handle_math_nan( T a, T b, bool x87 )
 {
     if ( my_isnan( a ) )
     {
@@ -3539,10 +3537,8 @@ template <typename T> T x64::handle_math_nan( T a, T b )
         {
             if ( signbit( a ) && signbit( b ) )
                 return (T) -MY_NAN;
-#if 0 // there is some additional factor that needs to be included here
-            if ( mode32 )            // an interesting difference between 32 and 64 bit
+            if ( mode32 && x87 )    // an interesting difference between 32 and 64 bit when math on an x87 (but not sse2)
                 return (T) MY_NAN;
-#endif
             return a;
         }
         else
@@ -3718,7 +3714,7 @@ float80_t do_f80_round( float80_t x )
 float80_t x64::do_f80_add( float80_t a, float80_t b )
 {
     #if NATIVE_X87_LONG_DOUBLE
-        return f80_from_ld( do_fadd( a.getld(), b.getld() ) );
+        return f80_from_ld( do_fadd( a.getld(), b.getld(), true ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3751,7 +3747,7 @@ float80_t x64::do_f80_add( float80_t a, float80_t b )
 float80_t x64::do_f80_sub( float80_t a, float80_t b )
 {
     #if NATIVE_X87_LONG_DOUBLE
-        return f80_from_ld( do_fsub( a.getld(), b.getld() ) );
+        return f80_from_ld( do_fsub( a.getld(), b.getld(), true ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3782,7 +3778,7 @@ float80_t x64::do_f80_sub( float80_t a, float80_t b )
 float80_t x64::do_f80_mul( float80_t a, float80_t b )
 {
     #if NATIVE_X87_LONG_DOUBLE
-        return f80_from_ld( do_fmul( a.getld(), b.getld() ) );
+        return f80_from_ld( do_fmul( a.getld(), b.getld(), true ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3823,7 +3819,7 @@ float80_t x64::do_f80_mul( float80_t a, float80_t b )
 float80_t x64::do_f80_div( float80_t a, float80_t b )
 {
     #if NATIVE_X87_LONG_DOUBLE
-        return f80_from_ld( do_fdiv( a.getld(), b.getld() ) );
+        return f80_from_ld( do_fdiv( a.getld(), b.getld(), true ) );
     #else
         float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
@@ -3867,7 +3863,7 @@ float80_t x64::do_f80_div( float80_t a, float80_t b )
     #endif
 } //do_f80_div
 
-template <typename T> T x64::do_fadd( T a, T b )
+template <typename T> T x64::do_fadd( T a, T b, bool x87 )
 {
     bool ainf = isinf( a );
     bool binf = isinf( b );
@@ -3880,7 +3876,7 @@ template <typename T> T x64::do_fadd( T a, T b )
     }
 
     if ( my_isnan( a ) || my_isnan( b ) )
-        return handle_math_nan( a, b );
+        return handle_math_nan( a, b, x87 );
 
     if ( ainf )
         return a;
@@ -3891,7 +3887,7 @@ template <typename T> T x64::do_fadd( T a, T b )
     return a + b;
 } //do_fadd
 
-template <typename T> T x64::do_fsub( T a, T b )
+template <typename T> T x64::do_fsub( T a, T b, bool x87 )
 {
     if ( isinf( a ) && isinf( b ) )
     {
@@ -3901,7 +3897,7 @@ template <typename T> T x64::do_fsub( T a, T b )
     }
 
     if ( my_isnan( a ) || my_isnan( b ) )
-        return handle_math_nan( a, b );
+        return handle_math_nan( a, b, x87 );
 
     T result = a - b;
     if ( my_isnan( result ) ) // never return -NAN
@@ -3910,10 +3906,10 @@ template <typename T> T x64::do_fsub( T a, T b )
     return result;
 } //do_fsub
 
-template <typename T> T x64::do_fmul( T a, T b )
+template <typename T> T x64::do_fmul( T a, T b, bool x87 )
 {
     if ( my_isnan( a ) || my_isnan( b ) )
-        return handle_math_nan( a, b );
+        return handle_math_nan( a, b, x87 );
 
     bool ainf = isinf( a );
     bool binf = isinf( b );
@@ -3932,10 +3928,10 @@ template <typename T> T x64::do_fmul( T a, T b )
     return a * b;
 } //do_fmul
 
-template <typename T> T x64::do_fdiv( T a, T b )
+template <typename T> T x64::do_fdiv( T a, T b, bool x87 )
 {
     if ( my_isnan( a ) || my_isnan( b ) )
-        return handle_math_nan( a, b );
+        return handle_math_nan( a, b, x87 );
 
     bool ainf = isinf( a );
     bool binf = isinf( b );
@@ -7775,12 +7771,12 @@ _prefix_is_set:
                 }
                 else if ( op1 >= 0xc0 && op1 <= 0xc7 ) // faddp st(i), st(0)
                 {
-                    poke_fp( offset, do_f80_add( peek_fp( 0 ), peek_fp( offset ) ) );
+                    poke_fp( offset, do_f80_add( peek_fp( offset ), peek_fp( 0 ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmulp st(i), st(0)
                 {
-                    poke_fp( offset, do_f80_mul( peek_fp( 0 ), peek_fp( offset ) ) );
+                    poke_fp( offset, do_f80_mul( peek_fp( offset ), peek_fp( 0 ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fdivrp st(i), st(0)
