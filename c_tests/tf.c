@@ -159,13 +159,14 @@ void many_trigonometrics()
     long double ldresult, ldback;
     double dresult, dback;
     float fresult, fback;
-    float f = 0.01 - ( M_PI / 2 ); // want to be >= negative half pi.
+    float f = 0.01 - ( M_PI / 2 ); // want to be > negative half pi.
+    float limit = ( M_PI / 2 ) - 0.01; // want to be < half pi.
 
     //printf( "float epsilon: %.40lf\n", (double) FLT_EPSILON );
     //printf( "double epsilon: %.40lf\n", (double) DBL_EPSILON );
     //printf( "long double epsilon: %.40lf\n", (double) LDBL_EPSILON );
 
-    while ( f < ( M_PI / 2 ) )
+    while ( f < limit )
     {
         fresult = tanf( f );
         fback = atanf( fresult );
