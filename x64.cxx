@@ -3130,7 +3130,10 @@ void x64::decode_sib()
         _displacement = (int8_t) get_rip8();
 
     if ( _rex.B )
+    {
         _sibBase |= 8;
+        _rm &= 7;        // clear bit 3 if set in decode_rex.
+    }
 } //decode_sib
 
 inline void x64::decode_rex()
@@ -3361,18 +3364,6 @@ uint32_t bitscan_reverse( uint64_t x )
     return 0; // undefined
 } //bitscan_reverse
 
-uint8_t bitcount( uint64_t x )
-{
-    uint8_t count = 0;
-    while ( 0 != x )
-    {
-        if ( x & 1 )
-            count++;
-        x >>= 1;
-    }
-    return count;
-} //bitcount
-
 uint8_t saturate_i16_to_ui8( int16_t x )
 {
     if ( x > UINT8_MAX )
@@ -3472,7 +3463,6 @@ double set_double_sign( double d, bool sign )
 
     float80_t x64::handle_f80_math_nan( float80_t a, float80_t b )
     {
-        float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
         ext80 eb = ext80::from_bytes_le( b.get_bytes() );
 
@@ -3480,6 +3470,7 @@ double set_double_sign( double d, bool sign )
         {
             if ( eb.is_nan() )
             {
+                float80_t r;
                 if ( ea.signbit() && eb.signbit() )
                 {
                     double_to_ieee80( -MY_NAN, r.get_bytes() );
@@ -3548,15 +3539,6 @@ template <typename T> T x64::handle_math_nan( T a, T b, bool x87 )
     assert( my_isnan( b ) );
     return b;
 } //handle_math_nan
-
-float80_t do_f80_round( float80_t x, uint16_t rmode )
-{
-    #if NATIVE_X87_LONG_DOUBLE
-        return f80_from_ld( round_ldouble_from_ldouble( x.getld(), (uint8_t) ( rmode >> 10 ) ) );
-    #else
-        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
-    #endif
-} //do_f80_round
 
 float80_t do_f80_chs( float80_t x ) // change the sign of the number
 {
@@ -3702,12 +3684,12 @@ float80_t do_f80_trunc( float80_t x )
     #endif
 } //do_f80_trunc
 
-float80_t do_f80_round( float80_t x )
+float80_t do_f80_round( float80_t x, uint16_t rmode )
 {
     #if NATIVE_X87_LONG_DOUBLE
-        return f80_from_ld( roundl( x.getld() ) );
+        return f80_from_ld( round_ldouble_from_ldouble( x.getld(), (uint8_t) ( rmode >> 10 ) ) );
     #else
-        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round() );
+        return ext80_to_float80_t( ext80::from_bytes_le( x.get_bytes() ).round_mode( rmode ) );
     #endif
 } //do_f80_round
 
@@ -5745,7 +5727,7 @@ _prefix_is_set:
                         if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
                         {
                             decode_rm();
-                            uint8_t val = bitcount( get_rm() );
+                            uint8_t val = bit_count( get_rm() );
                             if ( 0x66 == _prefix_size )
                                 regs[ _reg ].w = val; // don't 0-extend for 16-bit results
                             else
@@ -7472,7 +7454,7 @@ _prefix_is_set:
                 {
                     float80_t d0 = peek_fp( 0 );
                     float80_t d1 = peek_fp( 1 );
-                    float80_t Q = do_f80_round( do_f80_div( d0, d1 ) );
+                    float80_t Q = do_f80_round( do_f80_div( d0, d1 ), 0 );
                     float80_t remainder = do_f80_sub( d0, do_f80_mul( Q, d1 ) );
 
                     // to do set c0, c3, c1 to be least significant bits of Q: q2, q1, q0
