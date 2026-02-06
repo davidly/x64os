@@ -9,11 +9,12 @@ extern const char * emulator_symbol_lookup( uint64_t address, uint64_t & offset 
 extern const char * emulator_symbol_lookup( uint32_t address, uint32_t & offset );           // returns the best guess for a symbol name and offset for the address
 extern void emulator_hard_termination( x64 & cpu, const char *pcerr, uint64_t error_value ); // show an error and exit
 
-template <typename T> inline bool val_signed( T x )
+template <typename T> inline bool highest_bit( T x )
 {
-    uint64_t mask = ( 0x80ull << ( ( sizeof( T ) - 1 ) * 8 ) );
-    return ( 0 != ( x & (T) mask ) );
-} //val_signed
+    using U = typename std::make_unsigned<T>::type;
+    static constexpr U mask = U( 1 ) << ( (sizeof( T ) * 8) - 1 );
+    return ( 0 != (static_cast<U>( x ) & mask) );
+} //highest_bit
 
 template <typename T> inline bool second_highest_bit( T x )
 {
@@ -292,7 +293,7 @@ private:
     {
         setflag_p( is_parity_even8( 0xff & val ) );
         setflag_z( 0 == val );
-        setflag_s( val_signed( val ) );
+        setflag_s( highest_bit( val ) );
     } //set_PSZ
 
     void reset_CO() { rflags &= ~0x801; }

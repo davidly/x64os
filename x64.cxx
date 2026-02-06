@@ -5,7 +5,7 @@
     There is also a 32-bit x86 compatibility mode controlled by member variable Mode32. This can be used to run 32-bit binaries.
     Prefix code 0x67 to specify 32-bit addresses is not implemented (g++ and clang++ don't use this)
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
-    Also tested running nested emulators and their regression tests: this one (x64os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
+    Also tested running nested emulators and their regression tests: this one (x64os/x32os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
     Builds and runs on both little and big endian machines for 32 and 64 bit. set TARGET_BIG_ENDIAN for those machines.
 
     Written by David Lee in October & November 2025
@@ -156,7 +156,7 @@ void x64::trace_state()
         len += snprintf( & reg_string[ len ], 32, "gs:%llx ", gs.q );
 #endif
 
-    // for __mc68000__ this must be slit into two traces
+    // for a __mc68000__ limitation this must be slit into two traces
     tracer.Trace( "rip %8llx %s%s ", ip, symbol_name, symbol_offset );
     tracer.Trace( "%02x %02x %02x %02x %02x %s%s => ", getui8( ip ), getui8( ip + 1 ), getui8( ip + 2 ), getui8( ip + 3 ), getui8( ip + 4 ), reg_string, render_flags() );
 
@@ -2658,16 +2658,12 @@ float80_t x64::pop_fp()
 
 float80_t x64::peek_fp( uint8_t offset )
 {
-    offset += fp_sp;
-    offset = offset % _countof( fregs );
-    return fregs[ offset ];
+    return fregs[ ( offset + fp_sp ) % _countof( fregs ) ];
 } //peek_fp
 
 void x64::poke_fp( uint8_t offset, float80_t f80 )
 {
-    offset += fp_sp;
-    offset = offset % _countof( fregs );
-    fregs[ offset ] = f80;
+    fregs[ ( offset + fp_sp ) % _countof( fregs ) ] = f80;
     trace_fregs();
 } //poke_fp
 
@@ -2794,7 +2790,7 @@ template <typename T> T x64::op_add( T a, T b, bool carry )
     T result = a + b + (T) carry;
     set_PSZ( result );
     setflag_c( ( ( result < a || result < b ) ) || ( result < ( a + b ) ) );
-    setflag_o( ( ! val_signed( a ^ b ) ) && ( val_signed( a ^ result ) ) );
+    setflag_o( ( ! highest_bit( a ^ b ) ) && ( highest_bit( a ^ result ) ) );
     setflag_a( 0 != ( ( ( a & 0xf ) + ( b & 0xf ) + (T) carry ) & 0x10 ) );
     return result;
 } //op_add
@@ -2848,7 +2844,7 @@ template <typename T> void x64::op_rol( T * pval, uint8_t shift )
     T val = original;
     for ( uint8_t sh = 0; sh < shift; sh++ )
     {
-        bool highBit = val_signed( val );
+        bool highBit = highest_bit( val );
         val <<= 1;
         if ( highBit )
             val |= 1;
@@ -2856,7 +2852,7 @@ template <typename T> void x64::op_rol( T * pval, uint8_t shift )
     }
 
     if ( 1 == shift )
-        setflag_o( val_signed( val ) != val_signed( original ) );
+        setflag_o( highest_bit( val ) != highest_bit( original ) );
     *pval = val;
 } //op_rol
 
@@ -2873,7 +2869,7 @@ template <typename T> void x64::op_ror( T * pval, uint8_t shift )
     }
 
     if ( 1 == shift )
-        setflag_o( val_signed( val ) ^ second_highest_bit( val ) );
+        setflag_o( highest_bit( val ) ^ second_highest_bit( val ) );
     *pval = val;
 } //op_ror
 
@@ -2882,7 +2878,7 @@ template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
     T val = *pval;
     for ( uint8_t sh = 0; sh < shift; sh++ )
     {
-        bool newCarry = val_signed( val );
+        bool newCarry = highest_bit( val );
         val <<= 1;
         if ( flag_c() )
             val |= 1;
@@ -2890,7 +2886,7 @@ template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
     }
 
     if ( 1 == shift )
-        setflag_o( val_signed( val ) ^ flag_c() );
+        setflag_o( highest_bit( val ) ^ flag_c() );
     *pval = val;
 } //op_rcl
 
@@ -2907,7 +2903,7 @@ template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
     }
 
     if ( 1 == shift )
-        setflag_o( val_signed( val ) ^ second_highest_bit( val ) );
+        setflag_o( highest_bit( val ) ^ second_highest_bit( val ) );
     *pval = val;
 } //op_rcr
 
@@ -2919,7 +2915,7 @@ template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
 
     for ( uint8_t s = 0; s < shift; s++ )
     {
-        setflag_c( val_signed( x ) );
+        setflag_c( highest_bit( x ) );
         x <<= 1;
     }
 
@@ -2931,7 +2927,7 @@ template <typename T> void x64::op_shr( T * pval, uint8_t shift )
 {
     T x = *pval;
     if ( 1 == shift )
-        setflag_o( val_signed( x ) );
+        setflag_o( highest_bit( x ) );
     x >>= ( shift - 1 );
     setflag_c( 0 != ( *pval & 1 ) );
     x >>= 1;
@@ -3132,7 +3128,7 @@ void x64::decode_sib()
     if ( _rex.B )
     {
         _sibBase |= 8;
-        _rm &= 7;        // clear bit 3 if set in decode_rex.
+        _rm &= 7;        // clear bit 3 set in decode_rex since there is an SIB
     }
 } //decode_sib
 
@@ -4123,8 +4119,6 @@ uint64_t x64::run()
         _prefix_sse2_repeat = 0;    // can be 0xf2 or 0xf3 for SSE2 instructions or string repeat opcodes
         _prefix_segment = 0;        // can be 0x64 for fs: or 0x65 for gs:
 
-_prefix_is_set:
-
         #ifndef NDEBUG
             if ( regs[ rsp ].q <= ( stack_top - stack_size ) )
                 emulator_hard_termination( *this, "stack pointer is below stack memory:", regs[ rsp ].q );
@@ -4153,6 +4147,8 @@ _prefix_is_set:
             if ( ( g_State & stateTraceInstructions ) && tracer.IsEnabled() )
                 trace_state();
         }
+
+_prefix_is_set:
 
         uint8_t op = get_rip8();    // 18% of runtime
 
@@ -4564,16 +4560,16 @@ _prefix_is_set:
                             unhandled();
                         if ( 0x66 == _prefix_size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
                         {
-                            uint32_t val = val_signed( xregs[ _rm ].get64( 0 ) );
-                            val |= ( val_signed( xregs[ _rm ].get64( 1 ) ) << 1 );
+                            uint32_t val = highest_bit( xregs[ _rm ].get64( 0 ) );
+                            val |= ( highest_bit( xregs[ _rm ].get64( 1 ) ) << 1 );
                             regs[ _reg ].q = val; // zero-extend the value
                         }
                         else // movmkps reg, xmm    extract 4-bit sign mask from xmm and store in reg
                         {
-                            uint32_t val = val_signed( xregs[ _rm ].get32( 0 ) );
-                            val |= ( val_signed( xregs[ _rm ].get32( 1 ) ) << 1 );
-                            val |= ( val_signed( xregs[ _rm ].get32( 2 ) ) << 2 );
-                            val |= ( val_signed( xregs[ _rm ].get32( 3 ) ) << 3 );
+                            uint32_t val = highest_bit( xregs[ _rm ].get32( 0 ) );
+                            val |= ( highest_bit( xregs[ _rm ].get32( 1 ) ) << 1 );
+                            val |= ( highest_bit( xregs[ _rm ].get32( 2 ) ) << 2 );
+                            val |= ( highest_bit( xregs[ _rm ].get32( 3 ) ) << 3 );
                             regs[ _reg ].q = val; // zero-extend the value
                         }
                         break;
@@ -5416,10 +5412,17 @@ _prefix_is_set:
                         }
                         else if ( 1 == regs[ rax ].q )
                         {
-                            regs[ rax ].q = 0;
-                            regs[ rcx ].q = 0;
-                            regs[ rdx ].q = 0x04000000; // sse2 is bit 26. without this set glibc for 32-bit will use x87 and integer ops instead. for 64-bit sse2 is assumed.
-                                                        // for 32-bit string operations in the emulator, sse2 is about 50% faster realtime and executes about half the instructions.
+                            regs[ rbx ].q = 0;
+
+                            const uint32_t bitPOPCNT = 1 << 23;     // popcnt
+                            regs[ rcx ].q = bitPOPCNT;
+
+                            const uint32_t bitFPU = 1 << 0;         // x87
+                            const uint32_t bitTSC = 1 << 4;         // rdtsc
+                            const uint32_t bitCX8 = 1 << 8;         // cpmxchg8b
+                            const uint32_t bitCMOV = 1 << 15;       // cmov
+                            const uint32_t bitSSE2 = 1 << 26;       // sse2. for 32-bit string operations in the emulator, sse2 is about 50% faster realtime and executes about half the instructions.
+                            regs[ rdx ].q = bitFPU | bitTSC | bitCX8 | bitCMOV | bitSSE2;
                         }
                         else if ( 0x80000000 == regs[ rax ].d )
                             regs[ rax ].q = 0;
@@ -5590,7 +5593,7 @@ _prefix_is_set:
                         {
                             int64_t result128H = 0;
                             int64_t result128L = CMultiply128::mul_s64_s64( regs[ _reg ].q, get_rm64(), &result128H );
-                            setflag_o( val_signed( result128H) != val_signed( result128L ) );
+                            setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
                             setflag_c( flag_o() );
                             regs[ _reg ].q = result128L;
                         }
@@ -5600,7 +5603,7 @@ _prefix_is_set:
                             int32_t b = sign_extend32( get_rm16(), 15 );
                             int32_t result32 = a * b;
                             uint16_t result16 = result32 & 0xffff;
-                            setflag_o( val_signed( result32 ) != val_signed( result16 ) );
+                            setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
                             setflag_c( flag_o() );
                             regs[ _reg ].q = result16;
                         }
@@ -5610,7 +5613,7 @@ _prefix_is_set:
                             int64_t b = sign_extend( get_rm32(), 31 );
                             int64_t result64 = a * b;
                             uint32_t result32 = result64 & 0xffffffff;
-                            setflag_o( val_signed( result64 ) != val_signed( result32 ) );
+                            setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
                             setflag_c( flag_o() );
                             regs[ _reg ].q = result32;
                         }
@@ -6241,7 +6244,7 @@ _prefix_is_set:
                             for ( uint32_t e = 0; e < 4; e++ )
                             {
                                 if ( shift >= 32 )
-                                    xmm1.set32( e, val_signed( xmm1.get32( e ) ) ? 0xffffffff : 0 );
+                                    xmm1.set32( e, highest_bit( xmm1.get32( e ) ) ? 0xffffffff : 0 );
                                 else
                                     xmm1.set32( e, ( (int32_t) xmm1.get32( e ) ) >> shift );
                             }
@@ -6681,7 +6684,7 @@ _prefix_is_set:
                     uint64_t imm64 = sign_extend( get_rip32(), 31 );
                     int64_t result128H = 0;
                     uint64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), imm64, &result128H );
-                    setflag_o( val_signed( result128H) != val_signed( result128L ) );
+                    setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result128L;
                 }
@@ -6692,7 +6695,7 @@ _prefix_is_set:
                     uint32_t b = (uint32_t) imm16;
                     uint32_t result32 = a * b;
                     uint16_t result16 = result32 & 0xffff;
-                    setflag_o( val_signed( result32 ) != val_signed( result16 ) );
+                    setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result16;
                 }
@@ -6703,7 +6706,7 @@ _prefix_is_set:
                     uint64_t b = imm32;
                     uint64_t result64 = a * b;
                     uint32_t result32 = result64 & 0xffffffff;
-                    setflag_o( val_signed( result64 ) != val_signed( result32 ) );
+                    setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result32;
                 }
@@ -6722,7 +6725,7 @@ _prefix_is_set:
                 {
                     int64_t result128H = 0;
                     int64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), sign_extend( imm8, 7 ), &result128H );
-                    setflag_o( val_signed( result128H) != val_signed( result128L ) );
+                    setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result128L;
                 }
@@ -6732,7 +6735,7 @@ _prefix_is_set:
                     uint32_t b = (uint32_t) sign_extend( imm8,7 );
                     uint32_t result32 = a * b;
                     uint16_t result16 = result32 & 0xffff;
-                    setflag_o( val_signed( result32 ) != val_signed( result16 ) );
+                    setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result16;
                 }
@@ -6742,7 +6745,7 @@ _prefix_is_set:
                     uint64_t b = sign_extend( imm8, 7 );
                     uint64_t result64 = a * b;
                     uint32_t result32 = result64 & 0xffffffff;
-                    setflag_o( val_signed( result64 ) != val_signed( result32 ) );
+                    setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result32;
                 }
@@ -6984,11 +6987,11 @@ _prefix_is_set:
             {
                 decode_rex();
                 if ( _rex.W )
-                    regs[ rdx ].q = ( val_signed( regs[ rax ].q ) ) ? ~0 : 0;
+                    regs[ rdx ].q = ( highest_bit( regs[ rax ].q ) ) ? ~0 : 0;
                 else if ( 0x66 == _prefix_size )
-                    regs[ rdx ].q = ( val_signed( regs[ rax ].w ) ) ? 0xffff : 0;
+                    regs[ rdx ].q = ( highest_bit( regs[ rax ].w ) ) ? 0xffff : 0;
                 else
-                    regs[ rdx ].q = ( val_signed( regs[ rax ].d ) ) ? 0xffffffff : 0;
+                    regs[ rdx ].q = ( highest_bit( regs[ rax ].d ) ) ? 0xffffffff : 0;
                 break;
             }
             case 0x9b: // fwait. don't do anything
