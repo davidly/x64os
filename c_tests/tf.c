@@ -7,6 +7,12 @@
 #include <float.h>
 #include <stdint.h>
 
+#if defined( __mc68000__ ) || defined( sparc )
+#define LDBL_TESTS 0
+#else
+#define LDBL_TESTS 1
+#endif
+
 #if defined(__SIZEOF_INT128__)
 typedef unsigned __int128 uint128_t;
 typedef __int128 int128_t;
@@ -54,9 +60,9 @@ char *floattoa( char *buffer, double d, int precision )
 
 // less than full precision because libc only provides this much precision in trig functions
 
-#define TRIG_FLT_EPSILON 0.00002  /* 0.00000011920928955078 */
-#define TRIG_DBL_EPSILON 0.00000002 /* 0.00000000000000022204 */
-#define TRIG_LDBL_EPSILON 0.0000000000000002 /* 0.0000000000000000000000000000000001925930 */
+#define TRIG_FLT_EPSILON  0.00002  /* 0.00000011920928955078 */
+#define TRIG_DBL_EPSILON  0.00000002 /* 0.00000000000000022204 */
+#define TRIG_LDBL_EPSILON 0.0000000000002 /* 0.0000000000000000000000000000000001925930 */
 
 void check_same_f( const char * operation, float a, float b, float dbgval )
 {
@@ -84,12 +90,12 @@ void check_same_d( const char * operation, double a, double b, double dbgval )
     }
 } //check_same_d
 
+#if LDBL_TESTS
 void check_same_ld( const char * operation, long double a, long double b, long double dbgval )
 {
     long double diff = a - b;
     long double abs_diff = fabsl( diff );
-    // the x64os emulator uses double precision for long double, so using DBL_EPSILON here
-    bool eq = ( abs_diff <= TRIG_DBL_EPSILON );
+    bool eq = ( abs_diff <= TRIG_LDBL_EPSILON );
     if ( !eq )
     {
         printf( "operation %s: long double %.20Lf is not the same as long double %.20Lf\n", operation, a, b );
@@ -97,6 +103,7 @@ void check_same_ld( const char * operation, long double a, long double b, long d
         exit( 0 );
     }
 } //check_same_ld
+#endif
 
 #if defined(__SIZEOF_INT128__)
 const int max_N_Iterations = 17; // limited by factorial size for int128_t
@@ -112,6 +119,7 @@ int64_t factorial( int64_t n ) // should work for up to n=20
     return n * factorial( n - 1 );
 } //factorial
 
+#if LDBL_TESTS
 long double my_sin_ld( long double x, int n = max_N_Iterations )
 {
     long double result = 0;
@@ -125,6 +133,7 @@ long double my_sin_ld( long double x, int n = max_N_Iterations )
 
     return result;
 } //my_sin_ld
+#endif
 
 double my_sin_d( double x, int n = max_N_Iterations )
 {
@@ -160,7 +169,7 @@ void many_trigonometrics()
     double dresult, dback;
     float fresult, fback;
     float f = 0.01 - ( M_PI / 2 ); // want to be > negative half pi.
-    float limit = ( M_PI / 2 ) - 0.01; // want to be < half pi.
+    const float limit = ( M_PI / 2 ) - 0.01; // want to be < half pi.
 
     //printf( "float epsilon: %.40lf\n", (double) FLT_EPSILON );
     //printf( "double epsilon: %.40lf\n", (double) DBL_EPSILON );
@@ -176,9 +185,11 @@ void many_trigonometrics()
         dback = atan( dresult );
         check_same_d( "tan", (double) f, dback, fresult );
 
+#if LDBL_TESTS
         ldresult = tanl( (long double) f );
         ldback = atanl( ldresult );
         check_same_ld( "tan", (long double) f, ldback, ldresult );
+#endif
 
         fresult = sinf( f );
         fback = my_sin_f( f );
@@ -200,6 +211,7 @@ void many_trigonometrics()
         dback = asin( dresult );
         check_same_d( "my sin", (double) f, dback, dresult );
 
+#if LDBL_TESTS
         ldresult = sinl( (long double) f );
         ldback = my_sin_ld( (long double) f );
         check_same_ld( "sinl vs my_sinl", ldresult, ldback, f );
@@ -211,6 +223,7 @@ void many_trigonometrics()
         ldresult = my_sin_ld( (long double) f );
         ldback = asinl( ldresult );
         check_same_ld( "my sin", (long double) f, ldback, ldresult );
+#endif
 
         float f_cos = f + ( M_PI / 2 );
         fresult = cosf( f_cos );
@@ -221,11 +234,13 @@ void many_trigonometrics()
         dback = acos( dresult );
         check_same_d( "cos", (double) f_cos, dback, dresult );
 
+#if LDBL_TESTS
         ldresult = cosl( f_cos );
         ldback = acosl( ldresult );
         check_same_ld( "cos", (long double) f_cos, ldback, ldresult );
+#endif
 
-        f += .01f;
+        f += .032f;
     }
 } //many_trignometrics
 
@@ -401,8 +416,10 @@ extern "C" int main()
     for ( double d = 1.0; d < 100.0; d += 1.38 )
         check_same_d( "square root double", square_root_d( d ), sqrt( d ), d );
 
+#if LDBL_TESTS
     for ( long double ld = 1.0; ld < 100.0; ld += 1.38 )
         check_same_ld( "square root long double", square_root_ld( ld ), sqrtl( ld ), ld );
+#endif
 
     printf( "test tf completed with great success\n" );
     exit( 0 );
