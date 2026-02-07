@@ -84,6 +84,6 @@ set _fortranlist=e sieve ttt primes mm
 
 echo %date% %time% >>%outputfile%
 dos2unix %outputfile%
-diff baseline_%outputfile% %outputfile%
+diff -b baseline_%outputfile% %outputfile%
 
 
