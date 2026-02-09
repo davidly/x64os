@@ -1997,6 +1997,10 @@ void x64::trace_state()
                 tracer.Trace( "fadd st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(0), st(i)
                 tracer.Trace( "fmul st(0), st(%u)\n", op1 & 7 );
+            else if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fcom st(0), st(i)
+                tracer.Trace( "fcom st(0), st(%u)\n", op1 & 7 );
+            else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fcomp st(0), st(i)
+                tracer.Trace( "fcomp st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsub st(0), st(i)
                 tracer.Trace( "fsub st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubr st(0), st(i)
@@ -2197,8 +2201,12 @@ void x64::trace_state()
         case 0xdd:
         {
             uint8_t op1 = get_rip8();
-            if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
+            if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fst st(i)
+                tracer.Trace( "fst st(%u), st(0)\n", op1 & 7 );
+            else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
                 tracer.Trace( "fstp st(%u), st(0)\n", op1 & 7 );
+            else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fucom st(i).  compare st(0) with st(i)
+                tracer.Trace( "fucom st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomp st(i).  compare st(0) with st(i) and pop
                 tracer.Trace( "fucomp st(%u)\n", op1 & 7 );
             else
@@ -7356,6 +7364,13 @@ _prefix_is_set:
                     poke_fp( 0, do_f80_add( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(0), st(i)
                     poke_fp( 0, do_f80_mul( peek_fp( 0 ), peek_fp( offset ) ) );
+                else if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fcom st(0), st(i)
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
+                else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fcomp st(0), st(i)
+                {
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
+                    pop_fp();
+                }
                 else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsub st(0), st(i)
                     poke_fp( 0, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubr st(0), st(i)
@@ -7709,11 +7724,15 @@ _prefix_is_set:
             {
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
-                if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
+                if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fst st(i)
+                    poke_fp( offset, peek_fp( 0 ) );
+                else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
                 {
                     poke_fp( offset, peek_fp( 0 ) );
                     pop_fp();
                 }
+                else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fucom st(i).  compare st(0) with st(i)
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomp st(i).  compare st(0) with st(i) and pop
                 {
                     set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );

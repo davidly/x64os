@@ -16,8 +16,12 @@ do
         mkdir /mnt/c/users/david/onedrive/x64os/c_tests/x32bin"$optflag" 2>/dev/null
         mkdir /mnt/c/users/david/onedrive/x64os/c_tests/x32clangbin"$optflag" 2>/dev/null
 
-        # have clang generate code that uses the x87 and g++ generate code that uses sse2 to get more test coverage
-        _clangbuild="clang-18 -m32 -x c++ "$arg".c -o x32clangbin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+        # have clang generate code that uses the i386 + x87 and g++ generate code that uses P6 + sse2 to get more test coverage. excpt for tatomic, which needs P6 atomic operations
+        if [ "$arg" == "tatomic" ]; then
+            _clangbuild="clang-18 -m32 -x c++ "$arg".c -o x32clangbin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+        else
+            _clangbuild="clang-18 -m32 -march=i386 -x c++ "$arg".c -o x32clangbin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+        fi
         _gnubuild="g++ "$arg".c -m32 -msse2 -mfpmath=sse -o x32bin"$optflag"/"$arg" -O"$optflag" -static -mpopcnt -fsigned-char -Wno-format -Wno-format-security"
 
         if [ "$optflag" != "fast" ]; then

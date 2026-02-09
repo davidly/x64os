@@ -22,8 +22,12 @@ do
     mkdir x32bin"$optflag" 2>/dev/null
     mkdir x32clangbin"$optflag" 2>/dev/null
 
-    # have clang generate code that uses the x87 and g++ generate code that uses sse2 to get more test coverage
-    _clangbuild="clang-18 -x c++ "$1".c -m32 -mpopcnt -o x32clangbin"$optflag"/"$1" -O"$optflag" -static -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+    # have clang generate code that uses the i386 + x87 and g++ generate code that uses P6 + sse2 to get more test coverage
+        if [ "$1" == "tatomic" ]; then
+            _clangbuild="clang-18 -m32 -x c++ "$1".c -o x32clangbin"$optflag"/"$1" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+        else
+            _clangbuild="clang-18 -m32 -march=i386 -x c++ "$1".c -o x32clangbin"$optflag"/"$1" -O"$optflag" -static -mpopcnt -Wno-implicit-const-int-float-conversion -fsigned-char -Wno-format -Wno-format-security -std=c++14 -lm -lstdc++"
+        fi
     _gnubuild="g++ "$1".c -m32 -mpopcnt -msse2 -mfpmath=sse -U_FORTIFY_SOURCE -o x32bin"$optflag"/"$1" -O"$optflag" -static -fsigned-char -Wno-format -Wno-format-security"
 
     if [ "$optflag" != "fast" ]; then

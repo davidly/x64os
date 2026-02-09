@@ -1,4 +1,4 @@
-Fri 02/06/2026  8:29:22.40 
+Mon 02/09/2026 10:49:48.37 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -13229,7 +13229,7 @@ log10 of 300: 2.477121
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,
 pi has mantissa: 0.785398, exponent 2
 r should be 1.0: 1.000000
-  r high point 3187071009115100744291401655542800324833597909202670452736.000000
+  r high point 3187071009115111197765713466772397919701538213122126381056.000000
 floor of 1.1: 1.000000 == 1
 ceil of 1.1: 2.000000 == 2
 floor of -1.8: -2.000000 == -2
@@ -32085,7 +32085,7 @@ overflow: types   float +   int32, size 2, sumA 2.30466e+11, sumB 0, sumC 1.0140
 cast:     types   float +  uint32, size 2, sumA 2.30466e+11, sumB 0, sumC 1.01405e+12
 overflow: types   float +  uint32, size 2, sumA 2.30466e+11, sumB 0, sumC 1.01405e+12
 cast:     types   float +   int64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
-overflow: types   float +   int64, size 2, sumA 2.30466e+11, sumB 507024680839, sumC 1.01405e+12
+overflow: types   float +   int64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
 cast:     types   float +  uint64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
 overflow: types   float +  uint64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
 cast:     types   float +   float, size 2, sumA 2.30466e+11, sumB 5.07025e+11, sumC 1.01405e+12
@@ -32329,13 +32329,13 @@ overflow: types   float +  uint32, size 3, sumA 4.13686e+11, sumB 0, sumC 1.8202
 cast:     types   float +   int64, size 3, sumA 4.13686e+11, sumB 910109286464, sumC 1.82022e+12
 overflow: types   float +   int64, size 3, sumA 4.13686e+11, sumB 910109308327, sumC 1.82022e+12
 cast:     types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109286464, sumC 1.82022e+12
-overflow: types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109300816, sumC 1.82022e+12
+overflow: types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109304862, sumC 1.82022e+12
 cast:     types   float +   float, size 3, sumA 4.13686e+11, sumB 9.10109e+11, sumC 1.82022e+12
 overflow: types   float +   float, size 3, sumA 4.13686e+11, sumB 9.10109e+11, sumC 1.82022e+12
 cast:     types   float +  double, size 3, sumA 4.13686e+11, sumB 910109286465, sumC 1.82022e+12
-overflow: types   float +  double, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
+overflow: types   float +  double, size 3, sumA 4.13686e+11, sumB 910109293976, sumC 1.82022e+12
 cast:     types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109286465, sumC 1.82022e+12
-overflow: types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
+overflow: types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109293976, sumC 1.82022e+12
 cast:     types  double +    int8, size 3, sumA 1152328781.73, sumB 125, sumC 5070246639.62
 overflow: types  double +    int8, size 3, sumA 20357808304.5, sumB 125, sumC 207880109648
 cast:     types  double +   uint8, size 3, sumA 170928770121, sumB 253, sumC 752086588531
@@ -32570,8 +32570,8 @@ cast:     types   float +  uint32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.5052
 overflow: types   float +  uint32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
 cast:     types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
 overflow: types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
-cast:     types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
-overflow: types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
+cast:     types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261526729e+12, sumC 3.50523e+12
+overflow: types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261526729e+12, sumC 3.50523e+12
 cast:     types   float +   float, size 4, sumA 7.96643e+11, sumB 1.75262e+12, sumC 3.50523e+12
 overflow: types   float +   float, size 4, sumA 7.96643e+11, sumB 1.75262e+12, sumC 3.50523e+12
 cast:     types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
@@ -32806,14 +32806,14 @@ cast:     types   float +   int16, size 5, sumA 1.92055e+09, sumB 32763, sumC 8.
 overflow: types   float +   int16, size 5, sumA 1.2933e+12, sumB 32763, sumC 5.69051e+12
 cast:     types   float +  uint16, size 5, sumA 1.2933e+12, sumB 65531, sumC 5.69051e+12
 overflow: types   float +  uint16, size 5, sumA 1.2933e+12, sumB 65531, sumC 5.69051e+12
-cast:     types   float +   int32, size 5, sumA 1.92055e+09, sumB -69761606, sumC 8.45041e+09
+cast:     types   float +   int32, size 5, sumA 1.92055e+09, sumB -69761592, sumC 8.45041e+09
 overflow: types   float +   int32, size 5, sumA 1.2933e+12, sumB -2147483648, sumC 5.69051e+12
 cast:     types   float +  uint32, size 5, sumA 1.2933e+12, sumB 0, sumC 5.69051e+12
 overflow: types   float +  uint32, size 5, sumA 1.2933e+12, sumB 0, sumC 5.69051e+12
-cast:     types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-cast:     types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
+cast:     types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525349354e+12, sumC 5.69051e+12
+overflow: types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525349354e+12, sumC 5.69051e+12
+cast:     types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525349354e+12, sumC 5.69051e+12
+overflow: types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525349354e+12, sumC 5.69051e+12
 cast:     types   float +   float, size 5, sumA 1.2933e+12, sumB 2.84525e+12, sumC 5.69051e+12
 overflow: types   float +   float, size 5, sumA 1.2933e+12, sumB 2.84525e+12, sumC 5.69051e+12
 cast:     types   float +  double, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
@@ -33052,8 +33052,8 @@ cast:     types   float +   int32, size 6, sumA 2.30466e+09, sumB 775279532, sum
 overflow: types   float +   int32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
 cast:     types   float +  uint32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
 overflow: types   float +  uint32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
-cast:     types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
-overflow: types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
+cast:     types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042475432e+12, sumC 8.00085e+12
+overflow: types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042475432e+12, sumC 8.00085e+12
 cast:     types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
 overflow: types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
 cast:     types   float +   float, size 6, sumA 1.81837e+12, sumB 4.00042e+12, sumC 8.00085e+12
@@ -37909,14 +37909,14 @@ overflow: types   float +   int32, size 2, sumA 2.30466e+11, sumB 0, sumC 1.0140
 cast:     types   float +  uint32, size 2, sumA 2.30466e+11, sumB 0, sumC 1.01405e+12
 overflow: types   float +  uint32, size 2, sumA 2.30466e+11, sumB 0, sumC 1.01405e+12
 cast:     types   float +   int64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
-overflow: types   float +   int64, size 2, sumA 2.30466e+11, sumB 507024680839, sumC 1.01405e+12
+overflow: types   float +   int64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
 cast:     types   float +  uint64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
 overflow: types   float +  uint64, size 2, sumA 2.30466e+11, sumB 507024684304, sumC 1.01405e+12
 cast:     types   float +   float, size 2, sumA 2.30466e+11, sumB 5.07025e+11, sumC 1.01405e+12
 overflow: types   float +   float, size 2, sumA 2.30466e+11, sumB 5.07025e+11, sumC 1.01405e+12
-cast:     types   float +  double, size 2, sumA 2.30466e+11, sumB 507024684290, sumC 1.01405e+12
+cast:     types   float +  double, size 2, sumA 2.30466e+11, sumB 507024680840, sumC 1.01405e+12
 overflow: types   float +  double, size 2, sumA 2.30466e+11, sumB 507024684305, sumC 1.01405e+12
-cast:     types   float + ldouble, size 2, sumA 2.30466e+11, sumB 507024684305, sumC 1.01405e+12
+cast:     types   float + ldouble, size 2, sumA 2.30466e+11, sumB 507024680840, sumC 1.01405e+12
 overflow: types   float + ldouble, size 2, sumA 2.30466e+11, sumB 507024684305, sumC 1.01405e+12
 cast:     types  double +    int8, size 2, sumA 768219189.024, sumB -2, sumC 3380164431.7
 overflow: types  double +    int8, size 2, sumA 33801643884.9, sumB -2, sumC 148727233094
@@ -38152,14 +38152,14 @@ cast:     types   float +  uint32, size 3, sumA 4.13686e+11, sumB 0, sumC 1.8202
 overflow: types   float +  uint32, size 3, sumA 4.13686e+11, sumB 0, sumC 1.82022e+12
 cast:     types   float +   int64, size 3, sumA 4.13686e+11, sumB 910109304862, sumC 1.82022e+12
 overflow: types   float +   int64, size 3, sumA 4.13686e+11, sumB 910109308327, sumC 1.82022e+12
-cast:     types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109300816, sumC 1.82022e+12
-overflow: types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109300816, sumC 1.82022e+12
+cast:     types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109304862, sumC 1.82022e+12
+overflow: types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109304862, sumC 1.82022e+12
 cast:     types   float +   float, size 3, sumA 4.13686e+11, sumB 9.10109e+11, sumC 1.82022e+12
 overflow: types   float +   float, size 3, sumA 4.13686e+11, sumB 9.10109e+11, sumC 1.82022e+12
-cast:     types   float +  double, size 3, sumA 4.13686e+11, sumB 910109308313, sumC 1.82022e+12
-overflow: types   float +  double, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
-cast:     types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
-overflow: types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
+cast:     types   float +  double, size 3, sumA 4.13686e+11, sumB 910109300818, sumC 1.82022e+12
+overflow: types   float +  double, size 3, sumA 4.13686e+11, sumB 910109293976, sumC 1.82022e+12
+cast:     types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109300818, sumC 1.82022e+12
+overflow: types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109293976, sumC 1.82022e+12
 cast:     types  double +    int8, size 3, sumA 1152328781.73, sumB 125, sumC 5070246639.62
 overflow: types  double +    int8, size 3, sumA 20357808304.5, sumB 125, sumC 207880109648
 cast:     types  double +   uint8, size 3, sumA 170928770121, sumB 253, sumC 752086588531
@@ -38392,16 +38392,16 @@ cast:     types   float +   int32, size 4, sumA 1.53644e+09, sumB -914802744, su
 overflow: types   float +   int32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
 cast:     types   float +  uint32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
 overflow: types   float +  uint32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
-cast:     types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261531791e+12, sumC 3.50523e+12
-overflow: types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.7526153076e+12, sumC 3.50523e+12
-cast:     types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261530356e+12, sumC 3.50523e+12
-overflow: types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.7526153076e+12, sumC 3.50523e+12
+cast:     types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.7526153076e+12, sumC 3.50523e+12
+overflow: types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261531107e+12, sumC 3.50523e+12
+cast:     types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.7526153076e+12, sumC 3.50523e+12
+overflow: types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261530888e+12, sumC 3.50523e+12
 cast:     types   float +   float, size 4, sumA 7.96643e+11, sumB 1.75262e+12, sumC 3.50523e+12
 overflow: types   float +   float, size 4, sumA 7.96643e+11, sumB 1.75262e+12, sumC 3.50523e+12
-cast:     types   float +  double, size 4, sumA 7.96643e+11, sumB 1.7526153254e+12, sumC 3.50523e+12
-overflow: types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261532541e+12, sumC 3.50523e+12
-cast:     types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261532541e+12, sumC 3.50523e+12
-overflow: types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261532541e+12, sumC 3.50523e+12
+cast:     types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
+overflow: types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261527699e+12, sumC 3.50523e+12
+cast:     types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261526947e+12, sumC 3.50523e+12
+overflow: types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261527699e+12, sumC 3.50523e+12
 cast:     types  double +    int8, size 4, sumA 1536438374.44, sumB -4, sumC 6760328847.54
 overflow: types  double +    int8, size 4, sumA 9986849427.88, sumB -4, sumC 253512328705
 cast:     types  double +   uint8, size 4, sumA 240068496987, sumB 252, sumC 1.05630138674e+12
@@ -38630,20 +38630,20 @@ cast:     types   float +   int16, size 5, sumA 1.92055e+09, sumB 32763, sumC 8.
 overflow: types   float +   int16, size 5, sumA 1.2933e+12, sumB 32763, sumC 5.69051e+12
 cast:     types   float +  uint16, size 5, sumA 1.2933e+12, sumB 65531, sumC 5.69051e+12
 overflow: types   float +  uint16, size 5, sumA 1.2933e+12, sumB 65531, sumC 5.69051e+12
-cast:     types   float +   int32, size 5, sumA 1.92055e+09, sumB -69761606, sumC 8.45041e+09
+cast:     types   float +   int32, size 5, sumA 1.92055e+09, sumB -69761592, sumC 8.45041e+09
 overflow: types   float +   int32, size 5, sumA 1.2933e+12, sumB -2147483648, sumC 5.69051e+12
 cast:     types   float +  uint32, size 5, sumA 1.2933e+12, sumB 0, sumC 5.69051e+12
 overflow: types   float +  uint32, size 5, sumA 1.2933e+12, sumB 0, sumC 5.69051e+12
-cast:     types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525349824e+12, sumC 5.69051e+12
-cast:     types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.8452534682e+12, sumC 5.69051e+12
+cast:     types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525349354e+12, sumC 5.69051e+12
+overflow: types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525348087e+12, sumC 5.69051e+12
+cast:     types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525349354e+12, sumC 5.69051e+12
+overflow: types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.8452534774e+12, sumC 5.69051e+12
 cast:     types   float +   float, size 5, sumA 1.2933e+12, sumB 2.84525e+12, sumC 5.69051e+12
 overflow: types   float +   float, size 5, sumA 1.2933e+12, sumB 2.84525e+12, sumC 5.69051e+12
 cast:     types   float +  double, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +  double, size 5, sumA 1.2933e+12, sumB 2.84525352009e+12, sumC 5.69051e+12
+overflow: types   float +  double, size 5, sumA 1.2933e+12, sumB 2.84525355465e+12, sumC 5.69051e+12
 cast:     types   float + ldouble, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float + ldouble, size 5, sumA 1.2933e+12, sumB 2.84525352009e+12, sumC 5.69051e+12
+overflow: types   float + ldouble, size 5, sumA 1.2933e+12, sumB 2.84525355465e+12, sumC 5.69051e+12
 cast:     types  double +    int8, size 5, sumA 1920547967.15, sumB 123, sumC 8450411055.46
 overflow: types  double +    int8, size 5, sumA 14980274070.7, sumB 123, sumC 275483397133
 cast:     types  double +   uint8, size 5, sumA 308824114260, sumB 251, sumC 1.35882610274e+12
@@ -38876,16 +38876,16 @@ cast:     types   float +   int32, size 6, sumA 2.30466e+09, sumB 775279532, sum
 overflow: types   float +   int32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
 cast:     types   float +  uint32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
 overflow: types   float +  uint32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
-cast:     types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
-overflow: types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042473778e+12, sumC 8.00085e+12
+cast:     types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042475432e+12, sumC 8.00085e+12
+overflow: types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042474182e+12, sumC 8.00085e+12
 cast:     types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
 overflow: types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042474182e+12, sumC 8.00085e+12
 cast:     types   float +   float, size 6, sumA 1.81837e+12, sumB 4.00042e+12, sumC 8.00085e+12
 overflow: types   float +   float, size 6, sumA 1.81837e+12, sumB 4.00042e+12, sumC 8.00085e+12
 cast:     types   float +  double, size 6, sumA 1.81837e+12, sumB 4.00042477146e+12, sumC 8.00085e+12
-overflow: types   float +  double, size 6, sumA 1.81837e+12, sumB 4.00042475916e+12, sumC 8.00085e+12
+overflow: types   float +  double, size 6, sumA 1.81837e+12, sumB 4.0004247755e+12, sumC 8.00085e+12
 cast:     types   float + ldouble, size 6, sumA 1.81837e+12, sumB 4.00042477146e+12, sumC 8.00085e+12
-overflow: types   float + ldouble, size 6, sumA 1.81837e+12, sumB 4.00042475916e+12, sumC 8.00085e+12
+overflow: types   float + ldouble, size 6, sumA 1.81837e+12, sumB 4.0004247755e+12, sumC 8.00085e+12
 cast:     types  double +    int8, size 6, sumA 2304657559.86, sumB -6, sumC 10140493263.4
 overflow: types  double +    int8, size 6, sumA 48397808224.4, sumB -6, sumC 422520547409
 cast:     types  double +   uint8, size 6, sumA 406003841467, sumB 250, sumC 1.78641690246e+12
@@ -39120,8 +39120,8 @@ cast:     types   float +  uint32, size 15, sumA 9.97533e+12, sumB 0, sumC 4.389
 overflow: types   float +  uint32, size 15, sumA 9.97533e+12, sumB 0, sumC 4.38914e+13
 cast:     types   float +   int64, size 15, sumA 9.97533e+12, sumB 2.19457184126e+13, sumC 4.38914e+13
 overflow: types   float +   int64, size 15, sumA 9.97533e+12, sumB 2.19457184126e+13, sumC 4.38914e+13
-cast:     types   float +  uint64, size 15, sumA 9.97533e+12, sumB 2.19457184126e+13, sumC 4.38914e+13
-overflow: types   float +  uint64, size 15, sumA 9.97533e+12, sumB 2.19457184126e+13, sumC 4.38914e+13
+cast:     types   float +  uint64, size 15, sumA 9.97533e+12, sumB 2.19457184564e+13, sumC 4.38914e+13
+overflow: types   float +  uint64, size 15, sumA 9.97533e+12, sumB 2.19457184564e+13, sumC 4.38914e+13
 cast:     types   float +   float, size 15, sumA 9.97533e+12, sumB 2.19457e+13, sumC 4.38914e+13
 overflow: types   float +   float, size 15, sumA 9.97533e+12, sumB 2.19457e+13, sumC 4.38914e+13
 cast:     types   float +  double, size 15, sumA 9.97533e+12, sumB 2.19457184126e+13, sumC 4.38914e+13
@@ -39362,8 +39362,8 @@ cast:     types   float +  uint32, size 16, sumA 1.13139e+13, sumB 0, sumC 4.978
 overflow: types   float +  uint32, size 16, sumA 1.13139e+13, sumB 0, sumC 4.97814e+13
 cast:     types   float +   int64, size 16, sumA 1.13139e+13, sumB 2.48906867708e+13, sumC 4.97814e+13
 overflow: types   float +   int64, size 16, sumA 1.13139e+13, sumB 2.48906867708e+13, sumC 4.97814e+13
-cast:     types   float +  uint64, size 16, sumA 1.13139e+13, sumB 2.48906867708e+13, sumC 4.97814e+13
-overflow: types   float +  uint64, size 16, sumA 1.13139e+13, sumB 2.48906867708e+13, sumC 4.97814e+13
+cast:     types   float +  uint64, size 16, sumA 1.13139e+13, sumB 2.48906866904e+13, sumC 4.97814e+13
+overflow: types   float +  uint64, size 16, sumA 1.13139e+13, sumB 2.48906866904e+13, sumC 4.97814e+13
 cast:     types   float +   float, size 16, sumA 1.13139e+13, sumB 2.48907e+13, sumC 4.97814e+13
 overflow: types   float +   float, size 16, sumA 1.13139e+13, sumB 2.48907e+13, sumC 4.97814e+13
 cast:     types   float +  double, size 16, sumA 1.13139e+13, sumB 2.48906867708e+13, sumC 4.97814e+13
@@ -39598,14 +39598,14 @@ cast:     types   float +   int16, size 17, sumA 6.52986e+09, sumB 32751, sumC 2
 overflow: types   float +   int16, size 17, sumA 1.28638e+13, sumB 32751, sumC 5.66009e+13
 cast:     types   float +  uint16, size 17, sumA 1.28638e+13, sumB 65519, sumC 5.66009e+13
 overflow: types   float +  uint16, size 17, sumA 1.28638e+13, sumB 65519, sumC 5.66009e+13
-cast:     types   float +   int32, size 17, sumA 6.52986e+09, sumB 1480797458, sumC 2.87314e+10
+cast:     types   float +   int32, size 17, sumA 6.52986e+09, sumB 1480797472, sumC 2.87314e+10
 overflow: types   float +   int32, size 17, sumA 1.28638e+13, sumB -2147483648, sumC 5.66009e+13
 cast:     types   float +  uint32, size 17, sumA 1.28638e+13, sumB 0, sumC 5.66009e+13
 overflow: types   float +  uint32, size 17, sumA 1.28638e+13, sumB 0, sumC 5.66009e+13
-cast:     types   float +   int64, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
-overflow: types   float +   int64, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
-cast:     types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
-overflow: types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
+cast:     types   float +   int64, size 17, sumA 1.28638e+13, sumB 2.83004278152e+13, sumC 5.66009e+13
+overflow: types   float +   int64, size 17, sumA 1.28638e+13, sumB 2.83004278152e+13, sumC 5.66009e+13
+cast:     types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.83004278152e+13, sumC 5.66009e+13
+overflow: types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.83004278152e+13, sumC 5.66009e+13
 cast:     types   float +   float, size 17, sumA 1.28638e+13, sumB 2.83004e+13, sumC 5.66009e+13
 overflow: types   float +   float, size 17, sumA 1.28638e+13, sumB 2.83004e+13, sumC 5.66009e+13
 cast:     types   float +  double, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
@@ -43977,13 +43977,13 @@ overflow: types   float +  uint32, size 3, sumA 4.13686e+11, sumB 0, sumC 1.8202
 cast:     types   float +   int64, size 3, sumA 4.13686e+11, sumB 910109308327, sumC 1.82022e+12
 overflow: types   float +   int64, size 3, sumA 4.13686e+11, sumB 910109308327, sumC 1.82022e+12
 cast:     types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109300816, sumC 1.82022e+12
-overflow: types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109295395, sumC 1.82022e+12
+overflow: types   float +  uint64, size 3, sumA 4.13686e+11, sumB 910109300816, sumC 1.82022e+12
 cast:     types   float +   float, size 3, sumA 4.13686e+11, sumB 9.10109e+11, sumC 1.82022e+12
 overflow: types   float +   float, size 3, sumA 4.13686e+11, sumB 9.10109e+11, sumC 1.82022e+12
 cast:     types   float +  double, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
-overflow: types   float +  double, size 3, sumA 4.13686e+11, sumB 910109304283, sumC 1.82022e+12
-cast:     types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
-overflow: types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109304283, sumC 1.82022e+12
+overflow: types   float +  double, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
+cast:     types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109293976, sumC 1.82022e+12
+overflow: types   float + ldouble, size 3, sumA 4.13686e+11, sumB 910109308329, sumC 1.82022e+12
 cast:     types  double +    int8, size 3, sumA 1152328781.73, sumB 125, sumC 5070246639.62
 overflow: types  double +    int8, size 3, sumA 20357808304.5, sumB 125, sumC 207880109648
 cast:     types  double +   uint8, size 3, sumA 170928770121, sumB 253, sumC 752086588531
@@ -44216,16 +44216,16 @@ cast:     types   float +   int32, size 4, sumA 1.53644e+09, sumB -914802744, su
 overflow: types   float +   int32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
 cast:     types   float +  uint32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
 overflow: types   float +  uint32, size 4, sumA 7.96643e+11, sumB 0, sumC 3.50523e+12
-cast:     types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261530356e+12, sumC 3.50523e+12
+cast:     types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261531107e+12, sumC 3.50523e+12
 overflow: types   float +   int64, size 4, sumA 7.96643e+11, sumB 1.75261531107e+12, sumC 3.50523e+12
-cast:     types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261529595e+12, sumC 3.50523e+12
-overflow: types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261529595e+12, sumC 3.50523e+12
+cast:     types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261529814e+12, sumC 3.50523e+12
+overflow: types   float +  uint64, size 4, sumA 7.96643e+11, sumB 1.75261530356e+12, sumC 3.50523e+12
 cast:     types   float +   float, size 4, sumA 7.96643e+11, sumB 1.75262e+12, sumC 3.50523e+12
 overflow: types   float +   float, size 4, sumA 7.96643e+11, sumB 1.75262e+12, sumC 3.50523e+12
-cast:     types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261527699e+12, sumC 3.50523e+12
-overflow: types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261532886e+12, sumC 3.50523e+12
-cast:     types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261527349e+12, sumC 3.50523e+12
-overflow: types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261532886e+12, sumC 3.50523e+12
+cast:     types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261528729e+12, sumC 3.50523e+12
+overflow: types   float +  double, size 4, sumA 7.96643e+11, sumB 1.75261532196e+12, sumC 3.50523e+12
+cast:     types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261527699e+12, sumC 3.50523e+12
+overflow: types   float + ldouble, size 4, sumA 7.96643e+11, sumB 1.75261532196e+12, sumC 3.50523e+12
 cast:     types  double +    int8, size 4, sumA 1536438374.44, sumB -4, sumC 6760328847.54
 overflow: types  double +    int8, size 4, sumA 9986849427.88, sumB -4, sumC 253512328705
 cast:     types  double +   uint8, size 4, sumA 240068496987, sumB 252, sumC 1.05630138674e+12
@@ -44459,15 +44459,15 @@ overflow: types   float +   int32, size 5, sumA 1.2933e+12, sumB -2147483648, su
 cast:     types   float +  uint32, size 5, sumA 1.2933e+12, sumB 0, sumC 5.69051e+12
 overflow: types   float +  uint32, size 5, sumA 1.2933e+12, sumB 0, sumC 5.69051e+12
 cast:     types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525346416e+12, sumC 5.69051e+12
-cast:     types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525346881e+12, sumC 5.69051e+12
-overflow: types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525346881e+12, sumC 5.69051e+12
+overflow: types   float +   int64, size 5, sumA 1.2933e+12, sumB 2.84525348602e+12, sumC 5.69051e+12
+cast:     types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525349328e+12, sumC 5.69051e+12
+overflow: types   float +  uint64, size 5, sumA 1.2933e+12, sumB 2.84525345874e+12, sumC 5.69051e+12
 cast:     types   float +   float, size 5, sumA 1.2933e+12, sumB 2.84525e+12, sumC 5.69051e+12
 overflow: types   float +   float, size 5, sumA 1.2933e+12, sumB 2.84525e+12, sumC 5.69051e+12
 cast:     types   float +  double, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float +  double, size 5, sumA 1.2933e+12, sumB 2.84525351661e+12, sumC 5.69051e+12
+overflow: types   float +  double, size 5, sumA 1.2933e+12, sumB 2.84525351259e+12, sumC 5.69051e+12
 cast:     types   float + ldouble, size 5, sumA 1.2933e+12, sumB 2.8452534987e+12, sumC 5.69051e+12
-overflow: types   float + ldouble, size 5, sumA 1.2933e+12, sumB 2.84525351661e+12, sumC 5.69051e+12
+overflow: types   float + ldouble, size 5, sumA 1.2933e+12, sumB 2.84525351259e+12, sumC 5.69051e+12
 cast:     types  double +    int8, size 5, sumA 1920547967.15, sumB 123, sumC 8450411055.46
 overflow: types  double +    int8, size 5, sumA 14980274070.7, sumB 123, sumC 275483397133
 cast:     types  double +   uint8, size 5, sumA 308824114260, sumB 251, sumC 1.35882610274e+12
@@ -44701,15 +44701,15 @@ overflow: types   float +   int32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.0008
 cast:     types   float +  uint32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
 overflow: types   float +  uint32, size 6, sumA 1.81837e+12, sumB 0, sumC 8.00085e+12
 cast:     types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
-overflow: types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.00042477145e+12, sumC 8.00085e+12
-cast:     types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042469032e+12, sumC 8.00085e+12
-overflow: types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042469032e+12, sumC 8.00085e+12
+overflow: types   float +   int64, size 6, sumA 1.81837e+12, sumB 4.0004247755e+12, sumC 8.00085e+12
+cast:     types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042469547e+12, sumC 8.00085e+12
+overflow: types   float +  uint64, size 6, sumA 1.81837e+12, sumB 4.00042469547e+12, sumC 8.00085e+12
 cast:     types   float +   float, size 6, sumA 1.81837e+12, sumB 4.00042e+12, sumC 8.00085e+12
 overflow: types   float +   float, size 6, sumA 1.81837e+12, sumB 4.00042e+12, sumC 8.00085e+12
 cast:     types   float +  double, size 6, sumA 1.81837e+12, sumB 4.00042477146e+12, sumC 8.00085e+12
-overflow: types   float +  double, size 6, sumA 1.81837e+12, sumB 4.00042475919e+12, sumC 8.00085e+12
+overflow: types   float +  double, size 6, sumA 1.81837e+12, sumB 4.000424771e+12, sumC 8.00085e+12
 cast:     types   float + ldouble, size 6, sumA 1.81837e+12, sumB 4.00042477146e+12, sumC 8.00085e+12
-overflow: types   float + ldouble, size 6, sumA 1.81837e+12, sumB 4.00042475919e+12, sumC 8.00085e+12
+overflow: types   float + ldouble, size 6, sumA 1.81837e+12, sumB 4.000424771e+12, sumC 8.00085e+12
 cast:     types  double +    int8, size 6, sumA 2304657559.86, sumB -6, sumC 10140493263.4
 overflow: types  double +    int8, size 6, sumA 48397808224.4, sumB -6, sumC 422520547409
 cast:     types  double +   uint8, size 6, sumA 406003841467, sumB 250, sumC 1.78641690246e+12
@@ -45428,8 +45428,8 @@ cast:     types   float +  uint32, size 17, sumA 1.28638e+13, sumB 0, sumC 5.660
 overflow: types   float +  uint32, size 17, sumA 1.28638e+13, sumB 0, sumC 5.66009e+13
 cast:     types   float +   int64, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
 overflow: types   float +   int64, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
-cast:     types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.83004275804e+13, sumC 5.66009e+13
-overflow: types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.83004275804e+13, sumC 5.66009e+13
+cast:     types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.830042769e+13, sumC 5.66009e+13
+overflow: types   float +  uint64, size 17, sumA 1.28638e+13, sumB 2.830042769e+13, sumC 5.66009e+13
 cast:     types   float +   float, size 17, sumA 1.28638e+13, sumB 2.83004e+13, sumC 5.66009e+13
 overflow: types   float +   float, size 17, sumA 1.28638e+13, sumB 2.83004e+13, sumC 5.66009e+13
 cast:     types   float +  double, size 17, sumA 1.28638e+13, sumB 2.8300427748e+13, sumC 5.66009e+13
@@ -58898,7 +58898,6 @@ clk_tck / number of linux ticks per second: 100
 sleepy time ended with great success
 c_tests/x32clangbinfast/sleeptm
 clk_tck / number of linux ticks per second: 100
-getrusage user time in ms: 1015, system time 0
 sleepy time ended with great success
 c_tests/x32bin0/tatomic
 test atomic completed with great success
@@ -59117,7 +59116,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 24
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59137,7 +59136,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 24
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59157,7 +59156,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 24
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59177,7 +59176,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 24
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59197,7 +59196,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 25
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59217,7 +59216,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 25
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59237,7 +59236,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 25
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59257,7 +59256,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 25
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59277,7 +59276,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 25
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59297,7 +59296,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 6, hour 8, min 30, sec 25
+tz: 'PST+8', year: 2026, month 2, day 9, hour 10, min 50, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -61539,7 +61538,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-607 ms for 1 iterations
+679 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61588,7 +61587,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-173 ms for 1 iterations
+197 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61637,7 +61636,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-170 ms for 1 iterations
+190 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61686,7 +61685,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-179 ms for 1 iterations
+201 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61735,7 +61734,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-178 ms for 1 iterations
+202 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61970,4 +61969,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Fri 02/06/2026  8:30:44.34 
+Mon 02/09/2026 10:51:11.77 
