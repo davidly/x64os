@@ -1746,7 +1746,10 @@ void x64::trace_state()
             if ( 0 != _prefix_rex )
             {
                 decode_rex();
-                tracer.Trace( "xchg rax, %s\n", register_names[ _rm ] );
+                if ( _rex.W )
+                    tracer.Trace( "xchg rax, %s\n", register_names[ _rm ] );
+                else
+                    tracer.Trace( "xchg eax, %s\n", register_names32[ _rm ] );
             }
             else if ( 0x66 == _prefix_size )
                 tracer.Trace( "xchg ax, %s\n", register_names16[ _rm ] );
@@ -2615,7 +2618,7 @@ template <typename T> T round_i_from_double( double d, uint8_t rm )
     {
         if ( my_isnan( d ) || isinf( d ) )
             return d;
-    
+
         if ( ROUNDING_MODE_NEAREST == rm ) // nearest
             return roundl( d );
         if ( ROUNDING_MODE_FLOOR == rm ) // towards -infinity
@@ -2631,7 +2634,7 @@ template <typename T> T round_i_from_double( double d, uint8_t rm )
             #else
                 return ceill( d );
             #endif
-    
+
         assert( ROUNDING_MODE_TRUNCATE == rm );
         return truncl( d ); // towards 0 (truncate)
     } //round_ldouble_from_ldouble
@@ -3490,11 +3493,11 @@ double set_double_sign( double d, bool sign )
             else
                 return a;
         }
-    
+
         assert( eb.is_nan() );
         return b;
     } //handle_f80_math_nan
-    
+
     inline float80_t ext80_to_float80_t( ext80 er )
     {
         float80_t r;
@@ -4162,14 +4165,14 @@ _prefix_is_set:
 
         switch( op )                // 20.7% of runtime setting up for the switch
         {
-            case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38:  // math r/m8, r8
+            case 0x00: case 0x08: case 0x10: case 0x18: case 0x20: case 0x28: case 0x30: case 0x38: // math r/m8, r8
             {
                 decode_rm();
                 uint8_t math = ( op >> 3 ) & 7;
                 do_math( math, get_rm_ptr8(), get_reg8() );
                 break;
             }
-            case 0x01: case 0x09: case 0x11: case 0x19: case 0x21: case 0x29: case 0x31: case 0x39:  // math r/m, r (32 or 64 bit depending on _rex.W)
+            case 0x01: case 0x09: case 0x11: case 0x19: case 0x21: case 0x29: case 0x31: case 0x39: // math r/m, r (32 or 64 bit depending on _rex.W)
             {
                 decode_rm();
                 uint8_t math = ( op >> 3 ) & 7;
@@ -4196,7 +4199,7 @@ _prefix_is_set:
                 }
                 break;
             }
-            case 0x02: case 0x0a: case 0x12: case 0x1a: case 0x22: case 0x2a: case 0x32: case 0x3a:  // math r8, rm/8. rex math r/m8 sign-extended to 64 bits
+            case 0x02: case 0x0a: case 0x12: case 0x1a: case 0x22: case 0x2a: case 0x32: case 0x3a: // math r8, rm/8. rex math r/m8 sign-extended to 64 bits
             {
                 decode_rm();
                 uint8_t math = ( op >> 3 ) & 7;
@@ -4438,7 +4441,7 @@ _prefix_is_set:
                         {
                             decode_rm();
                             if ( 1 == _reg )
-                                { /* cet isn't implemented */ }  // rdsspd/rdsspq
+                                { /* cet isn't implemented */ } // rdsspd/rdsspq
                             else
                                 unhandled();
                         }
@@ -7408,9 +7411,9 @@ _prefix_is_set:
             {
                 uint8_t op1 = get_rip8();
                 uint8_t offset = ( op1 & 7 );
-                if ( op1 >= 0xc0 && op1 <= 0xc7 )
+                if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fld st(i)
                     push_fp( peek_fp( offset ) );
-                else if ( op1 >= 0xc8 && op1 <= 0xcf )
+                else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fxch st(i)
                 {
                     float80_t tmp = peek_fp( 0 );
                     poke_fp( 0, peek_fp( offset ) );
@@ -7636,9 +7639,9 @@ _prefix_is_set:
                     if ( check_condition( ccNU ) )
                         poke_fp( 0, peek_fp( offset ) );
                 }
-                else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fcomi st, st(i)  compare st(0) with st(i) and set status flags
-                    set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomi st, st(i)
+                    set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
+                else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fcomi st, st(i)  compare st(0) with st(i) and set status flags
                     set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( 0xe3 == op1 ) // finit
                 {
@@ -7683,14 +7686,14 @@ _prefix_is_set:
             {
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
-                if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubr st(i), st(0)
-                    poke_fp( offset, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
-                else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsub st(i), st(0)
-                    poke_fp( offset, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
-                else if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fadd st(i), st(0)
+                if ( op1 >= 0xc0 && op1 <= 0xc7 ) // fadd st(i), st(0)
                     poke_fp( offset, do_f80_add( peek_fp( offset ), peek_fp( 0 ) ) );
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmul st(i), st(0)
                     poke_fp( offset, do_f80_mul( peek_fp( offset ), peek_fp( 0 ) ) );
+                else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubr st(i), st(0)
+                    poke_fp( offset, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
+                else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsub st(i), st(0)
+                    poke_fp( offset, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fdivr st(i), st(0)
                     poke_fp( offset, do_f80_div( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xf8 && op1 <= 0xff ) // fdiv st(i), st(0)
@@ -7763,17 +7766,7 @@ _prefix_is_set:
             {
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
-                if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubrp st(i), st(0)
-                {
-                    poke_fp( offset, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
-                    pop_fp();
-                }
-                else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubp st(i), st(0)
-                {
-                    poke_fp( offset, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
-                    pop_fp();
-                }
-                else if ( op1 >= 0xc0 && op1 <= 0xc7 ) // faddp st(i), st(0)
+                if ( op1 >= 0xc0 && op1 <= 0xc7 ) // faddp st(i), st(0)
                 {
                     poke_fp( offset, do_f80_add( peek_fp( offset ), peek_fp( 0 ) ) );
                     pop_fp();
@@ -7781,6 +7774,22 @@ _prefix_is_set:
                 else if ( op1 >= 0xc8 && op1 <= 0xcf ) // fmulp st(i), st(0)
                 {
                     poke_fp( offset, do_f80_mul( peek_fp( offset ), peek_fp( 0 ) ) );
+                    pop_fp();
+                }
+                else if ( 0xd9 == op1 ) // fcompp  compare st(0) with st(1) and pop register stack twice
+                {
+                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( 1 ) ) );
+                    pop_fp();
+                    pop_fp();
+                }
+                else if ( op1 >= 0xe0 && op1 <= 0xe7 ) // fsubrp st(i), st(0)
+                {
+                    poke_fp( offset, do_f80_sub( peek_fp( 0 ), peek_fp( offset ) ) );
+                    pop_fp();
+                }
+                else if ( op1 >= 0xe8 && op1 <= 0xef ) // fsubp st(i), st(0)
+                {
+                    poke_fp( offset, do_f80_sub( peek_fp( offset ), peek_fp( 0 ) ) );
                     pop_fp();
                 }
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fdivrp st(i), st(0)
@@ -7791,12 +7800,6 @@ _prefix_is_set:
                 else if ( op1 >= 0xf8 && op1 <= 0xff ) // fdivp st(i), st(0)
                 {
                     poke_fp( offset, do_f80_div( peek_fp( offset ), peek_fp( 0 ) ) );
-                    pop_fp();
-                }
-                else if ( 0xd9 == op1 ) // fcompp  compare st(0) with st(1) and pop register stack twice
-                {
-                    set_x87_status_compare( compare_f80_floating( peek_fp( 0 ), peek_fp( 1 ) ) );
-                    pop_fp();
                     pop_fp();
                 }
                 else
