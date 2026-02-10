@@ -257,8 +257,8 @@ struct x64
         void setdouble( uint64_t o, double val ) { * (double *) getmem( o ) = val; }
     #endif //TARGET_BIG_ENDIAN
 
-    uint8_t getui8( uint64_t o ) { return * (uint8_t *) getmem( o ); }
-    void setui8( uint64_t o, uint8_t val ) { * (uint8_t *) getmem( o ) = val; }
+    inline uint8_t getui8( uint64_t o ) { return * (uint8_t *) getmem( o ); }
+    inline void setui8( uint64_t o, uint8_t val ) { * (uint8_t *) getmem( o ) = val; }
 
     reg8_t regs[ 16 ];               // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
     vec16_t xregs[ 16 ];             // xmm0 through 15

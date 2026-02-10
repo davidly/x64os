@@ -2852,111 +2852,106 @@ template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 {
     T original = *pval;
-    T val = original;
-    for ( uint8_t sh = 0; sh < shift; sh++ )
-    {
-        bool highBit = highest_bit( val );
-        val <<= 1;
-        if ( highBit )
-            val |= 1;
-        setflag_c( highBit );
-    }
-
+    const size_t remaining = ( sizeof( T ) * 8 ) - shift;
+    T result = ( original << shift ) | ( original >> remaining );
+    setflag_c( ( original >> remaining ) & 1 );
+    *pval = result;
+    
     if ( 1 == shift )
-        setflag_o( highest_bit( val ) != highest_bit( original ) );
-    *pval = val;
+        setflag_o( highest_bit( result ) != highest_bit( original ) );
 } //op_rol
 
 template <typename T> void x64::op_ror( T * pval, uint8_t shift )
 {
     T val = *pval;
-    for ( uint8_t sh = 0; sh < shift; sh++ )
-    {
-        bool lowBit = ( 0 != ( 1 & val ) );
-        val >>= 1;
-        if ( lowBit )
-            val = mk_signed( val );
-        setflag_c( lowBit );
-    }
-
+    const size_t remaining = ( sizeof( T ) * 8 ) - shift;
+    T result = ( val >> shift ) | ( val << remaining );
+    setflag_c( ( val >> ( shift - 1 ) ) & 1 );
+    *pval = result;
+    
     if ( 1 == shift )
-        setflag_o( highest_bit( val ) ^ second_highest_bit( val ) );
-    *pval = val;
+        setflag_o( highest_bit( result ) ^ second_highest_bit( result ) );
 } //op_ror
 
 template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 {
-    T val = *pval;
-    for ( uint8_t sh = 0; sh < shift; sh++ )
+    T original = *pval;
+    const size_t remaining = ( sizeof( T ) * 8 ) - shift;
+    T result = ( original << shift ) | ( original >> remaining );
+    if ( flag_c() )
     {
-        bool newCarry = highest_bit( val );
-        val <<= 1;
-        if ( flag_c() )
-            val |= 1;
-        setflag_c( newCarry );
+        T carryMask = ( ( T ) 1 << shift ) - 1;
+        result |= carryMask;
     }
-
+    
+    bool newCarry = ( original >> remaining ) & 1;
+    setflag_c( newCarry );
+    *pval = result;
     if ( 1 == shift )
-        setflag_o( highest_bit( val ) ^ flag_c() );
-    *pval = val;
+        setflag_o( highest_bit( result ) ^ newCarry );
 } //op_rcl
 
 template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
 {
-    T val = *pval;
-    for ( uint8_t sh = 0; sh < shift; sh++ )
+    T original = *pval;
+    const size_t remaining = ( sizeof( T ) * 8 ) - shift;
+    T result = ( original >> shift ) | ( original << remaining );
+    if ( flag_c() )
     {
-        bool newCarry = ( 0 != ( 1 & val ) );
-        val >>= 1;
-        if ( flag_c() )
-            mk_signed( val );
-        setflag_c( newCarry );
+        T carryMask = ( ( ( T ) 1 << shift ) - 1 ) << remaining;
+        result |= carryMask;
     }
-
+    
+    *pval = result;
+    setflag_c( ( original >> ( shift - 1 ) ) & 1 );
     if ( 1 == shift )
-        setflag_o( highest_bit( val ) ^ second_highest_bit( val ) );
-    *pval = val;
+        setflag_o( highest_bit( result ) ^ second_highest_bit( result ) );
 } //op_rcr
 
 template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
 {
-    T x = *pval;
+    T original = *pval;
     if ( 1 == shift )
-        setflag_o( 3 == top2bits( x ) );
-
-    for ( uint8_t s = 0; s < shift; s++ )
+        setflag_o( 3 == top2bits( original ) );
+        
+    if ( shift > 0 ) // Set carry to the bit that will be shifted out
     {
-        setflag_c( highest_bit( x ) );
-        x <<= 1;
+        const size_t bitWidth = sizeof ( T ) * 8;
+        if ( shift < bitWidth ) 
+        {
+            T mask = (T) 1 << ( bitWidth - shift );
+            setflag_c( 0 != ( original & mask) );
+        }
     }
-
-    *pval = x;
-    set_PSZ( x );
+    
+    T result = original << shift;
+    *pval = result;
+    set_PSZ( result );
 } //op_sal
 
 template <typename T> void x64::op_shr( T * pval, uint8_t shift )
 {
-    T x = *pval;
+    T original = *pval;
     if ( 1 == shift )
-        setflag_o( highest_bit( x ) );
-    x >>= ( shift - 1 );
-    setflag_c( 0 != ( *pval & 1 ) );
-    x >>= 1;
-    *pval = x;
-    set_PSZ( x );
+        setflag_o( highest_bit( original ) );
+    T result = original >> ( shift - 1 );
+    setflag_c( 0 != ( result & 1 ) );
+    result >>= 1;
+    *pval = result;
+    set_PSZ( result );
 } //op_shr
 
 template <typename T> void x64::op_sar( T * pval, uint8_t shift )
 {
     using ST = std::make_signed_t<T>;
-    ST x = *pval;
+    ST original = *pval;
     if ( 1 == shift )
         setflag_o( false );
-    x >>= ( shift - 1 );
-    setflag_c( 0 != ( *pval & 1 ) );
-    x >>= 1;
-    *pval = x;
-    set_PSZ( x );
+    ST result = original >> ( shift - 1 );
+    setflag_c( 0 != ( result & 1 ) );
+    result >>= 1;
+    *pval = result;
+    set_PSZ( result );
 } //op_sar
 
 template <typename T> void x64::op_shift( T * pval, uint8_t operation, uint8_t shift )
@@ -3705,7 +3700,6 @@ float80_t x64::do_f80_add( float80_t a, float80_t b )
     #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fadd( a.getld(), b.getld(), true ) );
     #else
-        float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
         ext80 eb = ext80::from_bytes_le( b.get_bytes() );
 
@@ -3716,6 +3710,7 @@ float80_t x64::do_f80_add( float80_t a, float80_t b )
         {
             if ( ea.signbit() == eb.signbit( ) )
                 return a;
+            float80_t r;
             double_to_ieee80( -MY_NAN, r.get_bytes() );
             return r;
         }
@@ -3769,7 +3764,6 @@ float80_t x64::do_f80_mul( float80_t a, float80_t b )
     #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fmul( a.getld(), b.getld(), true ) );
     #else
-        float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
         ext80 eb = ext80::from_bytes_le( b.get_bytes() );
 
@@ -3780,6 +3774,7 @@ float80_t x64::do_f80_mul( float80_t a, float80_t b )
         bool binf = eb.is_inf();
         bool azero = ea.is_zero();
         bool bzero = eb.is_zero();
+        float80_t r;
 
         if ( ( ainf && bzero ) || ( azero && binf ) )
         {
@@ -3810,7 +3805,6 @@ float80_t x64::do_f80_div( float80_t a, float80_t b )
     #if NATIVE_X87_LONG_DOUBLE
         return f80_from_ld( do_fdiv( a.getld(), b.getld(), true ) );
     #else
-        float80_t r;
         ext80 ea = ext80::from_bytes_le( a.get_bytes() );
         ext80 eb = ext80::from_bytes_le( b.get_bytes() );
 
@@ -3821,6 +3815,7 @@ float80_t x64::do_f80_div( float80_t a, float80_t b )
         bool binf = eb.is_inf();
         bool azero = ea.is_zero();
         bool bzero = eb.is_zero();
+        float80_t r;
 
         if ( ainf && binf )
         {
@@ -3984,7 +3979,7 @@ static const char * fcc_names[4] = { "equal", "less", "greater", "unordered" };
 
 template <typename T> inline uint32_t x64::compare_floating( T a, T b )
 {
-    #if defined( __clang__ ) // clang compares long doubles that are infinite incorrectly
+    #if 0 // defined( __clang__ ) // clang compares long doubles that are infinite incorrectly
 
         tracer.Trace( "a %lf (nan %u, inf %u, subnormal %u), b %lf (nan %u, inf %u, subnormal %u)\n",
                       (double) a, my_isnan( a ), my_isinf( a ), my_issubnormal( a ),
@@ -5330,7 +5325,7 @@ _prefix_is_set:
                     case 0x74:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pcmpeqb xmm, xmm/m128   compare packed bytes in rm to r for equality. if eq, set byte to 1 else 0
+                        if ( 0x66 == _prefix_size ) // pcmpeqb xmm, xmm/m128   compare packed bytes in rm to r for equality. if eq, set byte to 1s else 0
                         {
                             for ( uint32_t x = 0; x < 16; x++ )
                                 xregs[ _reg ].set8( x, ( xregs[ _reg ].get8( x ) == get_rmx8( x ) ) ? 0xff : 0 );
@@ -6026,7 +6021,7 @@ _prefix_is_set:
                                     regs[ rdx ].q = hi;
                                 }
                             }
-                            else         // cmpxchg8b m64.    compare edx:eax with m64.  if equal, set zf and load ecx:ebx into m64.  else, clear zf and load m64  into edx:eax
+                            else         // cmpxchg8b m64.    compare edx:eax with m64.  if equal, set zf and load ecx:ebx into m64.  else, clear zf and load m64 into edx:eax
                             {
                                 uint64_t ea = effective_address();
                                 uint32_t lo = getui32( ea );
