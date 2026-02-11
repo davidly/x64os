@@ -2593,7 +2593,9 @@ double round_double_from_double( double d, uint8_t rm )
 
 template <typename T> T round_i_from_double( double d, uint8_t rm )
 {
+    #if !defined( __ARM_32BIT_STATE ) 
     static_assert(std::is_integral<T>::value, "Type must be an integral type.");
+    #endif
     static_assert(std::is_signed<T>::value, "Type must be a signed type.");
 
     d = round_double_from_double( d, rm );
@@ -2776,7 +2778,7 @@ void x64::op_scas( uint8_t width )
 
 template <typename T> T x64::op_sub( T a, T b, bool borrow )
 {
-#if !defined(__APPLE__) && !defined(__mc68000__)
+#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE ) 
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
 #endif
     T result = a - b - (T) borrow;
@@ -2795,7 +2797,7 @@ template <typename T> T x64::op_sub( T a, T b, bool borrow )
 
 template <typename T> T x64::op_add( T a, T b, bool carry )
 {
-#if !defined(__APPLE__) && !defined(__mc68000__)
+#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE ) 
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
 #endif
     T result = a + b + (T) carry;
@@ -2832,7 +2834,7 @@ template <typename T> T x64::op_or( T a, T b )
 
 template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 {
-#if !defined(__APPLE__) && !defined(__mc68000__)
+#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE ) 
     static_assert(std::is_unsigned_v<T>, "Template parameter must be an unsigned type.");
 #endif
     assert( math <= 7 );

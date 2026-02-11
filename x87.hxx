@@ -59,7 +59,7 @@ static X87_EXT80_FORCEINLINE void store_u64_le(uint8_t* p, uint64_t v) {
 //   - Native __uint128_t on GCC/Clang
 //   - Portable {hi,lo} on MSVC (and any compiler lacking __int128)
 // ------------------------
-#if !defined(_MSC_VER) && !defined( __mc68000__ ) && !defined( sparc ) && (defined(__GNUC__) || defined(__clang__))
+#if !defined( __ARM_32BIT_STATE ) && !defined(_MSC_VER) && !defined( __mc68000__ ) && !defined( sparc ) && (defined(__GNUC__) || defined(__clang__))
   #define X87_HAS_NATIVE_U128 1
   using u128 = __uint128_t;
 
