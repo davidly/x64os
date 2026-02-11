@@ -23,6 +23,7 @@ Files:
   * x64os.cxx + linuxem.h: Main app that loads ELF binaries and provides basic Linux syscall emulation
   * x64.cxx + x64.hxx: AMD64 and 32-bit x86 emulation
   * *.hxx: support functionality
+  * x87.hxx and f80_double.h: x87 emulation helpers written by ChatGPT 5.2.
   * m.bat, mr.bat, m32.bat m32r.bat: builds x64os and x32os for release and debug using msvc on Windows
   * mg.bat, mgr.bat, m32g.bat m32gr.bat: builds x64os and x32os for release and debug using gcc on Windows
   * m.sh, mr.sh, m32.sh m32r.sh: builds x64os and x32os for release and debug using gcc on Linux
@@ -44,6 +45,6 @@ Also, each of the emulators mentioned above were built for AMD64 and run nested 
 of their respective test cases for validation.
 
 These emulators were built and tested on AMD64, Arm64, x86, and RISC-V 64 physical hardware including standard
-Windows/Linux AMD64 machines, Arm64 Windows/Linux, Raspberry PI 5, an M3 macBook, and a RISC-V 64 SBC.
+Windows/Linux AMD64 machines, Arm64 Windows/Linux, Raspberry PI 5, 32-bit Raspberry PI 4, an M3 macBook, and a RISC-V 64 SBC.
 
 This emulator is about 2x slower than other 64- and 32-bit emulators in sister repos because instruction decoding is complex.
