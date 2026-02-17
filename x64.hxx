@@ -262,7 +262,7 @@ struct x64
 
     reg8_t regs[ 16 ];               // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
     vec16_t xregs[ 16 ];             // xmm0 through 15
-    float80_t fregs[ 8 ];            // 80-bit numbers are stored in this fp stack, while math is done as 8-byte or 10-byte doubles depending on the compiler and ISA
+    float80_t fregs[ 8 ];            // 80-bit numbers are stored in this fp stack, while math is done on a physical x87 with gnu or via emulation
     reg8_t rip;                      // instruction pointer
     reg8_t res, rcs, rss, rds, rfs, rgs; // fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
     uint32_t mxcsr;
@@ -375,30 +375,6 @@ private:
             setui64( regs[ rsp ].q, val );
         }
     } //push
-
-    static inline int64_t sign_extend( uint64_t x, uint64_t high_bit )
-    {
-        assert( high_bit < 63 );
-        x &= ( 1ull << ( high_bit + 1 ) ) - 1; // clear bits above the high bit since they may contain noise
-        const int64_t m = 1ull << high_bit;
-        return ( x ^ m ) - m;
-    } //sign_extend
-
-    static inline uint32_t sign_extend32( uint32_t x, uint32_t high_bit )
-    {
-        assert( high_bit < 31 );
-        x &= ( 1u << ( high_bit + 1 ) ) - 1; // clear bits above the high bit since they may contain noise
-        const int32_t m = ( (uint32_t) 1 ) << high_bit;
-        return ( x ^ m ) - m;
-    } //sign_extend32
-
-    static inline uint16_t sign_extend16( uint16_t x, uint16_t high_bit )
-    {
-        assert( high_bit < 15 );
-        x &= ( 1u << ( high_bit + 1 ) ) - 1; // clear bits above the high bit since they may contain noise
-        const int16_t m = ( (uint16_t) 1 ) << high_bit;
-        return ( x ^ m ) - m;
-    } //sign_extend16
 
     template <typename T> T op_add( T lhs, T rhs, bool carry = false );
     template <typename T> T op_sub( T lhs, T rhs, bool carry = false );
@@ -725,7 +701,7 @@ private:
     float80_t peek_fp( uint8_t offset );
     void poke_fp( uint8_t offset, float80_t f80 );
 
-    // all of these math do_ and handle_ functions must be members because of differences between 32 and 64 bit nan handling
+    // all of these math do_ and handle_ functions must be members because of differences between 32 and 64 bit nan handling for x87 instructions
 
     template <typename T> T handle_math_nan( T a, T b, bool x87 = false );
     template <typename T> T do_fadd( T a, T b, bool x87 = false );
@@ -752,9 +728,7 @@ private:
          2     exception mask: ZM zero divide
          1     exception mask: DM denormal operand
          0     excepiton mask: IM invalid operation
-    */
 
-    /*
         fp status word
         --------------
         15    B    Busy (currently executing an instruction)

@@ -207,9 +207,9 @@ void x64::trace_state()
             }
             else
             {
-                uint32_t imm = (int32_t) get_rip32();
+                int32_t imm = get_rip32();
                 if ( _rex.W )
-                    tracer.Trace( "%sq rax, %#llx\n", math_names[ math ], sign_extend( imm, 31 ) );
+                    tracer.Trace( "%sq rax, %#llx\n", math_names[ math ], (int64_t) imm );
                 else
                     tracer.Trace( "%sd eax, %#x\n", math_names[ math ], imm );
             }
@@ -962,7 +962,7 @@ void x64::trace_state()
                 case 0x80: case 0x81: case 0x82: case 0x83: case 0x84: case 0x85: case 0x86: case 0x87: // jcc rel32
                 case 0x88: case 0x89: case 0x8a: case 0x8b: case 0x8c: case 0x8d: case 0x8e: case 0x8f:
                 {
-                    uint64_t disp = sign_extend( get_rip32(), 31 );
+                    int64_t disp = (int32_t) get_rip32();
                     tracer.Trace( "j%s %lld  # %#llx\n", condition_names[ op1 & 0xf ], disp, rip.q + disp );
                     break;
                 }
@@ -1621,8 +1621,8 @@ void x64::trace_state()
         case 0x6b: // imul reg, r/m, se( imm8 ). sizes 16/32/64
         {
             decode_rm();
-            uint8_t imm = get_rip8();
-            tracer.Trace( "imul %s, %s, %lld\n", register_name( _reg, op_width() ), rm_string( op_width() ), sign_extend( imm, 7 ) );
+            int8_t imm = get_rip8();
+            tracer.Trace( "imul %s, %s, %lld\n", register_name( _reg, op_width() ), rm_string( op_width() ), (int64_t) imm );
             break;
         }
         case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75: case 0x76: case 0x77: // jcc
@@ -1647,8 +1647,8 @@ void x64::trace_state()
                 tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 2 ), get_rip16() );
             else
             {
-                uint64_t imm = get_rip32();
-                tracer.Trace( "%s%c %s, %#llx\n", math_names[ math ], _rex.W ? 'q' : 'd', rm_string( op_width() ), _rex.W ? sign_extend( imm, 31 ) : imm );
+                int64_t imm = (int32_t) get_rip32();
+                tracer.Trace( "%s%c %s, %#llx\n", math_names[ math ], _rex.W ? 'q' : 'd', rm_string( op_width() ), imm );
             }
             break;
         }
@@ -1663,10 +1663,10 @@ void x64::trace_state()
             }
             else
             {
-                uint32_t imm = (int32_t) (int8_t) get_rip8();
+                int32_t imm = (int8_t) get_rip8();
                 uint8_t math = _reg;
                 if ( _rex.W )
-                    tracer.Trace( "%sq %s, %#llx\n", math_names[ math ], rm_string( 8 ), sign_extend( imm, 31 ) );
+                    tracer.Trace( "%sq %s, %#llx\n", math_names[ math ], rm_string( 8 ), (int64_t) imm );
                 else
                     tracer.Trace( "%sd %s, %#x\n", math_names[ math ], rm_string( 4 ), imm );
             }
@@ -1847,7 +1847,7 @@ void x64::trace_state()
         {
             decode_rex();
             if ( _rex.W )
-                tracer.Trace( "test rax, %#x\n", sign_extend( get_rip32(), 31 ) );
+                tracer.Trace( "test rax, %#llx\n", (int64_t) (int32_t) get_rip32() );
             else if ( 0x66 == _prefix_size )
                 tracer.Trace( "test ax, %#x\n", get_rip16() );
             else
@@ -1953,7 +1953,7 @@ void x64::trace_state()
             if ( 0x66 == _prefix_size )
                 tracer.Trace( "movw %s, %#x\n", rm_string( 8 ), get_rip16() );
             else if ( _rex.W )
-                tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), sign_extend( get_rip32(), 31 ) );
+                tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), (int64_t) (int32_t) get_rip32() );
             else
                 tracer.Trace( "movd %s, %##x\n", rm_string( 4 ), get_rip32() );
             break;
@@ -2381,7 +2381,7 @@ void x64::trace_state()
                 if ( 0x66 == _prefix_size )
                     tracer.Trace( "testw %s, %#x\n", rm_string( 2 ), get_rip16() );
                 else if ( _rex.W )
-                    tracer.Trace( "testq %s, %#llx\n", rm_string( 8 ), sign_extend( get_rip32(), 31 ) );
+                    tracer.Trace( "testq %s, %#llx\n", rm_string( 8 ), (int64_t) (int32_t) get_rip32() );
                 else
                     tracer.Trace( "testd %s, %#x\n", rm_string( 4 ), get_rip32() );
             }
@@ -4144,6 +4144,8 @@ uint64_t x64::run()
             #endif
         #endif
 
+_prefix_is_set:
+
         if ( 0 != g_State )         // 1.1% of runtime
         {
             if ( g_State & stateEndEmulation )
@@ -4155,8 +4157,6 @@ uint64_t x64::run()
             if ( ( g_State & stateTraceInstructions ) && tracer.IsEnabled() )
                 trace_state();
         }
-
-_prefix_is_set:
 
         uint8_t op = get_rip8();    // 18% of runtime
 
@@ -4232,8 +4232,8 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                 {
-                    uint32_t imm = get_rip32();
-                    do_math( math, & regs[ rax ].q, (uint64_t) sign_extend( imm, 31 ) );
+                    int32_t imm = get_rip32();
+                    do_math( math, & regs[ rax ].q, (uint64_t) imm );
                 }
                 else if ( 0x66 == _prefix_size )
                 {
@@ -5607,8 +5607,8 @@ _prefix_is_set:
                         }
                         else if ( 0x66 == _prefix_size )
                         {
-                            int32_t a = sign_extend32( regs[ _reg ].w, 15 );
-                            int32_t b = sign_extend32( get_rm16(), 15 );
+                            int32_t a = (int16_t) regs[ _reg ].w;
+                            int32_t b = (int16_t) get_rm16();
                             int32_t result32 = a * b;
                             uint16_t result16 = result32 & 0xffff;
                             setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
@@ -5617,8 +5617,8 @@ _prefix_is_set:
                         }
                         else
                         {
-                            int64_t a = sign_extend( regs[ _reg ].d, 31 );
-                            int64_t b = sign_extend( get_rm32(), 31 );
+                            int64_t a = (int32_t) regs[ _reg ].d;
+                            int64_t b = (int32_t) get_rm32();
                             int64_t result64 = a * b;
                             uint32_t result32 = result64 & 0xffffffff;
                             setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
@@ -5871,25 +5871,25 @@ _prefix_is_set:
                     case 0xbe: // movsx r, r/m. 16/32/64 from 8
                     {
                         decode_rm();
-                        uint8_t val = get_rm8();
+                        int8_t val = get_rm8();
                         if ( _rex.W )
-                            regs[ _reg ].q = sign_extend( val, 7 );
+                            regs[ _reg ].q = (uint64_t) val;
                         else if ( 0x66 == _prefix_size )
-                            regs[ _reg ].q = sign_extend16( val, 7 );
+                            regs[ _reg ].q = (uint64_t) (uint16_t) val;
                         else
-                            regs[ _reg ].q = sign_extend32( val, 7 );
+                            regs[ _reg ].q = (uint32_t) val;
                         break;
                     }
                     case 0xbf: // movsx r, r/m. 16/32/64 from 8
                     {
                         decode_rm();
-                        uint16_t val = get_rm16();
+                        int16_t val = get_rm16();
                         if ( _rex.W )
-                            regs[ _reg ].q = sign_extend( val, 15 );
+                            regs[ _reg ].q = (int64_t) val;
                         else if ( 0x66 == _prefix_size )
                             unhandled();
                         else
-                            regs[ _reg ].q = sign_extend32( val, 15 );
+                            regs[ _reg ].q = (uint32_t) val;
                         break;
                     }
                     case 0xc0: // xadd r/m8, r8
@@ -6657,7 +6657,7 @@ _prefix_is_set:
             {
                 decode_rm();
                 if ( _rex.W )
-                    regs[ _reg ].q = sign_extend( get_rm32(), 31 );
+                    regs[ _reg ].q = (int32_t) get_rm32();
                 else if ( 0x66 == _prefix_size )
                     regs[ _reg ].q = get_rm16();
                 else
@@ -6678,9 +6678,9 @@ _prefix_is_set:
             {
                 uint64_t val;
                 if ( 0x66 == _prefix_size )
-                    val = sign_extend( get_rip16(), 15 );
+                    val = (int16_t) get_rip16();
                 else
-                    val = sign_extend( get_rip32(), 31 );
+                    val = (int32_t) get_rip32();
                 push( val );
                 break;
             }
@@ -6689,7 +6689,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                 {
-                    uint64_t imm64 = sign_extend( get_rip32(), 31 );
+                    uint64_t imm64 = (int32_t) get_rip32();
                     int64_t result128H = 0;
                     uint64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), imm64, &result128H );
                     setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
@@ -6699,8 +6699,8 @@ _prefix_is_set:
                 else if ( 0x66 == _prefix_size )
                 {
                     uint16_t imm16 = get_rip16();
-                    uint32_t a = (uint32_t) sign_extend( get_rm16(), 15 );
-                    uint32_t b = (uint32_t) imm16;
+                    uint32_t a = (int16_t) get_rm16();
+                    uint32_t b = imm16;
                     uint32_t result32 = a * b;
                     uint16_t result16 = result32 & 0xffff;
                     setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
@@ -6710,7 +6710,7 @@ _prefix_is_set:
                 else
                 {
                     uint32_t imm32 = get_rip32();
-                    uint64_t a = sign_extend( get_rm32(), 31 );
+                    uint64_t a = (int32_t) get_rm32();
                     uint64_t b = imm32;
                     uint64_t result64 = a * b;
                     uint32_t result32 = result64 & 0xffffffff;
@@ -6728,19 +6728,19 @@ _prefix_is_set:
             case 0x6b: // imul reg, r/m, se(imm8). 16, 32, and 64-bit values
             {
                 decode_rm();
-                uint8_t imm8 = get_rip8();
+                int8_t imm8 = get_rip8();
                 if ( _rex.W )
                 {
                     int64_t result128H = 0;
-                    int64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), sign_extend( imm8, 7 ), &result128H );
+                    int64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), (int64_t) imm8, &result128H );
                     setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result128L;
                 }
                 else if ( 0x66 == _prefix_size )
                 {
-                    uint32_t a = (uint32_t) sign_extend( get_rm16(), 15 );
-                    uint32_t b = (uint32_t) sign_extend( imm8,7 );
+                    uint32_t a = (int16_t) get_rm16();
+                    uint32_t b = imm8;
                     uint32_t result32 = a * b;
                     uint16_t result16 = result32 & 0xffff;
                     setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
@@ -6749,8 +6749,8 @@ _prefix_is_set:
                 }
                 else
                 {
-                    uint64_t a = sign_extend( get_rm32(), 31 );
-                    uint64_t b = sign_extend( imm8, 7 );
+                    uint64_t a = (int32_t) get_rm32();
+                    uint64_t b = imm8;
                     uint64_t result64 = a * b;
                     uint32_t result32 = result64 & 0xffffffff;
                     setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
@@ -6762,7 +6762,7 @@ _prefix_is_set:
             case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75: case 0x76: case 0x77: // jcc
             case 0x78: case 0x79: case 0x7a: case 0x7b: case 0x7c: case 0x7d: case 0x7e: case 0x7f:
             {
-                int16_t offset = (int16_t) (int8_t) get_rip8();
+                int16_t offset = (int8_t) get_rip8();
                 if ( check_condition( op & 0xf ) )
                     rip.q += offset;
                 break;
@@ -6780,9 +6780,9 @@ _prefix_is_set:
                 uint8_t math = _reg;
                 if ( _rex.W )
                 {
-                    uint64_t r = get_rip32();
+                    int32_t r = get_rip32();
                     uint64_t val = get_rm64();
-                    do_math( math, &val, (uint64_t) sign_extend( r, 31 ) );
+                    do_math( math, &val, (uint64_t) r );
                     if ( 7 != math )
                         set_rm64( val );
                 }
@@ -6984,11 +6984,11 @@ _prefix_is_set:
             {
                 decode_rex();
                 if ( _rex.W )
-                    regs[ rax ].q = sign_extend( regs[ rax ].q, 31 );
+                    regs[ rax ].q = (int32_t) regs[ rax ].d;
                 else if ( 0x66 == _prefix_size )
-                    regs[ rax ].q = sign_extend16( regs[ rax ].w, 7 );
+                    regs[ rax ].q = (uint16_t) (int8_t) regs[ rax ].b;
                 else
-                    regs[ rax ].q = sign_extend32( regs[ rax ].d, 15 );
+                    regs[ rax ].q = (uint32_t) (int16_t) regs[ rax ].w;
                 break;
             }
             case 0x99: // cwd/cdq/cqo
@@ -7108,7 +7108,7 @@ _prefix_is_set:
             {
                 decode_rex();
                 if ( _rex.W )
-                    op_and( regs[ rax ].q, (uint64_t) sign_extend( get_rip32(), 31 ) );
+                    op_and( regs[ rax ].q, (uint64_t) (int32_t) get_rip32() );
                 else if ( 0x66 == _prefix_size )
                     op_and( regs[ rax ].w, get_rip16() );
                 else
@@ -7242,7 +7242,7 @@ _prefix_is_set:
             {
                 decode_rm();
                 if ( _rex.W )
-                    set_rm64( sign_extend( get_rip32(), 31 ) );
+                    set_rm64( (int32_t) get_rip32() );
                 else if ( 0x66 == _prefix_size )
                     set_rm16( get_rip16() );
                 else
@@ -8015,7 +8015,7 @@ _prefix_is_set:
                 {
                     if ( _rex.W )
                     {
-                        uint64_t val = (uint64_t) sign_extend( get_rip32(), 31 ) ;
+                        uint64_t val = (int32_t) get_rip32();
                         op_and( get_rm64(), val );
                     }
                     else if ( 0x66 == _prefix_size )
