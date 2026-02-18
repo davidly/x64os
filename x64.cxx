@@ -113,10 +113,10 @@ void x64::trace_state()
 
 //    tracer.TraceBinaryData( getmem( 0x5e8c80 ), 10, 2 );
 
-    uint64_t ip = ( 0 == _prefix_rex ) ? rip.q : ( rip.q - 1 );
-    if ( 0 != _prefix_size )
+    uint64_t ip = ( 0 == _prefix.rex ) ? rip.q : ( rip.q - 1 );
+    if ( 0 != _prefix.size )
         ip--;
-    if ( 0 != _prefix_sse2_repeat )
+    if ( 0 != _prefix.sse2_repeat )
         ip--;
 
     rip.q++;
@@ -200,7 +200,7 @@ void x64::trace_state()
         {
             uint8_t math = ( op >> 3 ) & 7;
             decode_rex();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
             {
                 uint16_t imm = (int16_t) (int16_t) get_rip16();
                 tracer.Trace( "%sw ax, %#x\n", math_names[ math ], imm );
@@ -239,11 +239,11 @@ void x64::trace_state()
                 case 0x10:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // movupd xmm1, xmm2/m128 move 128 bits of unaligned double from xmm2/mem to xmm1
+                    if ( 0x66 == _prefix.size ) // movupd xmm1, xmm2/m128 move 128 bits of unaligned double from xmm2/mem to xmm1
                         tracer.Trace( "movupd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xf2 == _prefix_sse2_repeat ) // movsd xmm1, xmm2/m64. move scalar double from source to xmm1
+                    else if ( 0xf2 == _prefix.sse2_repeat ) // movsd xmm1, xmm2/m64. move scalar double from source to xmm1
                         tracer.Trace( "movsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xf3 == _prefix_sse2_repeat ) // movss xmm1, xmm2/m32
+                    else if ( 0xf3 == _prefix.sse2_repeat ) // movss xmm1, xmm2/m32
                         tracer.Trace( "movss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else // movups xmm, xmm/m128. move unaligned 128 bits of single precision fp from xmm/mem to xmm
                         tracer.Trace( "movups %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -252,11 +252,11 @@ void x64::trace_state()
                 case 0x11:
                 {
                     decode_rm();
-                    if ( 0xf2 == _prefix_sse2_repeat ) // movsd xmm1/m64, xmm2  move scalar double from xmm2 to xmm1/m64
+                    if ( 0xf2 == _prefix.sse2_repeat ) // movsd xmm1/m64, xmm2  move scalar double from xmm2 to xmm1/m64
                         tracer.Trace( "movsd %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
-                    else if ( 0xf3 == _prefix_sse2_repeat ) // movss xmm1/m64, xmm2  move scalar float from xmm2 to xmm1/m64
+                    else if ( 0xf3 == _prefix.sse2_repeat ) // movss xmm1/m64, xmm2  move scalar float from xmm2 to xmm1/m64
                         tracer.Trace( "movss %s, %s\n", rm_string( 4, true ), xmm_names[ _reg ] );
-                    else if ( 0x66 == _prefix_size ) // movupd xmm2/m128, xmm1   move 128 bits of unaligned packed double precision fp from xmm1 to xmm2/mem
+                    else if ( 0x66 == _prefix.size ) // movupd xmm2/m128, xmm1   move 128 bits of unaligned packed double precision fp from xmm1 to xmm2/mem
                         tracer.Trace( "movupd %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
                     else   // movups xmm2/m128, xmm1   move 128 bits of unaligned packed single precision fp from xmm1 to xmm2/mem
                         tracer.Trace( "movups %s, %s\n", rm_string( 4, true ), xmm_names[ _reg ] );
@@ -264,10 +264,10 @@ void x64::trace_state()
                 }
                 case 0x12:
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
+                    if ( 0x66 == _prefix.size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
                         tracer.Trace( "movlpd %s, %s\n", xmm_names[ _reg ], rm_string( 8 ) );
                     else if ( 3 == _mod ) // movhlps xmm1, xmm2   move two packed floats from high qw of xmm2 to low qw of xmm1
                         tracer.Trace( "movhlps %s, %s\n", xmm_names[ _reg ], rm_string( 4 ) );
@@ -277,10 +277,10 @@ void x64::trace_state()
                 }
                 case 0x13:
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // movlpd m64, xmm1  moves double from m64 to low qword of xmm1 and doesn't touch high qword
+                    if ( 0x66 == _prefix.size ) // movlpd m64, xmm1  moves double from m64 to low qword of xmm1 and doesn't touch high qword
                         tracer.Trace( "movlpd %s, %s\n", rm_string( 8 ), xmm_names[ _reg ] );
                     else // movlps m64, xmm1
                         tracer.Trace( "movlps %s, %s\n", rm_string( 4 ), xmm_names[ _reg ] );
@@ -288,10 +288,10 @@ void x64::trace_state()
                 }
                 case 0x14:
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128
+                    if ( 0x66 == _prefix.size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128
                         tracer.Trace( "unpcklpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else // unpcklps xmm1, xmm2/m128 unpack singles from low of xmm1 and xmm2/m128
                         tracer.Trace( "unpcklps %s, %s\n", xmm_names[ _reg ], rm_string( 5, true ) );
@@ -300,7 +300,7 @@ void x64::trace_state()
                 case 0x15:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // unpckhpd xmm1, xmm2/m128
+                    if ( 0x66 == _prefix.size ) // unpckhpd xmm1, xmm2/m128
                         tracer.Trace( "unpckhpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else // unpckhps xmm1, xmm2/m128
                         tracer.Trace( "unpckhps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -309,7 +309,7 @@ void x64::trace_state()
                 case 0x16:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // movhpd xmm1, m64. moves double from m64 to high qword of xmm1 and doesn't touch low qword
+                    if ( 0x66 == _prefix.size ) // movhpd xmm1, m64. moves double from m64 to high qword of xmm1 and doesn't touch low qword
                         tracer.Trace( "movhpd %s, %s\n", xmm_names[ _reg ], rm_string( 8 ) );
                     else   // movlhps xmm1, m64  or movlhps xmm1, xmm2
                         tracer.Trace( "movlhps %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
@@ -318,7 +318,7 @@ void x64::trace_state()
                 case 0x17:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // movhpd m64, xmm1. moves double from high qword of xmm1 to m64
+                    if ( 0x66 == _prefix.size ) // movhpd m64, xmm1. moves double from high qword of xmm1 to m64
                         tracer.Trace( "movhpd %s, %s\n", rm_string( 8 ), xmm_names[ _reg ] );
                     else   // movlhps m64, xmm1  or movlhps xmm1, xmm2
                         tracer.Trace( "movhps %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
@@ -359,7 +359,7 @@ void x64::trace_state()
                 case 0x28: // movaps xmm, xmm/m128   move aligned packed single precision fp values from xmm2/m128 to xmm1. and movapd
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "movapd %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         tracer.Trace( "movaps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -368,10 +368,10 @@ void x64::trace_state()
                 case 0x29:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
 
-                    if ( 0x66 == _prefix_size ) // movapd xmm2/m128, xmm1
+                    if ( 0x66 == _prefix.size ) // movapd xmm2/m128, xmm1
                         tracer.Trace( "movapd %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
                     else   // movaps xmm/m128, xmm   move aligned packed single precision fp values from xmm1 to xmm2/m128
                         tracer.Trace( "movaps %s, %s\n", rm_string( 4, true ), xmm_names[ _reg ] );
@@ -380,11 +380,11 @@ void x64::trace_state()
                 case 0x2a: // cvtsi2sd xmm1, r32/m32   convert dword to scalar double
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         unhandled();
-                    if ( 0xf2 == _prefix_sse2_repeat )
+                    if ( 0xf2 == _prefix.sse2_repeat )
                         tracer.Trace( "cvtsi2sd %s, %s\n", xmm_names[ _reg ], rm_string( op_width() ) );
-                    else if ( 0xf3 == _prefix_sse2_repeat )
+                    else if ( 0xf3 == _prefix.sse2_repeat )
                         tracer.Trace( "cvtsi2ss %s, %s\n", xmm_names[ _reg ], rm_string( op_width() ) );
                     else
                         unhandled();
@@ -393,9 +393,9 @@ void x64::trace_state()
                 case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer
                 {
                     decode_rm();
-                    if ( 0xf2 == _prefix_sse2_repeat )
+                    if ( 0xf2 == _prefix.sse2_repeat )
                         tracer.Trace( "cvttsd2si %s, %s\n", register_name( _reg, _rex.W ? 8 : 4 ), rm_string( 8, true ) );
-                    else if ( 0xf3 == _prefix_sse2_repeat )
+                    else if ( 0xf3 == _prefix.sse2_repeat )
                         tracer.Trace( "cvttss2si %s, %s\n", register_name( _reg, _rex.W ? 8 : 4 ), rm_string( 4, true ) );
                     else
                         unhandled();
@@ -404,9 +404,9 @@ void x64::trace_state()
                 case 0x2e: // ucomisd xmm1, xmm2/m64   compare low doubles and set eflags accordingly
                 {
                     decode_rm();
-                    if ( 0 == _prefix_sse2_repeat )
+                    if ( 0 == _prefix.sse2_repeat )
                     {
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                             tracer.Trace( "ucomisd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                         else
                             tracer.Trace( "ucomiss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -418,9 +418,9 @@ void x64::trace_state()
                 case 0x2f:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )// comisd xmm1, xmm2/m32  compare low double scalar values and set eflags
+                    if ( 0x66 == _prefix.size )// comisd xmm1, xmm2/m32  compare low double scalar values and set eflags
                         tracer.Trace( "comisd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0 == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
+                    else if ( 0 == _prefix.sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
                         tracer.Trace( "comiss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
@@ -441,9 +441,9 @@ void x64::trace_state()
                 case 0x50:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
+                    if ( 0x66 == _prefix.size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
                         tracer.Trace( "movmskpd %s, %s\n", register_names[ _reg ], rm_string( 8, true ) );
                     else // movmkps reg, xmm    extract 4 bit sign mask from xmm and store in reg
                         tracer.Trace( "movmkps %s, %s\n", register_names[ _reg ], rm_string( 8, true ) );
@@ -452,13 +452,13 @@ void x64::trace_state()
                 case 0x51:
                 {
                     decode_rm();
-                    if ( 0xf2 == _prefix_sse2_repeat ) // sqrtsd xmm1, xmm2/m64  sqrt of low double
+                    if ( 0xf2 == _prefix.sse2_repeat ) // sqrtsd xmm1, xmm2/m64  sqrt of low double
                         tracer.Trace( "sqrtsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xf3 == _prefix_sse2_repeat ) // sqrtss xmm1 / xmm2/m32  sqrt of low float
+                    else if ( 0xf3 == _prefix.sse2_repeat ) // sqrtss xmm1 / xmm2/m32  sqrt of low float
                         tracer.Trace( "sqrtss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                    else if ( 0x66 == _prefix_size ) // sqrtpd xmm1, xmm2/m128  compute sqrt of packed doubles
+                    else if ( 0x66 == _prefix.size ) // sqrtpd xmm1, xmm2/m128  compute sqrt of packed doubles
                         tracer.Trace( "sqrtpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0 == _prefix_sse2_repeat && 0 == _prefix_size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
+                    else if ( 0 == _prefix.sse2_repeat && 0 == _prefix.size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
                         tracer.Trace( "sqrtps %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -467,9 +467,9 @@ void x64::trace_state()
                 case 0x52:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.size || 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of square root of the float in xmm2/m32 and store result in xmm1
+                    if ( 0xf3 == _prefix.sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of square root of the float in xmm2/m32 and store result in xmm1
                         tracer.Trace( "rsqrtss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else // rsqrtps xmm1, xmm2/m128 compute reciprocals of the square roots of packed floats
                         tracer.Trace( "rsqrtps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -478,11 +478,11 @@ void x64::trace_state()
                 case 0x53:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_size )
+                    if ( 0 != _prefix.size )
                         unhandled();
-                    if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
+                    if ( 0xf3 == _prefix.sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
                         tracer.Trace( "rcpss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                    else if ( 0 == _prefix_sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
+                    else if ( 0 == _prefix.sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
                         tracer.Trace( "rcpps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
@@ -491,7 +491,7 @@ void x64::trace_state()
                 case 0x54: // andpd xmm, xmm/m128   bitwise and of doubles and singles
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "andpd %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         tracer.Trace( "andps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -500,46 +500,46 @@ void x64::trace_state()
                 case 0x55: // andnps/andnpd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    bool wide = ( 0x66 == _prefix_size );
+                    bool wide = ( 0x66 == _prefix.size );
                     tracer.Trace( "andnp%c %s, %s\n", wide ? 'd' : 's', xmm_names[ _reg ], rm_string( wide ? 8 : 4, true ) );
                     break;
                 }
                 case 0x56: // orps/orpd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    bool wide = ( 0x66 == _prefix_size );
+                    bool wide = ( 0x66 == _prefix.size );
                     tracer.Trace( "orp%c %s, %s\n", wide ? 'd' : 's', xmm_names[ _reg ], rm_string( wide ? 8 : 4, true ) );
                     break;
                 }
                 case 0x57: // xorpd/xorps xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    bool wide = ( 0x66 == _prefix_size );
+                    bool wide = ( 0x66 == _prefix.size );
                     tracer.Trace( "xorp%c %s, %s\n", wide ? 'd' : 's', xmm_names[ _reg ], rm_string( wide ? 8 : 4, true ) );
                     break;
                 }
                 case 0x58:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // addpd xmm1, xmm2/m128   add packed double values
+                    if ( 0x66 == _prefix.size ) // addpd xmm1, xmm2/m128   add packed double values
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         tracer.Trace( "addpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
                     else
                     {
-                        if ( 0xf2 == _prefix_sse2_repeat ) // addsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // addsd xmm1, xmm2/m64
                             tracer.Trace( "addsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // addss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // addss xmm1, xmm2/m64
                             tracer.Trace( "addss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0 == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix.sse2_repeat )
                             tracer.Trace( "addps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -549,19 +549,19 @@ void x64::trace_state()
                 case 0x59:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // mulpd xmm1, xmm2/m128   multiply packed double values
+                    if ( 0x66 == _prefix.size ) // mulpd xmm1, xmm2/m128   multiply packed double values
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         tracer.Trace( "mulpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
                     else
                     {
-                        if ( 0xf2 == _prefix_sse2_repeat ) // mulsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // mulsd xmm1, xmm2/m64
                             tracer.Trace( "mulsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // mulss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // mulss xmm1, xmm2/m64
                             tracer.Trace( "mulss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0 == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix.sse2_repeat )
                             tracer.Trace( "mulps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -571,11 +571,11 @@ void x64::trace_state()
                 case 0x5a:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // cvtpd2ps xmm1, xmm2/m128   convert two packed doubles in 2 to two floats in 1
+                    if ( 0x66 == _prefix.size ) // cvtpd2ps xmm1, xmm2/m128   convert two packed doubles in 2 to two floats in 1
                         tracer.Trace( "cvtpd2ps %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xf3 == _prefix_sse2_repeat ) // cvtss2sd xmm1, xmm2/m32   convert scalar float to scalar double
+                    else if ( 0xf3 == _prefix.sse2_repeat ) // cvtss2sd xmm1, xmm2/m32   convert scalar float to scalar double
                         tracer.Trace( "cvtss2sd %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                    else if ( 0xf2 == _prefix_sse2_repeat ) // cvtsd2ss xmm1, xmm2/m32   convert scalar double to scalar float
+                    else if ( 0xf2 == _prefix.sse2_repeat ) // cvtsd2ss xmm1, xmm2/m32   convert scalar double to scalar float
                         tracer.Trace( "cvtsd2ss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else // cvtps2pd xmm1, xmm2/m64 convert two packed floats in 2 to two packed doubles in 1
                         tracer.Trace( "cvtps2pd %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
@@ -584,11 +584,11 @@ void x64::trace_state()
                 case 0x5b:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_size )
+                    if ( 0 != _prefix.size )
                         unhandled();
-                    if ( 0xf3 == _prefix_sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
+                    if ( 0xf3 == _prefix.sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
                         tracer.Trace( "cvttps2dq %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                    else if ( 0 == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
+                    else if ( 0 == _prefix.sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
                         tracer.Trace( "cvtdq2ps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
@@ -597,19 +597,19 @@ void x64::trace_state()
                 case 0x5c:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // subpd xmm1, xmm2/m128   subtract packed double values
+                    if ( 0x66 == _prefix.size ) // subpd xmm1, xmm2/m128   subtract packed double values
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         tracer.Trace( "subpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
                     else
                     {
-                        if ( 0xf2 == _prefix_sse2_repeat ) // subsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // subsd xmm1, xmm2/m64
                             tracer.Trace( "subsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // subss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // subss xmm1, xmm2/m64
                             tracer.Trace( "subss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0 == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix.sse2_repeat )
                             tracer.Trace( "subps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -619,19 +619,19 @@ void x64::trace_state()
                 case 0x5d:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // minpd xmm1, xmm2/m128   min packed double values
+                    if ( 0x66 == _prefix.size ) // minpd xmm1, xmm2/m128   min packed double values
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         tracer.Trace( "minpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
                     else
                     {
-                        if ( 0xf2 == _prefix_sse2_repeat ) // minsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // minsd xmm1, xmm2/m64
                             tracer.Trace( "minsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // minss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // minss xmm1, xmm2/m64
                             tracer.Trace( "minss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0 == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix.sse2_repeat )
                             tracer.Trace( "minps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -641,19 +641,19 @@ void x64::trace_state()
                 case 0x5e:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // divpd xmm1, xmm2/m128   divide packed double values
+                    if ( 0x66 == _prefix.size ) // divpd xmm1, xmm2/m128   divide packed double values
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         tracer.Trace( "divpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
                     else
                     {
-                        if ( 0xf2 == _prefix_sse2_repeat ) // divsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // divsd xmm1, xmm2/m64
                             tracer.Trace( "divsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // divss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // divss xmm1, xmm2/m64
                             tracer.Trace( "divss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0 == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix.sse2_repeat )
                             tracer.Trace( "divps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -663,19 +663,19 @@ void x64::trace_state()
                 case 0x5f:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // maxpd xmm1, xmm2/m128   max packed double values
+                    if ( 0x66 == _prefix.size ) // maxpd xmm1, xmm2/m128   max packed double values
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         tracer.Trace( "maxpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
                     else
                     {
-                        if ( 0xf2 == _prefix_sse2_repeat ) // maxsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // maxsd xmm1, xmm2/m64
                             tracer.Trace( "maxsd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // maxss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // maxss xmm1, xmm2/m64
                             tracer.Trace( "maxss %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
-                        else if ( 0 == _prefix_sse2_repeat )
+                        else if ( 0 == _prefix.sse2_repeat )
                             tracer.Trace( "maxps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                         else
                             unhandled();
@@ -685,7 +685,7 @@ void x64::trace_state()
                 case 0x60: // punpcklbw xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpcklbw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -694,7 +694,7 @@ void x64::trace_state()
                 case 0x61: // punpcklwd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpcklwd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -703,7 +703,7 @@ void x64::trace_state()
                 case 0x62: // punpckldq xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpckldq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -712,7 +712,7 @@ void x64::trace_state()
                 case 0x63:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // packsswb xmm1, xmm2/m128   convert 8 packed int16_t from xmm1 and xmm2/m128 into 16 packed int8_t using signed saturation
+                    if ( 0x66 == _prefix.size ) // packsswb xmm1, xmm2/m128   convert 8 packed int16_t from xmm1 and xmm2/m128 into 16 packed int8_t using signed saturation
                         tracer.Trace( "packsswb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -721,7 +721,7 @@ void x64::trace_state()
                 case 0x64: // pcmpgtb xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pcmpgtb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -730,7 +730,7 @@ void x64::trace_state()
                 case 0x65: // pcmpgtw xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pcmpgtw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -739,7 +739,7 @@ void x64::trace_state()
                 case 0x66: // pcmpgtd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pcmpgtd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -748,7 +748,7 @@ void x64::trace_state()
                 case 0x67: // packuswb xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "packuswb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -757,7 +757,7 @@ void x64::trace_state()
                 case 0x68: // punpckhbw xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpckhbw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -766,7 +766,7 @@ void x64::trace_state()
                 case 0x69: // punpckhwd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpckhwd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -775,7 +775,7 @@ void x64::trace_state()
                 case 0x6a: // punpckhdq xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpckhdq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -784,7 +784,7 @@ void x64::trace_state()
                 case 0x6b:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // packssdw xmm1, xmm2/m128  converts 4 packed dwords from xmm1 and xmm2/m128 into 8 packed signed word integers using signed saturation
+                    if ( 0x66 == _prefix.size ) // packssdw xmm1, xmm2/m128  converts 4 packed dwords from xmm1 and xmm2/m128 into 8 packed signed word integers using signed saturation
                         tracer.Trace( "packssdw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -793,7 +793,7 @@ void x64::trace_state()
                 case 0x6c: // punpcklqdq xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpcklqdq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -802,7 +802,7 @@ void x64::trace_state()
                 case 0x6d: // punpckhqdq xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "punpckhqdq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -811,7 +811,7 @@ void x64::trace_state()
                 case 0x6e: // movd xmm, r/m32   movq xmm, r/m64
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                     {
                         if ( _rex.W )
                             tracer.Trace( "movq %s, %s\n", xmm_names[ _reg ], rm_string( 8 ) );
@@ -825,13 +825,13 @@ void x64::trace_state()
                 case 0x6f: // movdqa xmm1, xmm2/m128   move 128 bits of aligned packed integer values from xmm2/m128 to xmm1
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "movdqa %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0xf3 == _prefix_sse2_repeat )
+                    else if ( 0xf3 == _prefix.sse2_repeat )
                         tracer.Trace( "movqdu %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                     {
-                        tracer.Trace( "_prefix_sse2_repeat %#x, _prefix_size %#x\n", _prefix_sse2_repeat, _prefix_size );
+                        tracer.Trace( "_prefix.sse2_repeat %#x, _prefix.size %#x\n", _prefix.sse2_repeat, _prefix.size );
                         unhandled(); // mmx not supported
                     }
                     break;
@@ -839,11 +839,11 @@ void x64::trace_state()
                 case 0x70:
                 {
                     decode_rm();
-                    if ( 0xf2 == _prefix_sse2_repeat ) // pshuflw xmm1, xmm2/m128, imm8
+                    if ( 0xf2 == _prefix.sse2_repeat ) // pshuflw xmm1, xmm2/m128, imm8
                         tracer.Trace( "pshuflw %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), get_rip8() );
-                    else if ( 0xf3 == _prefix_sse2_repeat ) // pshufhw xmm1, xmm2/m128, imm8
+                    else if ( 0xf3 == _prefix.sse2_repeat ) // pshufhw xmm1, xmm2/m128, imm8
                         tracer.Trace( "pshufhw %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), get_rip8() );
-                    else if ( 0x66 == _prefix_size ) // pshufd xmm, xmm/m128, imm8
+                    else if ( 0x66 == _prefix.size ) // pshufd xmm, xmm/m128, imm8
                         tracer.Trace( "pshufd %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), get_rip8() );
                     else
                         unhandled();
@@ -852,7 +852,7 @@ void x64::trace_state()
                 case 0x71:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                     {
                         uint8_t shift = get_rip8();
                         if ( 2 == _reg ) // psrlw
@@ -871,7 +871,7 @@ void x64::trace_state()
                 case 0x72:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                     {
                         uint8_t shift = get_rip8();
                         if ( 2 == _reg ) // psrld xmm1, imm8
@@ -890,7 +890,7 @@ void x64::trace_state()
                 case 0x73:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                     {
                         if ( 2 == _reg ) // psrlq xmm1, imm8   shift quad right logical
                             tracer.Trace( "psrlq %s, %u\n", xmm_names[ _rm ], get_rip8() );
@@ -910,7 +910,7 @@ void x64::trace_state()
                 case 0x74:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // pcmpeqb xmm, xmm/m128   compare packed bytes in rm to r for equality. if eq, set byte to 1 else 0
+                    if ( 0x66 == _prefix.size ) // pcmpeqb xmm, xmm/m128   compare packed bytes in rm to r for equality. if eq, set byte to 1 else 0
                         tracer.Trace( "pcmpeqb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -919,7 +919,7 @@ void x64::trace_state()
                 case 0x75:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // pcmpeqw xmm, xmm/m128   compare packed words in rm to r for equality. if eq, set byte to 1 else 0
+                    if ( 0x66 == _prefix.size ) // pcmpeqw xmm, xmm/m128   compare packed words in rm to r for equality. if eq, set byte to 1 else 0
                         tracer.Trace( "pcmpeqw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -928,7 +928,7 @@ void x64::trace_state()
                 case 0x76:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // pcmpeqd xmm/m128, xmm   compare packed doublewords in xmm/m128 and xmm1 for equality
+                    if ( 0x66 == _prefix.size ) // pcmpeqd xmm/m128, xmm   compare packed doublewords in xmm/m128 and xmm1 for equality
                         tracer.Trace( "pcmpeqd %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
                     else
                         unhandled();
@@ -936,12 +936,12 @@ void x64::trace_state()
                 }
                 case 0x7e: // movq r/m64, xmm
                 {
-                    if ( 0xf3 == _prefix_sse2_repeat )
+                    if ( 0xf3 == _prefix.sse2_repeat )
                     {
                         decode_rm();
                         tracer.Trace( "movq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     }
-                    else if ( 0x66 == _prefix_size ) // mov r/m, xmm
+                    else if ( 0x66 == _prefix.size ) // mov r/m, xmm
                     {
                         decode_rm();
                         tracer.Trace( "movq %s, %s\n", rm_string( 8 ), xmm_names[ _reg ] );
@@ -953,8 +953,8 @@ void x64::trace_state()
                 case 0x7f:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size || 0xf3 == _prefix_sse2_repeat ) // movdqa xmm2/m128, xmm1   move aligned packed integer values. or movdqu (unaligned)
-                        tracer.Trace( "movdq%c %s, %s\n", ( 0x66 == _prefix_size ) ? 'a' : 'u', rm_string( 8, true ), xmm_names[ _reg ] );
+                    if ( 0x66 == _prefix.size || 0xf3 == _prefix.sse2_repeat ) // movdqa xmm2/m128, xmm1   move aligned packed integer values. or movdqu (unaligned)
+                        tracer.Trace( "movdq%c %s, %s\n", ( 0x66 == _prefix.size ) ? 'a' : 'u', rm_string( 8, true ), xmm_names[ _reg ] );
                     else
                         unhandled();
                     break;
@@ -981,7 +981,7 @@ void x64::trace_state()
                 case 0xa3: // bt r/m, r 16/32/64
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "bt %s %s\n", rm_string( 2 ), register_name( _reg, 2 ) );
                     else if ( _rex.W )
                         tracer.Trace( "bt %s %s\n", rm_string( 8 ), register_name( _reg, 8 ) );
@@ -1061,7 +1061,7 @@ void x64::trace_state()
                 }
                 case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
                     tracer.Trace( "btr %s, %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
@@ -1081,7 +1081,7 @@ void x64::trace_state()
                 }
                 case 0xb8:
                 {
-                    if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
+                    if ( 0xf3 == _prefix.sse2_repeat ) // popcnt
                     {
                         decode_rm();
                         tracer.Trace( "popcnt %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
@@ -1127,7 +1127,7 @@ void x64::trace_state()
                 case 0xbf: // movsx r, r/m16. 32/64 from 16
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         unhandled();
                     tracer.Trace( "movsx %s, %s\n", register_name( _reg, op_width() ), rm_string( 2 ) );
                     break;
@@ -1148,11 +1148,11 @@ void x64::trace_state()
                 {
                     decode_rm();
                     uint8_t imm = get_rip8();
-                    if ( 0x66 == _prefix_size ) // packed double
+                    if ( 0x66 == _prefix.size ) // packed double
                         tracer.Trace( "cmppd %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm );
-                    else if ( 0xf2 == _prefix_sse2_repeat ) // scalar double
+                    else if ( 0xf2 == _prefix.sse2_repeat ) // scalar double
                         tracer.Trace( "cmpsd %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm );
-                    else if ( 0xf3 == _prefix_sse2_repeat ) // scalar single
+                    else if ( 0xf3 == _prefix.sse2_repeat ) // scalar single
                         tracer.Trace( "cmpss %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm );
                     else // packed single
                         tracer.Trace( "cmpps %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 4, true ), imm );
@@ -1161,10 +1161,10 @@ void x64::trace_state()
                 case 0xc4:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     uint8_t imm = get_rip8();
-                    if ( 0x66 == _prefix_size ) // pinsrw xmm, r32/m16, imm8
+                    if ( 0x66 == _prefix.size ) // pinsrw xmm, r32/m16, imm8
                         tracer.Trace( "pinsrw %s, %s, %u\n", xmm_names[ _reg ], rm_string( 2, true ), imm );
                     else
                         unhandled();
@@ -1173,7 +1173,7 @@ void x64::trace_state()
                 case 0xc5: // pextrw reg, xmm, imm8
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pextrw %s %s, %u\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), xmm_names[ _rm ], get_rip8() );
                     else
                         unhandled();
@@ -1183,7 +1183,7 @@ void x64::trace_state()
                 {
                     decode_rm();
                     uint8_t imm8 = get_rip8();
-                    if ( 0x66 == _prefix_size ) // shufpd xmm, xmm/m128, imm8
+                    if ( 0x66 == _prefix.size ) // shufpd xmm, xmm/m128, imm8
                         tracer.Trace( "shufpd, %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm8 );
                     else // shufps xmm, xmm/m128, imm8
                         tracer.Trace( "shufps, %s, %s, %#x\n", xmm_names[ _reg ], rm_string( 8, true ), imm8 );
@@ -1205,7 +1205,7 @@ void x64::trace_state()
                 }
                 case 0xc8: case 0xc9: case 0xca: case 0xcb: case 0xcc: case 0xcd: case 0xce: case 0xcf: // bswap r32/r64
                 {
-                    if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.size || 0 != _prefix.sse2_repeat )
                         unhandled();
                     _rm = ( op1 & 7 );
                     decode_rex();
@@ -1215,9 +1215,9 @@ void x64::trace_state()
                 case 0xd2:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size ) // psrld xmm1, xmm2/m128   shift dwords in xmm1 right by amount specified
+                    if ( 0x66 == _prefix.size ) // psrld xmm1, xmm2/m128   shift dwords in xmm1 right by amount specified
                         tracer.Trace( "paddq, %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1226,9 +1226,9 @@ void x64::trace_state()
                 case 0xd3:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size ) // psrlq xmm1, xmm2/m128   shift qwords right while shifting in 0s
+                    if ( 0x66 == _prefix.size ) // psrlq xmm1, xmm2/m128   shift qwords right while shifting in 0s
                         tracer.Trace( "psrlq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1237,9 +1237,9 @@ void x64::trace_state()
                 case 0xd4:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size )  // paddq xmm1, xmm2/m128
+                    if ( 0x66 == _prefix.size )  // paddq xmm1, xmm2/m128
                         tracer.Trace( "paddq, %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1248,7 +1248,7 @@ void x64::trace_state()
                 case 0xd5:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // pmullw xmm1, xmm2/m128  multiply signed words and store low 16 bits of results
+                    if ( 0x66 == _prefix.size ) // pmullw xmm1, xmm2/m128  multiply signed words and store low 16 bits of results
                         tracer.Trace( "pmullw %s, %s\n", xmm_names[ _reg ], rm_string( 2, true ) );
                     else
                         unhandled();
@@ -1257,7 +1257,7 @@ void x64::trace_state()
                 case 0xd6: // movq r/m64, xmm
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "movq %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
                     else
                         unhandled();
@@ -1266,7 +1266,7 @@ void x64::trace_state()
                 case 0xd7: // pmovmskb reg, xmm
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pmovmskb %s, %s\n", register_names[ _reg ], xmm_names[ _rm ] );
                     else
                         unhandled();
@@ -1275,7 +1275,7 @@ void x64::trace_state()
                 case 0xd8: // psubsub xmm1, xmm2/m128 subtract unsigned bytes and saturate result
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psubusb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1284,7 +1284,7 @@ void x64::trace_state()
                 case 0xd9: // psubsuw xmm1, xmm2/m128 subtract unsigned words and saturate result
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psubusw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1293,7 +1293,7 @@ void x64::trace_state()
                 case 0xda: // pminub xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pminub %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1302,7 +1302,7 @@ void x64::trace_state()
                 case 0xdb:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // pand xmm1, xmm2/m128
+                    if ( 0x66 == _prefix.size ) // pand xmm1, xmm2/m128
                         tracer.Trace( "pand %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1311,7 +1311,7 @@ void x64::trace_state()
                 case 0xde: // pmaxub xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pmaxub %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1319,10 +1319,10 @@ void x64::trace_state()
                 }
                 case 0xdf: // pandn xmm1, xmm2/m128
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pandn %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1330,10 +1330,10 @@ void x64::trace_state()
                 }
                 case 0xe2:
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // psrad xmm1, xmm2/m128   shift signed dword in xmm1 right by xmm2/m128
+                    if ( 0x66 == _prefix.size ) // psrad xmm1, xmm2/m128   shift signed dword in xmm1 right by xmm2/m128
                         tracer.Trace( "psrad %s, %s\n",  xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1341,10 +1341,10 @@ void x64::trace_state()
                 }
                 case 0xe4: // pmulhuw xmm1, xmm2/m128
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pmulhuw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1352,10 +1352,10 @@ void x64::trace_state()
                 }
                 case 0xe5:
                 {
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // pmulhw xmm1, xmm2/m128   multiply packed signed words and store high 16 bits of results
+                    if ( 0x66 == _prefix.size ) // pmulhw xmm1, xmm2/m128   multiply packed signed words and store high 16 bits of results
                         tracer.Trace( "pmulhuw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1364,9 +1364,9 @@ void x64::trace_state()
                 case 0xe6:
                 {
                     decode_rm();
-                    if ( 0xf3 == _prefix_sse2_repeat ) // cvtdq2pd xmm1, xmm2/m64  convert two packed signed dword ints from xmm2/mem to 2 double fp values in xmm1
+                    if ( 0xf3 == _prefix.sse2_repeat ) // cvtdq2pd xmm1, xmm2/m64  convert two packed signed dword ints from xmm2/mem to 2 double fp values in xmm1
                         tracer.Trace( "cvtdq2pd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
-                    else if ( 0x66 == _prefix_size ) // cvttpd2dq xmm1, xmm2/m128  convert two doubles to two signed dword integers
+                    else if ( 0x66 == _prefix.size ) // cvttpd2dq xmm1, xmm2/m128  convert two doubles to two signed dword integers
                         tracer.Trace( "cvttpd2dq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1375,7 +1375,7 @@ void x64::trace_state()
                 case 0xe7:
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size ) // movntdq m128, xmm1  move packed integers from xmm to mm using non-temporal hint
+                    if ( 0x66 == _prefix.size ) // movntdq m128, xmm1  move packed integers from xmm to mm using non-temporal hint
                         tracer.Trace( "movntdq %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
                     else
                         unhandled();
@@ -1384,9 +1384,9 @@ void x64::trace_state()
                 case 0xea: // pminsw xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pminsw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1395,7 +1395,7 @@ void x64::trace_state()
                 case 0xeb: // por xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "por %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1404,9 +1404,9 @@ void x64::trace_state()
                 case 0xee: // pmaxsw xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pmaxsw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1415,7 +1415,7 @@ void x64::trace_state()
                 case 0xef: // pxor xmm, xmm/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pxor %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1424,9 +1424,9 @@ void x64::trace_state()
                 case 0xf2:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size ) // pslld xmm1, xmm2/m128   shift dwords left while shifting in 0s
+                    if ( 0x66 == _prefix.size ) // pslld xmm1, xmm2/m128   shift dwords left while shifting in 0s
                         tracer.Trace( "pslld %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else
                         unhandled();
@@ -1435,9 +1435,9 @@ void x64::trace_state()
                 case 0xf3:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size ) // psllq xmm1, xmm2/m128   shift qwords left while shifting in 0s
+                    if ( 0x66 == _prefix.size ) // psllq xmm1, xmm2/m128   shift qwords left while shifting in 0s
                         tracer.Trace( "psllq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1446,7 +1446,7 @@ void x64::trace_state()
                 case 0xf4: // pmuludq xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "pmuludq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1460,7 +1460,7 @@ void x64::trace_state()
                 case 0xf6: // psadbw xmm1, xmm2/m128  compute absolute differences on bytes and store results in low words of each part of result
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psadbw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1469,7 +1469,7 @@ void x64::trace_state()
                 case 0xf8: // psubb xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psubb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1478,7 +1478,7 @@ void x64::trace_state()
                 case 0xf9: // psubw xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psubw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1487,7 +1487,7 @@ void x64::trace_state()
                 case 0xfa: // psubd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psubd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1496,9 +1496,9 @@ void x64::trace_state()
                 case 0xfb:
                 {
                     decode_rm();
-                    if ( 0 != _prefix_sse2_repeat )
+                    if ( 0 != _prefix.sse2_repeat )
                         unhandled();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "psubq %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1507,7 +1507,7 @@ void x64::trace_state()
                 case 0xfc: // paddb xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "padddb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1516,7 +1516,7 @@ void x64::trace_state()
                 case 0xfd: // paddw xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "padddw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1525,7 +1525,7 @@ void x64::trace_state()
                 case 0xfe: // paddd xmm1, xmm2/m128
                 {
                     decode_rm();
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         tracer.Trace( "paddd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
@@ -1550,7 +1550,7 @@ void x64::trace_state()
         case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f: // REX prefix on x64 and dec on x32
         {
             if ( mode32 )
-                tracer.Trace( "%s %s\n", ( op < 0x48 ) ? "inc" : "dec", register_name( op & 7, ( 0x66 == _prefix_size ) ? 2 : 4 ) );
+                tracer.Trace( "%s %s\n", ( op < 0x48 ) ? "inc" : "dec", register_name( op & 7, ( 0x66 == _prefix.size ) ? 2 : 4 ) );
             //tracer.Trace( "rex %c %c %c %c\n", (op & 8) ? 'W' : 'w', (op & 4) ? 'R' : 'r', (op & 2) ? 'X' : 'x', (op & 1) ? 'B' : 'b' );
             break;
         }
@@ -1571,7 +1571,7 @@ void x64::trace_state()
         case 0x63: // movsxd reg, r/m. aka gcc movslq
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "movsxw %s, %s\n", register_names[ _reg ], rm_string( 2 ) );
             else if ( _rex.W )
                 tracer.Trace( "movsxq %s, %s\n", register_names[ _reg ], rm_string( 8 ) );
@@ -1596,7 +1596,7 @@ void x64::trace_state()
         }
         case 0x68: // push imm16 / imm32
         {
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "push %#x\n", get_rip16() );
             else
                 tracer.Trace( "push %#x\n", get_rip32() );
@@ -1605,7 +1605,7 @@ void x64::trace_state()
         case 0x69: // imul reg, r/m, imm. 16, 32, and 64-bit values (imm 16 or 32)
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "imul %s, %s, %d\n", register_name( _reg, 2 ), rm_string( 2 ), get_rip16() );
             else if ( _rex.W )
                 tracer.Trace( "imul %s, %s, %d\n", register_name( _reg, 8 ), rm_string( 8 ), get_rip32() );
@@ -1643,7 +1643,7 @@ void x64::trace_state()
         {
             decode_rm();
             uint8_t math = _reg;
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 2 ), get_rip16() );
             else
             {
@@ -1655,7 +1655,7 @@ void x64::trace_state()
         case 0x83: // math r/m, imm8
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
             {
                 uint16_t imm = (int16_t) (int16_t) get_rip8();
                 uint8_t math = _reg;
@@ -1705,7 +1705,7 @@ void x64::trace_state()
         case 0x89: // mov r/m, reg
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "movw %s, %s\n", rm_string( 2 ), register_name( _reg, 2 ) );
             else
                 tracer.Trace( "mov %s, %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
@@ -1743,7 +1743,7 @@ void x64::trace_state()
         case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // xchg ax, r  (widths 16, 32, 64)
         {
             _rm = op & 0xf;
-            if ( 0 != _prefix_rex )
+            if ( 0 != _prefix.rex )
             {
                 decode_rex();
                 if ( _rex.W )
@@ -1751,7 +1751,7 @@ void x64::trace_state()
                 else
                     tracer.Trace( "xchg eax, %s\n", register_names32[ _rm ] );
             }
-            else if ( 0x66 == _prefix_size )
+            else if ( 0x66 == _prefix.size )
                 tracer.Trace( "xchg ax, %s\n", register_names16[ _rm ] );
             else
                 tracer.Trace( "xchg eax, %s\n", register_names32[ _rm ] );
@@ -1760,13 +1760,13 @@ void x64::trace_state()
         case 0x98: // cbw/cwde/cdqe
         {
             decode_rex();
-            tracer.Trace( "%s\n", _rex.W ? "cdqe" : ( 0x66 == _prefix_size ) ? "cbw" : "cwde" );
+            tracer.Trace( "%s\n", _rex.W ? "cdqe" : ( 0x66 == _prefix.size ) ? "cbw" : "cwde" );
             break;
         }
         case 0x99: // cwd/cdq/cqo
         {
             decode_rex();
-            tracer.Trace( "%s\n", _rex.W ? "cqo" : ( 0x66 == _prefix_size ) ? "cwd" : "cdq" );
+            tracer.Trace( "%s\n", _rex.W ? "cqo" : ( 0x66 == _prefix.size ) ? "cwd" : "cdq" );
             break;
         }
         case 0x9b: // fwait
@@ -1799,7 +1799,7 @@ void x64::trace_state()
             decode_rex();
             if ( _rex.W )
                 tracer.Trace( "mov rax, moffs64  # %llx\n", get_rip64() );
-            else if ( 0x66 == _prefix_size )
+            else if ( 0x66 == _prefix.size )
                 tracer.Trace( "mov ax, moffs16  # %#x\n", get_rip16() );
             else
                 tracer.Trace( "mov eax, moffs32  # %#x\n", get_rip32() );
@@ -1815,7 +1815,7 @@ void x64::trace_state()
             decode_rex();
             if ( _rex.W )
                 tracer.Trace( "mov moffs64, rax\n" );
-            else if ( 0x66 == _prefix_size )
+            else if ( 0x66 == _prefix.size )
                 tracer.Trace( "mov moffs16, ax\n" );
             else
                 tracer.Trace( "mov moffs32, eax\n" );
@@ -1830,7 +1830,7 @@ void x64::trace_state()
         case 0xa5: // movsq m, m  RSI to RDI 16/32/64
         {
             decode_rex();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "movsw (rdi), (rsi)\n" );
             else if ( _rex.W )
                 tracer.Trace( "movsq (rdi), (rsi)\n" );
@@ -1848,7 +1848,7 @@ void x64::trace_state()
             decode_rex();
             if ( _rex.W )
                 tracer.Trace( "test rax, %#llx\n", (int64_t) (int32_t) get_rip32() );
-            else if ( 0x66 == _prefix_size )
+            else if ( 0x66 == _prefix.size )
                 tracer.Trace( "test ax, %#x\n", get_rip16() );
             else
                 tracer.Trace( "test eax, %#x\n", get_rip32() );
@@ -1862,7 +1862,7 @@ void x64::trace_state()
         case 0xab: // stos
         {
             decode_rex();
-            char w = _rex.W ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
+            char w = _rex.W ? 'q' : ( 0x66 == _prefix.size ) ? 'w' : 'd';
             tracer.Trace( "stos%c rdi\n", w ); // 32-bit edi addressing ignored
             break;
         }
@@ -1881,7 +1881,7 @@ void x64::trace_state()
         case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
         {
             decode_rex();
-            char w = _rex.W  ? 'q' : ( 0x66 == _prefix_size ) ? 'w' : 'd';
+            char w = _rex.W  ? 'q' : ( 0x66 == _prefix.size ) ? 'w' : 'd';
             tracer.Trace( "scas%c\n", w );
             break;
         }
@@ -1893,7 +1893,7 @@ void x64::trace_state()
             char w;
             uint8_t width;
 
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
             {
                 w = 'w';
                 val = get_rip16();
@@ -1950,7 +1950,7 @@ void x64::trace_state()
         case 0xc7: // mov r/m, imm. 32-bit zero-extended immediate value
         {
             decode_rm();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "movw %s, %#x\n", rm_string( 8 ), get_rip16() );
             else if ( _rex.W )
                 tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), (int64_t) (int32_t) get_rip32() );
@@ -2280,7 +2280,7 @@ void x64::trace_state()
                 tracer.Trace( "fcomip st(0), st(%u)\n", op1 & 7 );
             else if ( 0xe0 == op1 )
                 tracer.Trace( "fnstsw ax\n" );
-            else if ( 0 == _prefix_sse2_repeat )
+            else if ( 0 == _prefix.sse2_repeat )
             {
                 rip.q--;
                 decode_rm();
@@ -2313,7 +2313,7 @@ void x64::trace_state()
         {
             int8_t rel = get_rip8();
             decode_rex();
-            if ( 0x66 == _prefix_size )
+            if ( 0x66 == _prefix.size )
                 tracer.Trace( "jcxz %d\n", (int32_t) rel );
             else if ( _rex.W )
                 tracer.Trace( "jrcxz %d\n", (int32_t) rel );
@@ -2378,7 +2378,7 @@ void x64::trace_state()
             decode_rm();
             if ( 0 == _reg ) // test r/m16, imm16   test r/m32, imm32    test r/m64, se( imm32 )
             {
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                     tracer.Trace( "testw %s, %#x\n", rm_string( 2 ), get_rip16() );
                 else if ( _rex.W )
                     tracer.Trace( "testq %s, %#llx\n", rm_string( 8 ), (int64_t) (int32_t) get_rip32() );
@@ -2389,7 +2389,7 @@ void x64::trace_state()
                 tracer.Trace( "not %s\n", rm_string( op_width() ) );
             else if ( 3 == _reg )
             {
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                     tracer.Trace( "negw %s\n", rm_string( 2 ) );
                 else if ( _rex.W )
                     tracer.Trace( "negq %s\n", rm_string( 8 ) );
@@ -2488,7 +2488,7 @@ void x64::trace_state()
                     unhandled();
                 case 6: // push
                 {
-                    if ( 0x66 == _prefix_size )
+                    if ( 0x66 == _prefix.size )
                         unhandled();
                     tracer.Trace( "push %s\n", rm_string( 8 ) );
                     break;
@@ -2978,7 +2978,7 @@ template <typename T> void x64::op_shift( T * pval, uint8_t operation, uint8_t s
 not_inlined void x64::unhandled()
 {
     printf( "\n  instruction_start: %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip.q, getui8( rip.q ), base, mem_size, stack_top, stack_size );
-    printf( "_prefix_rex %#x, _prefix_size %#x, _prefix_sse2_repeat %#x, _prefix_segment %#x\n", _prefix_rex, _prefix_size, _prefix_sse2_repeat, _prefix_segment );
+    printf( "_prefix.rex %#x, _prefix.size %#x, _prefix.sse2_repeat %#x, _prefix.segment %#x\n", _prefix.rex, _prefix.size, _prefix.sse2_repeat, _prefix.segment );
     printf( "_rex.W %#x, _rex.R %#x, _rex.X %#x, _rex.B %#x\n", _rex.W, _rex.R, _rex.X, _rex.B );
     printf( "_mod %#x, _reg %#x, _rm %#x\n", _mod, _reg, _rm );
     tracer.Trace( "\n  instruction_start %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip.q, getui8( rip.q ), base, mem_size, stack_top, stack_size );
@@ -3142,15 +3142,15 @@ void x64::decode_sib()
 
 inline void x64::decode_rex()
 {
-    if ( 0 == _prefix_rex )
+    if ( 0 == _prefix.rex )
         _rex.All = 0; // always happens in mode32
     else
     {
-        assert( 0x40 == ( 0xf0 & _prefix_rex ) );
-        _rex.W = ( 0 != ( _prefix_rex & 8 ) );      // W = wide (64-bit), not 32-bit
-        _rex.R = ( 0 != ( _prefix_rex & 4 ) );      // high bit for _reg
-        _rex.X = ( 0 != ( _prefix_rex & 2 ) );      // high bit for _sibIndex
-        _rex.B = ( _prefix_rex & 1 );               // high bit for _rm or _sibBase
+        assert( 0x40 == ( 0xf0 & _prefix.rex ) );
+        _rex.W = ( 0 != ( _prefix.rex & 8 ) );      // W = wide (64-bit), not 32-bit
+        _rex.R = ( 0 != ( _prefix.rex & 4 ) );      // high bit for _reg
+        _rex.X = ( 0 != ( _prefix.rex & 2 ) );      // high bit for _sibIndex
+        _rex.B = ( _prefix.rex & 1 );               // high bit for _rm or _sibBase
 
         if ( _rex.R )
             _reg |= 8;
@@ -3186,7 +3186,7 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
         return xmm_names[ reg ];
     if ( 1 == byte_width )
     {
-        if ( 0 == _prefix_rex ) // both _rm and _reg change behavior if a REX prefix is specified and old h registers can't be expressed
+        if ( 0 == _prefix.rex ) // both _rm and _reg change behavior if a REX prefix is specified and old h registers can't be expressed
             return register_names8_old[ reg ];
         return register_names8[ reg ];
     }
@@ -3251,11 +3251,11 @@ uint64_t x64::effective_address()
     else // [ r/m ]
         ea = regs[ _rm ].q;
 
-    if ( 0 != _prefix_segment )
+    if ( 0 != _prefix.segment )
     {
-        if ( 0x64 == _prefix_segment )
+        if ( 0x64 == _prefix.segment )
             ea += rfs.q;
-        else if ( 0x65 == _prefix_segment )
+        else if ( 0x65 == _prefix.segment )
             ea += rgs.q;
         else
             unhandled();
@@ -4122,10 +4122,10 @@ uint64_t x64::run()
         #endif
 
         instruction_count++;        // 14.7% of runtime including _prefix initialization below
-        _prefix_rex = 0;            // can be 0x40 through 0x4f to indicate high registers and 64-bit operands
-        _prefix_size = 0;           // can be 0x66 (operand size 16). 0x67 for 32-bit addresses isn't required for test apps implemented
-        _prefix_sse2_repeat = 0;    // can be 0xf2 or 0xf3 for SSE2 instructions or string repeat opcodes
-        _prefix_segment = 0;        // can be 0x64 for fs: or 0x65 for gs:
+        _prefix.All = 0;            // rex can be 0x40 through 0x4f to indicate high registers and 64-bit operands
+                                    // size can be 0x66 (operand size 16). 0x67 for 32-bit addresses isn't required for test apps implemented
+                                    // sse2_repeat can be 0xf2 or 0xf3 for SSE2 instructions or string repeat opcodes
+                                    // segment can be 0x64 for fs: or 0x65 for gs:
 
         #ifndef NDEBUG
             if ( regs[ rsp ].q <= ( stack_top - stack_size ) )
@@ -4180,7 +4180,7 @@ _prefix_is_set:
                     if ( 7 != math )
                         set_rm64( val );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t val = get_rm16();
                     do_math( math, &val, regs[ _reg ].w );
@@ -4209,7 +4209,7 @@ _prefix_is_set:
                 uint8_t math = ( op >> 3 ) & 7;
                 if ( _rex.W ) // if wide/64-bit
                     do_math( math, & regs[ _reg ].q, get_rm64() );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     do_math( math, & regs[ _reg ].w, get_rm16() );
                 else
                 {
@@ -4235,7 +4235,7 @@ _prefix_is_set:
                     int32_t imm = get_rip32();
                     do_math( math, & regs[ rax ].q, (uint64_t) imm );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t imm = get_rip16();
                     uint16_t regval = regs[ rax ].w;
@@ -4267,18 +4267,18 @@ _prefix_is_set:
                     case 0x10:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // movupd xmm1, xmm2/m128 move 128 bits of unaligned double from xmm2/mem to xmm1
+                        if ( 0x66 == _prefix.size ) // movupd xmm1, xmm2/m128 move 128 bits of unaligned double from xmm2/mem to xmm1
                         {
                             xregs[ _reg ].setd( 0, get_rmxdouble( 0 ) );
                             xregs[ _reg ].setd( 1, get_rmxdouble( 1 ) );
                         }
-                        else if ( 0xf2 == _prefix_sse2_repeat ) // movsd xmm1, xmm2/m64. move scalar double from source to xmm1
+                        else if ( 0xf2 == _prefix.sse2_repeat ) // movsd xmm1, xmm2/m64. move scalar double from source to xmm1
                         {
                             xregs[ _reg ].set64( 0, get_rmx64( 0 ) );
                             if ( 3 != _mod )
                                 xregs[ _reg ].set64( 1, 0 );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // movss xmm1, xmm2/m32
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // movss xmm1, xmm2/m32
                         {
                             xregs[ _reg ].set32( 0, get_rmx32( 0 ) );
                             if ( 3 != _mod )
@@ -4298,11 +4298,11 @@ _prefix_is_set:
                     case 0x11:
                     {
                         decode_rm();
-                        if ( 0xf2 == _prefix_sse2_repeat ) // movsd xmm1/m64, xmm2  move scalar double from xmm2 to xmm1/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // movsd xmm1/m64, xmm2  move scalar double from xmm2 to xmm1/m64
                             set_rmx64( 0, xregs[ _reg ].get64( 0 ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // movss xmm1/m64, xmm2  move scalar float from xmm2 to xmm1/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // movss xmm1/m64, xmm2  move scalar float from xmm2 to xmm1/m64
                             set_rmx32( 0, xregs[ _reg ].get32( 0 ) );
-                        else if ( 0x66 == _prefix_size ) // movupd xmm2/m128, xmm1  move 128 bits of doubles from xmm1 to xmm2/mem
+                        else if ( 0x66 == _prefix.size ) // movupd xmm2/m128, xmm1  move 128 bits of doubles from xmm1 to xmm2/mem
                         {
                             for ( uint32_t o = 0; o < 2; o++ )
                                 set_rmx64( o, xregs[ _reg ].get64( o ) );
@@ -4318,10 +4318,10 @@ _prefix_is_set:
                     }
                     case 0x12:
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
+                        if ( 0x66 == _prefix.size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
                             xregs[ _reg ].set64( 0, get_rm64() );
                         else if ( 3 == _mod ) // movhlps xmm1, xmm2   move two packed floats from high qw of xmm2 to low qw of xmm1
                         {
@@ -4338,10 +4338,10 @@ _prefix_is_set:
                     }
                     case 0x13:
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // movlpd m64, xmm1. moves double from low qword of xmm1 to m64
+                        if ( 0x66 == _prefix.size ) // movlpd m64, xmm1. moves double from low qword of xmm1 to m64
                             set_rmx64( 0, xregs[ _reg ].get64( 0 ) );
                         else   // movlps xmm1, m64   and movlps xmm1, xmm2
                             set_rmx32_2( xregs[ _reg ].get32( 0 ), xregs[ _reg ].get32( 1 ) );
@@ -4350,10 +4350,10 @@ _prefix_is_set:
                     }
                     case 0x14:
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128 into low of xmm1 and high of xmm1
+                        if ( 0x66 == _prefix.size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128 into low of xmm1 and high of xmm1
                             xregs[ _reg ].set64( 1, get_rmx64( 0 ) ); // don't copy low of xmm1 over itself
                         else // unpcklps xmm1, xmm2/m128 unpack singles from low of xmm1 and xmm2/m128
                         {
@@ -4373,7 +4373,7 @@ _prefix_is_set:
                         decode_rm();
                         vec16_t src1 = xregs[ _reg ];
                         vec16_t & dst = xregs[ _reg ];
-                        if ( 0x66 == _prefix_size ) // unpckhpd xmm1, xmm2/m128
+                        if ( 0x66 == _prefix.size ) // unpckhpd xmm1, xmm2/m128
                         {
                             dst.set64( 0, src1.get64( 1 ) );
                             dst.set64( 1, get_rmx64( 1 ) );
@@ -4393,7 +4393,7 @@ _prefix_is_set:
                     case 0x16:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
+                        if ( 0x66 == _prefix.size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
                             xregs[ _reg ].set64( 1, get_rm64() );
                         else // movlhps xmm1, xmm2/m64
                         {
@@ -4407,7 +4407,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t src1 = xregs[ _reg ];
-                        if ( 0x66 == _prefix_size ) // movhpd m64, xmm1  moves double from high quadword to r/m
+                        if ( 0x66 == _prefix.size ) // movhpd m64, xmm1  moves double from high quadword to r/m
                             set_rmdouble( src1.getd( 1 ) );
                         else // movhps xmm2/m64, xmm1
                         {
@@ -4465,7 +4465,7 @@ _prefix_is_set:
                     {
                         decode_rm();
 
-                        if ( 0x66 == _prefix_size ) // movapd xmm1, xmm2/m128
+                        if ( 0x66 == _prefix.size ) // movapd xmm1, xmm2/m128
                         {
                             vec16_t & dst = xregs[ _reg ];
                             dst.set64( 0, get_rmx64( 0 ) );
@@ -4485,9 +4485,9 @@ _prefix_is_set:
                     case 0x29: // movaps xmm/m128, xmm   move 4 aligned packed single precision fp values from xmm1 to xmm2/m128
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                             set_rmx64_2( xregs[ _reg ].get64( 0 ), xregs[ _reg ].get64( 1 ) );
                         else
                             set_rmx32_4( xregs[ _reg ].get32( 0 ), xregs[ _reg ].get32( 1 ), xregs[ _reg ].get32( 2 ), xregs[ _reg ].get32( 3 ) );
@@ -4496,13 +4496,13 @@ _prefix_is_set:
                     case 0x2a:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                             unhandled();
 
                         xregs[ _reg ].zero();
-                        if ( 0xf2 == _prefix_sse2_repeat )  // cvtsi2sd xmm1, r32/m32   convert dword or qword to scalar double
+                        if ( 0xf2 == _prefix.sse2_repeat )  // cvtsi2sd xmm1, r32/m32   convert dword or qword to scalar double
                             xregs[ _reg ].setd( 0, (double) ( _rex.W ? (int64_t) get_rm64() : (int32_t) get_rm32() ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // cvtsi2ss xmm1, r32/m32
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // cvtsi2ss xmm1, r32/m32
                             xregs[ _reg ].setf( 0, (float) ( _rex.W ? (int64_t) get_rm64() : (int32_t) get_rm32() ) );
                         else
                             unhandled();
@@ -4512,10 +4512,10 @@ _prefix_is_set:
                     case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer
                     {
                         decode_rm();
-                        if ( 0xf2 == _prefix_sse2_repeat ) // cvttsd2si
+                        if ( 0xf2 == _prefix.sse2_repeat ) // cvttsd2si
                             regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxdouble( 0 ), ROUNDING_MODE_TRUNCATE ) :
                                                       round_i_from_double<int32_t>( get_rmxdouble( 0 ), ROUNDING_MODE_TRUNCATE );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // cvttss2si
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // cvttss2si
                             regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE ) :
                                                       round_i_from_double<int32_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE );
                         else
@@ -4525,9 +4525,9 @@ _prefix_is_set:
                     case 0x2e: // ucomisd xmm1, xmm2/m64 compare low doubles and set eflags accordingly. also ucomiss
                     {
                         decode_rm();
-                        if ( 0 == _prefix_sse2_repeat )
+                        if ( 0 == _prefix.sse2_repeat )
                         {
-                            if ( 0x66 == _prefix_size ) // ucomisd
+                            if ( 0x66 == _prefix.size ) // ucomisd
                                 set_eflags_from_fcc( compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) ) );
                             else // ucomiss
                                 set_eflags_from_fcc( compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) ) );
@@ -4539,9 +4539,9 @@ _prefix_is_set:
                     case 0x2f:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )// comisd xmm1, xmm2/m32  compare low double scalar values and set eflags
+                        if ( 0x66 == _prefix.size )// comisd xmm1, xmm2/m32  compare low double scalar values and set eflags
                             set_eflags_from_fcc( compare_floating( xregs[ _reg ].getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0 == _prefix_sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
+                        else if ( 0 == _prefix.sse2_repeat ) // comiss xmm1, xmm2/m32  compare low float scalar values and set eflags
                             set_eflags_from_fcc( compare_floating( xregs[ _reg ].getf( 0 ), get_rmxfloat( 0 ) ) );
                         else
                             unhandled();
@@ -4564,9 +4564,9 @@ _prefix_is_set:
                     case 0x50:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
+                        if ( 0x66 == _prefix.size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
                         {
                             uint32_t val = highest_bit( xregs[ _rm ].get64( 0 ) );
                             val |= ( highest_bit( xregs[ _rm ].get64( 1 ) ) << 1 );
@@ -4586,16 +4586,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & dst = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // sqrtsd xmm1, xmm2/m64  sqrt of low double
+                        if ( 0xf2 == _prefix.sse2_repeat ) // sqrtsd xmm1, xmm2/m64  sqrt of low double
                             dst.setd( 0, sqrt( get_rmxdouble( 0 ) ) );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // sqrtss xmm1 / xmm2/m32  sqrt of low float
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // sqrtss xmm1 / xmm2/m32  sqrt of low float
                             dst.setf( 0, sqrtf( get_rmxfloat( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // sqrtpd xmm1, xmm2/m128  compute sqrt of packed doubles
+                        else if ( 0x66 == _prefix.size ) // sqrtpd xmm1, xmm2/m128  compute sqrt of packed doubles
                         {
                             for ( uint32_t e = 0; e < 2; e++ )
                                 dst.setd( e, sqrt( get_rmxdouble( e ) ) );
                         }
-                        else if ( 0 == _prefix_sse2_repeat && 0 == _prefix_size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
+                        else if ( 0 == _prefix.sse2_repeat && 0 == _prefix.size ) // sqrtps xmm1, xmm2/m128. compute sqrt of packed singles
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 dst.setf( e, sqrtf( get_rmxfloat( e ) ) );
@@ -4608,11 +4608,11 @@ _prefix_is_set:
                     case 0x52:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.size || 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of square root of the float in xmm2/m32 and store result in xmm1
+                        if ( 0xf3 == _prefix.sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of square root of the float in xmm2/m32 and store result in xmm1
                             xregs[ _reg ].setf( 0, 1.0f / sqrtf( get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
+                        else if ( 0 == _prefix.sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xregs[ _reg ].setf( e, 1.0f / sqrtf( get_rmxfloat( e ) ) );
@@ -4624,11 +4624,11 @@ _prefix_is_set:
                     case 0x53:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_size )
+                        if ( 0 != _prefix.size )
                             unhandled();
-                        if ( 0xf3 == _prefix_sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
+                        if ( 0xf3 == _prefix.sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
                             xregs[ _reg ].setf( 0, 1.0f / get_rmxfloat( 0 ) );
-                        else if ( 0 == _prefix_sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
+                        else if ( 0 == _prefix.sse2_repeat ) // rcpps xmm1, xmm2/m128  compute reciprocals of the packed floats in xmm2/m128 and store results in xmm1
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xregs[ _reg ].setf( e, 1.0f / get_rmxfloat( e ) );
@@ -4640,7 +4640,7 @@ _prefix_is_set:
                     case 0x54: // andpd xmm, xmm/m128   bitwise and. also andps
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // movapd xmm1, xmm2/m128
+                        if ( 0x66 == _prefix.size ) // movapd xmm1, xmm2/m128
                         {
                             vec16_t & dst = xregs[ _reg ];
                             dst.set64( 0, dst.get64( 0 ) & get_rmx64( 0 ) );
@@ -4660,9 +4660,9 @@ _prefix_is_set:
                     case 0x55: // andnpd/andnps xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        bool wide = ( 0x66 == _prefix_size );
+                        bool wide = ( 0x66 == _prefix.size );
                         vec16_t & dst = xregs[ _reg ];
                         if ( wide )
                             for ( uint32_t e = 0; e < 2; e++ )
@@ -4676,9 +4676,9 @@ _prefix_is_set:
                     case 0x56: // orpd/orps xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        bool wide = ( 0x66 == _prefix_size );
+                        bool wide = ( 0x66 == _prefix.size );
                         vec16_t & dst = xregs[ _reg ];
                         if ( wide )
                             for ( uint32_t e = 0; e < 2; e++ )
@@ -4692,9 +4692,9 @@ _prefix_is_set:
                     case 0x57: // xorpd/xorps xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        bool wide = ( 0x66 == _prefix_size );
+                        bool wide = ( 0x66 == _prefix.size );
                         vec16_t & dst = xregs[ _reg ];
                         if ( wide )
                             for ( uint32_t e = 0; e < 2; e++ )
@@ -4709,16 +4709,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // addsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // addsd xmm1, xmm2/m64
                             xmm1.setd( 0, do_fadd( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // addpd xmm1, xmm2/m128   add packed double values
+                        else if ( 0x66 == _prefix.size ) // addpd xmm1, xmm2/m128   add packed double values
                         {
                             xmm1.setd( 0, do_fadd( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
                             xmm1.setd( 1, do_fadd( xmm1.getd( 1 ), get_rmxdouble( 1 ) ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // addss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // addss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fadd( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // addps xmm1, xmm2/m128   add packed float values
+                        else if ( 0 == _prefix.size && 0 == _prefix.sse2_repeat ) // addps xmm1, xmm2/m128   add packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fadd( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4732,16 +4732,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // mulsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // mulsd xmm1, xmm2/m64
                             xmm1.setd( 0, do_fmul( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // mulpd xmm1, xmm2/m128   multiply packed double values
+                        else if ( 0x66 == _prefix.size ) // mulpd xmm1, xmm2/m128   multiply packed double values
                         {
                             xmm1.setd( 0, do_fmul( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
                             xmm1.setd( 1, do_fmul( xmm1.getd( 1 ), get_rmxdouble( 1 ) ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // mulss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // mulss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fmul( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // mulps xmm1, xmm2/m128   multiply packed float values
+                        else if ( 0 == _prefix.size && 0 == _prefix.sse2_repeat ) // mulps xmm1, xmm2/m128   multiply packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fmul( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4754,16 +4754,16 @@ _prefix_is_set:
                     case 0x5a:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // cvtpd2ps xmm1, xmm2/m128   convert two packed doubles in 2 to two floats in 1
+                        if ( 0x66 == _prefix.size ) // cvtpd2ps xmm1, xmm2/m128   convert two packed doubles in 2 to two floats in 1
                         {
                             double val0 = get_rmxdouble( 0 );
                             double val1 = get_rmxdouble( 1 );
                             xregs[ _reg ].setf( 0, double_to_float( val0 ) );
                             xregs[ _reg ].setf( 1, double_to_float( val1 ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // cvtss2sd xmm1, xmm2/m32   convert scalar float to scalar double
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // cvtss2sd xmm1, xmm2/m32   convert scalar float to scalar double
                             xregs[ _reg ].setd( 0, float_to_double( get_rmxfloat( 0 ) ) );
-                        else if ( 0xf2 == _prefix_sse2_repeat ) // cvtsd2ss xmm1, xmm2/m32   convert scalar double to scalar float
+                        else if ( 0xf2 == _prefix.sse2_repeat ) // cvtsd2ss xmm1, xmm2/m32   convert scalar double to scalar float
                             xregs[ _reg ].setf( 0, double_to_float( get_rmxdouble( 0 ) ) );
                         else // cvtps2pd xmm1, xmm2/m64 convert two packed floats in 2 to two packed doubles in 1
                         {
@@ -4778,17 +4778,17 @@ _prefix_is_set:
                     case 0x5b:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_size )
+                        if ( 0 != _prefix.size )
                             unhandled();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf3 == _prefix_sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
+                        if ( 0xf3 == _prefix.sse2_repeat ) // cvttps2dq xmm1, xmm2/m128   convert 4 packed floats to signed dwords using trucation
                         {
                             xmm1.set32( 0, round_i_from_double<int32_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE ) );
                             xmm1.set32( 1, round_i_from_double<int32_t>( get_rmxfloat( 1 ), ROUNDING_MODE_TRUNCATE ) );
                             xmm1.set32( 2, round_i_from_double<int32_t>( get_rmxfloat( 2 ), ROUNDING_MODE_TRUNCATE ) );
                             xmm1.set32( 3, round_i_from_double<int32_t>( get_rmxfloat( 3 ), ROUNDING_MODE_TRUNCATE ) );
                         }
-                        else if ( 0 == _prefix_sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
+                        else if ( 0 == _prefix.sse2_repeat ) // cvtdq2ps xmm1, xmm2/m128   convert 4 packed signed dwords from xmm2/m128 t 4 packed signed floats in xmm1
                         {
                             xmm1.setf( 0, (float) (int32_t) get_rmx32( 0 ) );
                             xmm1.setf( 1, (float) (int32_t) get_rmx32( 1 ) );
@@ -4804,16 +4804,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // subsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // subsd xmm1, xmm2/m64
                             xmm1.setd( 0, do_fsub( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // subpd xmm1, xmm2/m128   subtract packed double values
+                        else if ( 0x66 == _prefix.size ) // subpd xmm1, xmm2/m128   subtract packed double values
                         {
                             xmm1.setd( 0, do_fsub( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
                             xmm1.setd( 1, do_fsub( xmm1.getd( 1 ), get_rmxdouble( 1 ) ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // subss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // subss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fsub( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // subps xmm1, xmm2/m128   subtract packed float values
+                        else if ( 0 == _prefix.size && 0 == _prefix.sse2_repeat ) // subps xmm1, xmm2/m128   subtract packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fsub( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4827,16 +4827,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // minsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // minsd xmm1, xmm2/m64
                             xmm1.setd( 0, do_fmin( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // minpd xmm1, xmm2/m128   minide packed double values
+                        else if ( 0x66 == _prefix.size ) // minpd xmm1, xmm2/m128   minide packed double values
                         {
                             xmm1.setd( 0, do_fmin( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
                             xmm1.setd( 1, do_fmin( xmm1.getd( 1 ), get_rmxdouble( 1 ) ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // minss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // minss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fmin( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // minps xmm1, xmm2/m128   minide packed float values
+                        else if ( 0 == _prefix.size && 0 == _prefix.sse2_repeat ) // minps xmm1, xmm2/m128   minide packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fmin( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4850,16 +4850,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // divsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // divsd xmm1, xmm2/m64
                             xmm1.setd( 0, do_fdiv( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // divpd xmm1, xmm2/m128   divide packed double values
+                        else if ( 0x66 == _prefix.size ) // divpd xmm1, xmm2/m128   divide packed double values
                         {
                             xmm1.setd( 0, do_fdiv( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
                             xmm1.setd( 1, do_fdiv( xmm1.getd( 1 ), get_rmxdouble( 1 ) ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // divss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // divss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fdiv( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // divps xmm1, xmm2/m128   divide packed float values
+                        else if ( 0 == _prefix.size && 0 == _prefix.sse2_repeat ) // divps xmm1, xmm2/m128   divide packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fdiv( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4873,16 +4873,16 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t & xmm1 = xregs[ _reg ];
-                        if ( 0xf2 == _prefix_sse2_repeat ) // maxsd xmm1, xmm2/m64
+                        if ( 0xf2 == _prefix.sse2_repeat ) // maxsd xmm1, xmm2/m64
                             xmm1.setd( 0, do_fmax( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
-                        else if ( 0x66 == _prefix_size ) // maxpd xmm1, xmm2/m128   get max packed double values
+                        else if ( 0x66 == _prefix.size ) // maxpd xmm1, xmm2/m128   get max packed double values
                         {
                             xmm1.setd( 0, do_fmax( xmm1.getd( 0 ), get_rmxdouble( 0 ) ) );
                             xmm1.setd( 1, do_fmax( xmm1.getd( 1 ), get_rmxdouble( 1 ) ) );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // maxss xmm1, xmm2/m64
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // maxss xmm1, xmm2/m64
                             xmm1.setf( 0, do_fmax( xmm1.getf( 0 ), get_rmxfloat( 0 ) ) );
-                        else if ( 0 == _prefix_size && 0 == _prefix_sse2_repeat ) // maxps xmm1, xmm2/m128   get max packed float values
+                        else if ( 0 == _prefix.size && 0 == _prefix.sse2_repeat ) // maxps xmm1, xmm2/m128   get max packed float values
                         {
                             for ( uint32_t e = 0; e < 4; e++ )
                                 xmm1.setf( e, do_fmax( xmm1.getf( e ), get_rmxfloat( e ) ) );
@@ -4923,7 +4923,7 @@ _prefix_is_set:
                     case 0x62: // punpckldq xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t target = xregs[ _reg ];
                             target.set32( 0, xregs[ _reg ].get32( 0 ) );
@@ -4940,7 +4940,7 @@ _prefix_is_set:
                     case 0x63:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // packsswb xmm1, xmm2/m128   convert 8 packed int16_t from xmm1 and xmm2/m128 into 16 packed int8_t using signed saturation
+                        if ( 0x66 == _prefix.size ) // packsswb xmm1, xmm2/m128   convert 8 packed int16_t from xmm1 and xmm2/m128 into 16 packed int8_t using signed saturation
                         {
                             vec16_t src1 = xregs[ _reg ];
                             vec16_t target = xregs[ _reg ];
@@ -4960,7 +4960,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t dst = xregs[ _reg ];
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             for ( uint32_t i = 0; i < 16; i++ )
                                 xregs[ _reg ].set8( i, ( (int8_t) dst.get8( i ) > (int8_t) get_rmx8( i ) ) ? 0xff : 0 );
@@ -4973,7 +4973,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t dst = xregs[ _reg ];
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             for ( uint32_t i = 0; i < 8; i++ )
                                 xregs[ _reg ].set16( i, ( (int16_t) dst.get16( i ) > (int16_t) get_rmx16( i ) ) ? 0xffff : 0 );
@@ -4987,7 +4987,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         vec16_t dst = xregs[ _reg ];
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             for ( uint32_t i = 0; i < 4; i++ )
                                 xregs[ _reg ].set32( i, ( (int32_t) dst.get32( i ) > (int32_t) get_rmx32( i ) ) ? ~0 : 0 );
@@ -5000,7 +5000,7 @@ _prefix_is_set:
                     case 0x67: // packuswb xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t target = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 8; i++ )
@@ -5018,7 +5018,7 @@ _prefix_is_set:
                     case 0x68: // punpckhbw xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t target = xregs[ _reg ];
                             vec16_t & src1 = xregs[ _reg ];
@@ -5037,7 +5037,7 @@ _prefix_is_set:
                     case 0x69: // punpckhwd xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t dst = xregs[ _reg ];
                             vec16_t target = xregs[ _reg ];
@@ -5056,7 +5056,7 @@ _prefix_is_set:
                     case 0x6a: // punpckhdq xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t target = xregs[ _reg ];
                             target.set32( 0, xregs[ _reg ].get32( 2 ) );
@@ -5073,7 +5073,7 @@ _prefix_is_set:
                     case 0x6b:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // packssdw xmm1, xmm2/m128  converts 4 packed dwords from xmm1 and xmm2/m128 into 8 packed signed word integers using signed saturation
+                        if ( 0x66 == _prefix.size ) // packssdw xmm1, xmm2/m128  converts 4 packed dwords from xmm1 and xmm2/m128 into 8 packed signed word integers using signed saturation
                         {
                             vec16_t src1 = xregs[ _reg ];
                             vec16_t target = xregs[ _reg ];
@@ -5092,7 +5092,7 @@ _prefix_is_set:
                     case 0x6c: // punpcklqdq xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t target = xregs[ _reg ];
                             target.set64( 0, xregs[ _reg ].get64( 0 ) );
@@ -5107,7 +5107,7 @@ _prefix_is_set:
                     case 0x6d: // punpckhqdq xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             xregs[ _reg ].set64( 0, xregs[ _reg ].get64( 1 ) );
                             xregs[ _reg ].set64( 1, get_rmx64( 1 ) );
@@ -5120,7 +5120,7 @@ _prefix_is_set:
                     case 0x6e: // movd xmm, r/m32   movq xmm, r/m64
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             xregs[ _reg ].zero();
                             if ( _rex.W )
@@ -5136,8 +5136,8 @@ _prefix_is_set:
                     case 0x6f:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ||        // movdqa xmm1, xmm2/m128   move 128 bits of aligned packed integer values from xmm2/m128 to xmm1
-                             0xf3 == _prefix_sse2_repeat )  // movdqu xmm1, xmm2/m128   move 128 bits of unaligned packed integer values from xmm2/m128 to xmm1
+                        if ( 0x66 == _prefix.size ||        // movdqa xmm1, xmm2/m128   move 128 bits of aligned packed integer values from xmm2/m128 to xmm1
+                             0xf3 == _prefix.sse2_repeat )  // movdqu xmm1, xmm2/m128   move 128 bits of unaligned packed integer values from xmm2/m128 to xmm1
                         {
                             xregs[ _reg ].set64( 0, get_rmx64( 0 ) );
                             xregs[ _reg ].set64( 1, get_rmx64( 1 ) );
@@ -5151,7 +5151,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         uint8_t imm8 = get_rip8();
-                        if ( 0xf2 == _prefix_sse2_repeat ) // pshuflw xmm1, xmm2/m128, imm8
+                        if ( 0xf2 == _prefix.sse2_repeat ) // pshuflw xmm1, xmm2/m128, imm8
                         {
                             vec16_t & dst = xregs[ _reg ];
                             vec16_t xmm1 = xregs[ _reg ];
@@ -5161,7 +5161,7 @@ _prefix_is_set:
                                 dst.set16( x, (uint16_t) ( src0 >> 16 * ( ( 3 & ( imm8 >> ( 2 * x ) ) ) ) ) );
                             dst.set64( 1, src1 );
                         }
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // pshufhw xmm1, xmm2/m128, imm8
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // pshufhw xmm1, xmm2/m128, imm8
                         {
                             vec16_t & dst = xregs[ _reg ];
                             vec16_t xmm1 = xregs[ _reg ];
@@ -5171,7 +5171,7 @@ _prefix_is_set:
                                 dst.set16( x, (uint16_t) ( src1 >> 16 * ( ( 3 & ( imm8 >> ( 2 * ( x - 4 ) ) ) ) ) ) );
                             dst.set64( 0, src0 );
                         }
-                        else if ( 0x66 == _prefix_size ) // pshufd xmm, xmm/m128, imm8
+                        else if ( 0x66 == _prefix.size ) // pshufd xmm, xmm/m128, imm8
                         {
                             vec16_t target = xregs[ _reg ];
                             target.set32( 0, get_rmx32( imm8 & 3 ) );
@@ -5188,7 +5188,7 @@ _prefix_is_set:
                     case 0x71:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pshufd xmm, xmm/m128, imm8
+                        if ( 0x66 == _prefix.size ) // pshufd xmm, xmm/m128, imm8
                         {
                             uint8_t shift = get_rip8();
                             vec16_t target = xregs[ _rm ];
@@ -5219,7 +5219,7 @@ _prefix_is_set:
                     case 0x72:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             uint8_t shift = get_rip8();
 
@@ -5249,7 +5249,7 @@ _prefix_is_set:
                     case 0x73:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             uint8_t shift = get_rip8();
                             if ( 2 == _reg ) // psrlq xmm1, imm8
@@ -5327,7 +5327,7 @@ _prefix_is_set:
                     case 0x74:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pcmpeqb xmm, xmm/m128   compare packed bytes in rm to r for equality. if eq, set byte to 1s else 0
+                        if ( 0x66 == _prefix.size ) // pcmpeqb xmm, xmm/m128   compare packed bytes in rm to r for equality. if eq, set byte to 1s else 0
                         {
                             for ( uint32_t x = 0; x < 16; x++ )
                                 xregs[ _reg ].set8( x, ( xregs[ _reg ].get8( x ) == get_rmx8( x ) ) ? 0xff : 0 );
@@ -5340,7 +5340,7 @@ _prefix_is_set:
                     case 0x75:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pcmpeqw xmm/m128, xmm   compare packed words in xmm/m128 and xmm1 for equality
+                        if ( 0x66 == _prefix.size ) // pcmpeqw xmm/m128, xmm   compare packed words in xmm/m128 and xmm1 for equality
                         {
                             for ( uint32_t x = 0; x < 8; x++ )
                                 xregs[ _reg ].set16( x, ( xregs[ _reg ].get16( x ) == get_rmx16( x ) ) ? 0xffff : 0 );
@@ -5353,7 +5353,7 @@ _prefix_is_set:
                     case 0x76:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pcmpeqd xmm/m128, xmm   compare packed doublewords in xmm/m128 and xmm1 for equality
+                        if ( 0x66 == _prefix.size ) // pcmpeqd xmm/m128, xmm   compare packed doublewords in xmm/m128 and xmm1 for equality
                         {
                             for ( uint32_t x = 0; x < 4; x++ )
                                 xregs[ _reg ].set32( x, ( xregs[ _reg ].get32( x ) == get_rmx32( x ) ) ? 0xffffffff : 0 );
@@ -5365,14 +5365,14 @@ _prefix_is_set:
                     }
                     case 0x7e:
                     {
-                        if ( 0xf3 == _prefix_sse2_repeat ) // movq xmm, xmm
+                        if ( 0xf3 == _prefix.sse2_repeat ) // movq xmm, xmm
                         {
                             decode_rm();
                             xregs[ _reg ].set64( 0, get_rmx64( 0 ) );
                             xregs[ _reg ].set64( 1, 0 ); // clear the high qword
                             trace_xreg( _reg );
                         }
-                        else if ( 0x66 == _prefix_size ) // mov r/m, xmm
+                        else if ( 0x66 == _prefix.size ) // mov r/m, xmm
                         {
                             decode_rm();
                             if ( _rex.W )
@@ -5387,7 +5387,7 @@ _prefix_is_set:
                     case 0x7f:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size || 0xf3 == _prefix_sse2_repeat ) // movdqa xmm2/m128, xmm1   move aligned packed integer values. or movdqu (unaligned)
+                        if ( 0x66 == _prefix.size || 0xf3 == _prefix.sse2_repeat ) // movdqa xmm2/m128, xmm1   move aligned packed integer values. or movdqu (unaligned)
                             set_rmx64_2( xregs[ _reg ].get64( 0 ), xregs[ _reg ].get64( 1 ) );
                         else
                             unhandled();
@@ -5447,7 +5447,7 @@ _prefix_is_set:
                             uint64_t val = get_rm64();
                             setflag_c( val & bit );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint16_t bit = 1 << ( regs[ _reg ].w & 0xf );
                             uint16_t val = get_rm16();
@@ -5482,7 +5482,7 @@ _prefix_is_set:
                             destination |= ( regs[ _reg ].q >> ( 64 - count ) );
                             set_rm64( destination );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             count &= 0xf;
                             if ( 0 == count )
@@ -5516,7 +5516,7 @@ _prefix_is_set:
                             setflag_c( val & bit );
                             set_rm64( val | bit );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint16_t bit = 1 << ( regs[ _reg ].w & 0xf );
                             uint16_t val = get_rm16();
@@ -5553,7 +5553,7 @@ _prefix_is_set:
                             destination |= ( regs[ _reg ].q << ( 64 - count ) );
                             set_rm64( destination );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             count &= 0xf;
                             if ( 0 == count )
@@ -5605,7 +5605,7 @@ _prefix_is_set:
                             setflag_c( flag_o() );
                             regs[ _reg ].q = result128L;
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             int32_t a = (int16_t) regs[ _reg ].w;
                             int32_t b = (int16_t) get_rm16();
@@ -5660,7 +5660,7 @@ _prefix_is_set:
                                 regs[ rax ].q = val;
                             }
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = get_rm16();
                             if ( val == regs[ rax ].w )
@@ -5692,7 +5692,7 @@ _prefix_is_set:
                     }
                     case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         decode_rm();
                         if ( _rex.W )
@@ -5703,7 +5703,7 @@ _prefix_is_set:
                             setflag_c( val & bit );
                             set_rm64( val & ~bit );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint8_t imm = regs[ _reg ].w & 0xf;
                             uint16_t bit = 1 << imm;
@@ -5735,11 +5735,11 @@ _prefix_is_set:
                     }
                     case 0xb8:
                     {
-                        if ( 0xf3 == _prefix_sse2_repeat ) // popcnt
+                        if ( 0xf3 == _prefix.sse2_repeat ) // popcnt
                         {
                             decode_rm();
                             uint8_t val = bit_count( get_rm() );
-                            if ( 0x66 == _prefix_size )
+                            if ( 0x66 == _prefix.size )
                                 regs[ _reg ].w = val; // don't 0-extend for 16-bit results
                             else
                                 regs[ _reg ].q = val; // 0-extend
@@ -5763,7 +5763,7 @@ _prefix_is_set:
                                 uint64_t val = get_rm64();
                                 setflag_c( val & bit );
                             }
-                            else if ( 0x66 == _prefix_size )
+                            else if ( 0x66 == _prefix.size )
                             {
                                 uint16_t bit = 1 << ( imm & 0xf );
                                 uint16_t val = get_rm16();
@@ -5785,7 +5785,7 @@ _prefix_is_set:
                                 setflag_c( val & bit );
                                 set_rm64( val | bit );
                             }
-                            else if ( 0x66 == _prefix_size )
+                            else if ( 0x66 == _prefix.size )
                             {
                                 uint16_t bit = 1 << ( imm & 0xf );
                                 uint16_t val = get_rm16();
@@ -5809,7 +5809,7 @@ _prefix_is_set:
                                 setflag_c( val & bit );
                                 set_rm64( val & ~bit );
                             }
-                            else if ( 0x66 == _prefix_size )
+                            else if ( 0x66 == _prefix.size )
                             {
                                 uint16_t bit = 1 << ( imm & 0xf );
                                 uint16_t val = get_rm16();
@@ -5833,7 +5833,7 @@ _prefix_is_set:
                                 setflag_c( val & bit );
                                 set_rm64( val ^ bit );
                             }
-                            else if ( 0x66 == _prefix_size )
+                            else if ( 0x66 == _prefix.size )
                             {
                                 uint16_t bit = 1 << ( imm & 0xf );
                                 uint16_t val = get_rm16();
@@ -5874,7 +5874,7 @@ _prefix_is_set:
                         int8_t val = get_rm8();
                         if ( _rex.W )
                             regs[ _reg ].q = (uint64_t) val;
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                             regs[ _reg ].q = (uint64_t) (uint16_t) val;
                         else
                             regs[ _reg ].q = (uint32_t) val;
@@ -5886,7 +5886,7 @@ _prefix_is_set:
                         int16_t val = get_rm16();
                         if ( _rex.W )
                             regs[ _reg ].q = (int64_t) val;
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                             unhandled();
                         else
                             regs[ _reg ].q = (uint32_t) val;
@@ -5909,7 +5909,7 @@ _prefix_is_set:
                             regs[ _reg ].q = get_rm64();
                             set_rm64( get_rm64() + val );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = regs[ _reg ].w;
                             regs[ _reg ].q = get_rm16();
@@ -5929,12 +5929,12 @@ _prefix_is_set:
                         uint8_t imm = get_rip8();
                         vec16_t & xmm1 = xregs[ _reg ];
 
-                        if ( 0x66 == _prefix_size ) // packed double
+                        if ( 0x66 == _prefix.size ) // packed double
                             for ( uint32_t e = 0; e < 2; e++ )
                                 xmm1.set64( e, ( floating_comparison_true( xmm1.getd( e ), get_rmxdouble( e ), imm ) ) ? ~0ull : 0ull );
-                        else if ( 0xf2 == _prefix_sse2_repeat ) // scalar double
+                        else if ( 0xf2 == _prefix.sse2_repeat ) // scalar double
                             xmm1.set64( 0, ( floating_comparison_true( xmm1.getd( 0 ), get_rmxdouble( 0 ), imm ) ) ? ~0ull : 0ull );
-                        else if ( 0xf3 == _prefix_sse2_repeat ) // scalar single
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // scalar single
                             xmm1.set32( 0, ( floating_comparison_true( xmm1.getf( 0 ), get_rmxfloat( 0 ), imm ) ) ? ~0 : 0 );
                         else // packed single
                             for ( uint32_t e = 0; e < 4; e++ )
@@ -5945,12 +5945,12 @@ _prefix_is_set:
                     case 0xc4:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         uint8_t imm = get_rip8();
                         vec16_t & xmm1 = xregs[ _reg ];
                         uint16_t val = ( 3 == _mod ) ? (uint16_t) regs[ _rm ].d : get_rm16();
-                        if ( 0x66 == _prefix_size ) // pinsrw xmm, r32/m16, imm8
+                        if ( 0x66 == _prefix.size ) // pinsrw xmm, r32/m16, imm8
                             xmm1.set16( imm & 7, val );
                         else
                             unhandled();
@@ -5960,7 +5960,7 @@ _prefix_is_set:
                     case 0xc5: // pextrw reg, xmm, imm8
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                             regs[ _reg ].q = xregs[ _rm ].get16( get_rip8() );
                         else
                             unhandled();
@@ -5970,7 +5970,7 @@ _prefix_is_set:
                     {
                         decode_rm();
                         uint8_t imm8 = get_rip8();
-                        if ( 0x66 == _prefix_size ) // shufpd xmm, xmm/m128, imm8
+                        if ( 0x66 == _prefix.size ) // shufpd xmm, xmm/m128, imm8
                         {
                             vec16_t src1 = xregs[ _reg ];
                             vec16_t target = xregs[ _reg ];
@@ -6048,7 +6048,7 @@ _prefix_is_set:
                     }
                     case 0xc8: case 0xc9: case 0xca: case 0xcb: case 0xcc: case 0xcd: case 0xce: case 0xcf: // bswap r32/r64
                     {
-                        if ( 0 != _prefix_size || 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.size || 0 != _prefix.sse2_repeat )
                             unhandled();
                         _rm = ( op1 & 7 );
                         decode_rex();
@@ -6061,9 +6061,9 @@ _prefix_is_set:
                     case 0xd2:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size ) // psrld xmm1, xmm2/m128   shift dwords in xmm1 right by amount specified
+                        if ( 0x66 == _prefix.size ) // psrld xmm1, xmm2/m128   shift dwords in xmm1 right by amount specified
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             uint64_t count = get_rmx64( 0 );
@@ -6083,9 +6083,9 @@ _prefix_is_set:
                     case 0xd3:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size ) // psrlq xmm1, xmm2/m128   shift qwords right while shifting in 0s
+                        if ( 0x66 == _prefix.size ) // psrlq xmm1, xmm2/m128   shift qwords right while shifting in 0s
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             uint64_t count = get_rmx64( 0 );
@@ -6107,7 +6107,7 @@ _prefix_is_set:
                     case 0xd4: // paddq xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             xmm1.set64( 0, xmm1.get64( 0 ) + get_rmx64( 0 ) );
@@ -6121,7 +6121,7 @@ _prefix_is_set:
                     case 0xd5:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pmullw xmm1, xmm2/m128  multiply signed words and store low 16 bits of results
+                        if ( 0x66 == _prefix.size ) // pmullw xmm1, xmm2/m128  multiply signed words and store low 16 bits of results
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             vec16_t & dst = xregs[ _reg ];
@@ -6137,7 +6137,7 @@ _prefix_is_set:
                     case 0xd6: // movq r/m64, xmm
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                             set_rm64( xregs[ _reg ].get64( 0 ) );
                         else
                             unhandled();
@@ -6146,7 +6146,7 @@ _prefix_is_set:
                     case 0xd7:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // pmovmskb reg, xmm
+                        if ( 0x66 == _prefix.size ) // pmovmskb reg, xmm
                         {
                             // move the high bits of each byte to create a mask 16 bits long in reg
                             uint32_t mask = 0;
@@ -6162,7 +6162,7 @@ _prefix_is_set:
                     case 0xd8: // psubsub xmm1, xmm2/m128 subtract unsigned bytes and saturate result
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 16; i++ )
@@ -6176,7 +6176,7 @@ _prefix_is_set:
                     case 0xd9: // psubsuw xmm1, xmm2/m128 subtract unsigned words and saturate result
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 8; i++ )
@@ -6190,7 +6190,7 @@ _prefix_is_set:
                     case 0xda: // pminub xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             for ( uint32_t x = 0; x < 16; x++ )
                                 xregs[ _reg ].set8( x, get_min( xregs[ _reg ].get8( x ), get_rmx8( x ) ) );
@@ -6203,7 +6203,7 @@ _prefix_is_set:
                     case 0xdb:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )  // pand xmm1, xmm2/m128
+                        if ( 0x66 == _prefix.size )  // pand xmm1, xmm2/m128
                         {
                             xregs[ _reg ].set64( 0, xregs[ _reg ].get64( 0 ) & get_rmx64( 0 ) );
                             xregs[ _reg ].set64( 1, xregs[ _reg ].get64( 1 ) & get_rmx64( 1 ) );
@@ -6216,7 +6216,7 @@ _prefix_is_set:
                     case 0xde: // pmaxub xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t e = 0; e < 16; e++ )
@@ -6230,7 +6230,7 @@ _prefix_is_set:
                     case 0xdf: // pandn xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             xregs[ _reg ].set64( 0, ~( xregs[ _reg ].get64( 0 ) ) & get_rmx64( 0 ) );
                             xregs[ _reg ].set64( 1, ~( xregs[ _reg ].get64( 1 ) ) & get_rmx64( 1 ) );
@@ -6242,10 +6242,10 @@ _prefix_is_set:
                     }
                     case 0xe2:
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // psrad xmm1, xmm2/m128   shift signed dword in xmm1 right by xmm2/m128
+                        if ( 0x66 == _prefix.size ) // psrad xmm1, xmm2/m128   shift signed dword in xmm1 right by xmm2/m128
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             uint64_t shift = get_rmx64( 0 );
@@ -6264,9 +6264,9 @@ _prefix_is_set:
                     }
                     case 0xe4: // pmulhuw xmm1, xmm2/m128
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 != _prefix_size )
+                        if ( 0x66 != _prefix.size )
                             unhandled();
                         decode_rm();
                         vec16_t target = xregs[ _reg ];
@@ -6282,9 +6282,9 @@ _prefix_is_set:
                     }
                     case 0xe5: // pmulhuw xmm1, xmm2/m128
                     {
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 != _prefix_size )
+                        if ( 0x66 != _prefix.size )
                             unhandled();
                         decode_rm();
                         vec16_t target = xregs[ _reg ];
@@ -6301,7 +6301,7 @@ _prefix_is_set:
                     case 0xe6:
                     {
                         decode_rm();
-                        if ( 0xf3 == _prefix_sse2_repeat ) // cvtdq2pd xmm1, xmm2/m64  convert two packed signed dword ints from xmm2/mem to 2 double fp values in xmm1
+                        if ( 0xf3 == _prefix.sse2_repeat ) // cvtdq2pd xmm1, xmm2/m64  convert two packed signed dword ints from xmm2/mem to 2 double fp values in xmm1
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             uint32_t val0 = get_rmx32( 0 );
@@ -6309,7 +6309,7 @@ _prefix_is_set:
                             xregs[ _reg ].setd( 0, (double) (int32_t) val0 );
                             xregs[ _reg ].setd( 1, (double) (int32_t) val1 );
                         }
-                        else if ( 0x66 == _prefix_size ) // cvttpd2dq xmm1, xmm2/m128  convert two doubles to two signed dword integers
+                        else if ( 0x66 == _prefix.size ) // cvttpd2dq xmm1, xmm2/m128  convert two doubles to two signed dword integers
                         {
                             double val0 = get_rmxdouble( 0 );
                             double val1 = get_rmxdouble( 1 );
@@ -6324,7 +6324,7 @@ _prefix_is_set:
                     case 0xe7:
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size ) // movntdq m128, xmm1  move packed integers from xmm to mm using non-temporal hint
+                        if ( 0x66 == _prefix.size ) // movntdq m128, xmm1  move packed integers from xmm to mm using non-temporal hint
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             set_rmx64( 0, xmm1.get64( 0 ) );
@@ -6337,9 +6337,9 @@ _prefix_is_set:
                     case 0xea: // pminsw xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t e = 0; e < 8; e++ )
@@ -6353,7 +6353,7 @@ _prefix_is_set:
                     case 0xeb: // por xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             if ( 3 == _mod )
                             {
@@ -6374,9 +6374,9 @@ _prefix_is_set:
                     case 0xee: // pmaxsw xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t e = 0; e < 8; e++ )
@@ -6390,7 +6390,7 @@ _prefix_is_set:
                     case 0xef: // pxor xmm, xmm/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             xmm1.set64( 0, xmm1.get64( 0 ) ^ get_rmx64( 0 ) );
@@ -6404,9 +6404,9 @@ _prefix_is_set:
                     case 0xf2:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size ) // pslld xmm1, xmm2/m128   shift dwords left while shifting in 0s
+                        if ( 0x66 == _prefix.size ) // pslld xmm1, xmm2/m128   shift dwords left while shifting in 0s
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             uint64_t count = get_rmx64( 0 );
@@ -6425,9 +6425,9 @@ _prefix_is_set:
                     case 0xf3:
                     {
                         decode_rm();
-                        if ( 0 != _prefix_sse2_repeat )
+                        if ( 0 != _prefix.sse2_repeat )
                             unhandled();
-                        if ( 0x66 == _prefix_size ) // psllq xmm1, xmm2/m128   shift qwords left while shifting in 0s
+                        if ( 0x66 == _prefix.size ) // psllq xmm1, xmm2/m128   shift qwords left while shifting in 0s
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             uint64_t count = get_rmx64( 0 );
@@ -6449,7 +6449,7 @@ _prefix_is_set:
                     case 0xf4: // pmuludq xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             xregs[ _reg ].set64( 0, (uint64_t) xmm1.get32( 0 ) * (uint64_t) get_rmx32( 0 ) );
@@ -6463,7 +6463,7 @@ _prefix_is_set:
                     case 0xf6: // psadbw xmm1, xmm2/m128  compute absolute differences on bytes and store results in low words of each part of result
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             uint16_t sumlow = 0;
@@ -6487,7 +6487,7 @@ _prefix_is_set:
                     case 0xf8: // psubb xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 16; i++ )
@@ -6501,7 +6501,7 @@ _prefix_is_set:
                     case 0xf9: // psubw xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             for ( uint32_t i = 0; i < 8; i++ )
                                 xregs[ _reg ].set16( i, xregs[ _reg ].get16( i ) - get_rmx16( i ) );
@@ -6514,7 +6514,7 @@ _prefix_is_set:
                     case 0xfa: // psubd xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 4; i++ )
@@ -6528,7 +6528,7 @@ _prefix_is_set:
                     case 0xfb: // psubq xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 2; i++ )
@@ -6542,7 +6542,7 @@ _prefix_is_set:
                     case 0xfc: // paddb xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 16; i++ )
@@ -6556,7 +6556,7 @@ _prefix_is_set:
                     case 0xfd: // paddw xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 8; i++ )
@@ -6570,7 +6570,7 @@ _prefix_is_set:
                     case 0xfe: // paddd xmm1, xmm2/m128
                     {
                         decode_rm();
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             vec16_t & xmm1 = xregs[ _reg ];
                             for ( uint32_t i = 0; i < 4; i++ )
@@ -6599,7 +6599,7 @@ _prefix_is_set:
                     uint8_t reg = op & 7;
                     if ( op < 0x48 ) // inc
                     {
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = 1 + regs[ reg ].w;
                             set_PSZ( val );
@@ -6616,7 +6616,7 @@ _prefix_is_set:
                     }
                     else // dec
                     {
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = regs[ reg ].w - 1;
                             set_PSZ( val );
@@ -6634,7 +6634,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    _prefix_rex = op;
+                    _prefix.rex = op;
                     goto _prefix_is_set;
                 }
                 break;
@@ -6658,7 +6658,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                     regs[ _reg ].q = (int32_t) get_rm32();
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ _reg ].q = get_rm16();
                 else
                     regs[ _reg ].q = get_rm32();
@@ -6666,18 +6666,18 @@ _prefix_is_set:
             }
             case 0x64: case 0x65: // prefix for fs: and gs:
             {
-                _prefix_segment = op;
+                _prefix.segment = op;
                 goto _prefix_is_set;
             }
             case 0x66: case 0x67:
             {
-                _prefix_size = op;
+                _prefix.size = op;
                 goto _prefix_is_set;
             }
             case 0x68: // push imm16 / imm32
             {
                 uint64_t val;
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                     val = (int16_t) get_rip16();
                 else
                     val = (int32_t) get_rip32();
@@ -6696,7 +6696,7 @@ _prefix_is_set:
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result128L;
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t imm16 = get_rip16();
                     uint32_t a = (int16_t) get_rm16();
@@ -6737,7 +6737,7 @@ _prefix_is_set:
                     setflag_c( flag_o() );
                     regs[ _reg ].q = result128L;
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint32_t a = (int16_t) get_rm16();
                     uint32_t b = imm8;
@@ -6786,7 +6786,7 @@ _prefix_is_set:
                     if ( 7 != math )
                         set_rm64( val );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t r = get_rip16();
                     uint16_t val = get_rm16();
@@ -6817,7 +6817,7 @@ _prefix_is_set:
                     if ( 7 != math )
                         set_rm64( val );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t val = get_rm16();
                     do_math( math, &val, (uint16_t) (int16_t) (int8_t) imm8 );
@@ -6845,7 +6845,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                     set_PSZ( get_rm64() & regs[ _reg ].q );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     set_PSZ( (uint16_t) ( get_rm16() & regs[ _reg ].w ) );
                 else
                     set_PSZ( get_rm32() & regs[ _reg ].d );
@@ -6869,7 +6869,7 @@ _prefix_is_set:
                     regs[ _reg ].q = get_rm64();
                     set_rm64( tmp );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t tmp = regs[ _reg ].w;
                     regs[ _reg ].q = get_rm16();
@@ -6894,7 +6894,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                     set_rm64( regs[ _reg ].q );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     set_rm16( regs[ _reg ].w );
                 else
                     set_rm32z( regs[ _reg ].d );
@@ -6911,7 +6911,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                     regs[ _reg ].q = get_rm64();
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ _reg ].q = get_rm16();
                 else
                     regs[ _reg ].q = get_rm32();
@@ -6922,7 +6922,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                     regs[ _reg ].q = effective_address();
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ _reg ].q = 0xffff & effective_address();
                 else
                     regs[ _reg ].q = 0xffffffff & effective_address();
@@ -6954,7 +6954,7 @@ _prefix_is_set:
             case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // xchg ax, r  (widths 16, 32, 64)
             {
                 _rm = op & 0xf;
-                if ( 0 != _prefix_rex )
+                if ( 0 != _prefix.rex )
                 {
                     decode_rex();
                     if ( _rex.W )
@@ -6966,7 +6966,7 @@ _prefix_is_set:
                         regs[ _rm ].q = tmp;
                     }
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t tmp = regs[ rax ].w;
                     regs[ rax ].q = regs[ _rm ].w;
@@ -6985,7 +6985,7 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                     regs[ rax ].q = (int32_t) regs[ rax ].d;
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ rax ].q = (uint16_t) (int8_t) regs[ rax ].b;
                 else
                     regs[ rax ].q = (uint32_t) (int16_t) regs[ rax ].w;
@@ -6996,7 +6996,7 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                     regs[ rdx ].q = ( highest_bit( regs[ rax ].q ) ) ? ~0 : 0;
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ rdx ].q = ( highest_bit( regs[ rax ].w ) ) ? 0xffff : 0;
                 else
                     regs[ rdx ].q = ( highest_bit( regs[ rax ].d ) ) ? 0xffffffff : 0;
@@ -7008,7 +7008,7 @@ _prefix_is_set:
             }
             case 0x9c: // pushf
             {
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                     unhandled();
                 else
                     push( rflags & 0xffff );
@@ -7016,7 +7016,7 @@ _prefix_is_set:
             }
             case 0x9d: // popf
             {
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                     unhandled();
                 else
                     rflags = pop();
@@ -7034,11 +7034,11 @@ _prefix_is_set:
             }
             case 0xa0: // mov al, moffs8
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rex.W )
                     regs[ rax ].b = getui8( get_rip64() );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip16() ) );
                 else
                     regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip32() ) );
@@ -7046,11 +7046,11 @@ _prefix_is_set:
             }
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rex.W )
                     regs[ rax ].q = getui64( get_rip64() );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ rax ].q = getui16( lower32_address( segment_offset + get_rip16() ) );
                 else
                     regs[ rax ].q = getui32( lower32_address( segment_offset + get_rip32() ) );
@@ -7058,11 +7058,11 @@ _prefix_is_set:
             }
             case 0xa2: // mov moffs8, al
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rex.W )
                     setui8( get_rip64(), regs[ rax ].b );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     setui8( lower32_address( segment_offset + get_rip16() ), regs[ rax ].b );
                 else
                     setui8( lower32_address( segment_offset + get_rip32() ), regs[ rax ].b );
@@ -7070,11 +7070,11 @@ _prefix_is_set:
             }
             case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
             {
-                uint64_t segment_offset = ( 0x64 == _prefix_segment ) ? rfs.q : ( 0x65 == _prefix_segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
                 decode_rex();
                 if ( _rex.W )
                     setui64( get_rip64(), regs[ rax ].q );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     setui16( lower32_address( segment_offset + get_rip16() ), regs[ rax ].w );
                 else
                     setui32( lower32_address( segment_offset + get_rip32() ), regs[ rax ].d );
@@ -7084,11 +7084,11 @@ _prefix_is_set:
             case 0xa5: // movs m, m  RSI to RDI 16/32/64
             {
                 decode_rex();
-                uint8_t width = ( 0xa4 == op ) ? 1 : _rex.W ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4;
+                uint8_t width = ( 0xa4 == op ) ? 1 : _rex.W ? 8 : ( 0x66 == _prefix.size ) ? 2 : 4;
 
-                if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
+                if ( 0 != _prefix.sse2_repeat ) // f3 is legal. alllow f2
                 {
-                    assert( ( 0xf2 == _prefix_sse2_repeat ) || ( 0xf3 == _prefix_sse2_repeat ) );
+                    assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
                     while ( 0 != regs[ rcx ].q )
                     {
                         op_movs( width );
@@ -7109,7 +7109,7 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                     op_and( regs[ rax ].q, (uint64_t) (int32_t) get_rip32() );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     op_and( regs[ rax ].w, get_rip16() );
                 else
                     op_and( regs[ rax ].d, get_rip32() );
@@ -7119,11 +7119,11 @@ _prefix_is_set:
             case 0xab: // stos
             {
                 decode_rex();
-                uint8_t width = ( 0xaa == op ) ? 1 : _rex.W ? 8: ( 0x66 == _prefix_size ) ? 2 : 4;
+                uint8_t width = ( 0xaa == op ) ? 1 : _rex.W ? 8: ( 0x66 == _prefix.size ) ? 2 : 4;
 
-                if ( 0 != _prefix_sse2_repeat ) // f3 is legal. alllow f2
+                if ( 0 != _prefix.sse2_repeat ) // f3 is legal. alllow f2
                 {
-                    assert( ( 0xf2 == _prefix_sse2_repeat ) || ( 0xf3 == _prefix_sse2_repeat ) );
+                    assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
                     while ( 0 != regs[ rcx ].q )
                     {
                         op_stos( width );
@@ -7138,10 +7138,10 @@ _prefix_is_set:
             case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
             {
                 decode_rex();
-                uint8_t width = ( 0xae == op ) ? 1 : _rex.W ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4;
-                if ( 0 != _prefix_sse2_repeat )
+                uint8_t width = ( 0xae == op ) ? 1 : _rex.W ? 8 : ( 0x66 == _prefix.size ) ? 2 : 4;
+                if ( 0 != _prefix.sse2_repeat )
                 {
-                    assert( ( 0xf2 == _prefix_sse2_repeat ) || ( 0xf3 == _prefix_sse2_repeat ) );
+                    assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
                     while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_scas( width );
@@ -7153,8 +7153,8 @@ _prefix_is_set:
                         else
                             regs[ rcx ].q--;
 
-                        if ( (  flag_z() && ( 0xf2 == _prefix_sse2_repeat ) ) ||
-                             ( !flag_z() && ( 0xf3 == _prefix_sse2_repeat ) ) )
+                        if ( (  flag_z() && ( 0xf2 == _prefix.sse2_repeat ) ) ||
+                             ( !flag_z() && ( 0xf3 == _prefix.sse2_repeat ) ) )
                             break;
                     }
                 }
@@ -7176,7 +7176,7 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                     regs[ _rm ].q = get_rip64();
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     regs[ _rm ].q = get_rip16();
                 else
                     regs[ _rm ].q = get_rip32();
@@ -7201,7 +7201,7 @@ _prefix_is_set:
                     op_shift( &val, _reg, shift );
                     set_rm64( val );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     shift &= 0xf;
                     uint16_t val = get_rm16();
@@ -7243,7 +7243,7 @@ _prefix_is_set:
                 decode_rm();
                 if ( _rex.W )
                     set_rm64( (int32_t) get_rip32() );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     set_rm16( get_rip16() );
                 else
                     set_rm32z( get_rip32() );
@@ -7254,7 +7254,7 @@ _prefix_is_set:
                 uint16_t alloc_size = get_rip16();
                 uint8_t nesting_level = get_rip8() % 32;
 
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                     unhandled(); // I haven't found apps that use 16-bit stack elements yet. implement when it happens
 
                 push( regs[ rbp ].q );
@@ -7313,7 +7313,7 @@ _prefix_is_set:
                     op_shift( &val, _reg, 1 );
                     set_rm64( val );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     uint16_t val = get_rm16();
                     op_shift( &val, _reg, 1 );
@@ -7340,7 +7340,7 @@ _prefix_is_set:
                     op_shift( &val, _reg, shift );
                     set_rm64( val );
                 }
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                 {
                     shift &= 0xf;
                     uint16_t val = get_rm16();
@@ -7839,7 +7839,7 @@ _prefix_is_set:
                     update_x87_status_top();
                     regs[ rax ].w = x87_fpu_status_word;
                 }
-                else if ( 0 == _prefix_sse2_repeat )
+                else if ( 0 == _prefix.sse2_repeat )
                 {
                     rip.q--;
                     decode_rm();
@@ -7880,7 +7880,7 @@ _prefix_is_set:
 
                 // LOOP instructions assume 64-bit operands in 64-bit mode; no _rex.W is required.
 
-                if ( 0x66 == _prefix_size )
+                if ( 0x66 == _prefix.size )
                 {
                     regs[ rcx ].w--;
                     count_zero = ( 0 == regs[ rcx ].w );
@@ -7907,7 +7907,7 @@ _prefix_is_set:
                 decode_rex();
                 if ( _rex.W )
                     jump = ( 0 == regs[ rcx ].q );
-                else if ( 0x66 == _prefix_size )
+                else if ( 0x66 == _prefix.size )
                     jump = ( 0 == regs[ rcx ].w );
                 else
                     jump = ( 0 == regs[ rcx ].d );
@@ -7939,7 +7939,7 @@ _prefix_is_set:
             }
             case 0xf2: case 0xf3: // repeat or multibyte or bnd (memory protection)
             {
-                _prefix_sse2_repeat = op;
+                _prefix.sse2_repeat = op;
                 goto _prefix_is_set;
             }
             case 0xf4: // hlt
@@ -8018,7 +8018,7 @@ _prefix_is_set:
                         uint64_t val = (int32_t) get_rip32();
                         op_and( get_rm64(), val );
                     }
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                     {
                         uint16_t val = get_rip16();
                         op_and( get_rm16(), val );
@@ -8033,7 +8033,7 @@ _prefix_is_set:
                 {
                     if ( _rex.W )
                         set_rm64( ~ get_rm64() );
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                         set_rm16( ~ get_rm16() );
                     else
                         set_rm32( ~ get_rm32() );
@@ -8048,7 +8048,7 @@ _prefix_is_set:
                         set_PSZ( val );
                         set_rm64( val );
                     }
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                     {
                         uint16_t val = get_rm16();
                         setflag_c( 0 != val );
@@ -8073,7 +8073,7 @@ _prefix_is_set:
                         regs[ rax ].q = CMultiply128::mul_u64_u64( regs[ rax ].q, get_rm64(), &resultHigh );
                         regs[ rdx ].q = resultHigh;
                     }
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                     {
                         uint32_t result = (uint32_t) regs[ rax ].w * get_rm16();
                         regs[ rax ].q = result & 0xffff;
@@ -8094,7 +8094,7 @@ _prefix_is_set:
                         regs[ rax ].q = CMultiply128::mul_s64_s64( regs[ rax ].q, get_rm64(), &resultHigh );
                         regs[ rdx ].q = resultHigh;
                     }
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                     {
                         int32_t result = (int32_t) (int16_t) regs[ rax ].w * (int32_t) (int16_t) get_rm16();
                         regs[ rax ].q = result & 0xffff;
@@ -8129,7 +8129,7 @@ _prefix_is_set:
                             regs[ rdx ].q = remainder;
                         }
                     }
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                     {
                         uint32_t divisor = get_rm16();
                         if ( 0 == divisor )
@@ -8178,7 +8178,7 @@ _prefix_is_set:
                             regs[ rdx ].q = remainder;
                         }
                     }
-                    else if ( 0x66 == _prefix_size )
+                    else if ( 0x66 == _prefix.size )
                     {
                         int32_t divisor = (int16_t) get_rm16();
                         if ( 0 == divisor )
@@ -8256,7 +8256,7 @@ _prefix_is_set:
                             setflag_o( 0 == val );
                             set_rm64( val );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = 1 + get_rm16();
                             set_PSZ( val );
@@ -8281,7 +8281,7 @@ _prefix_is_set:
                             setflag_o( ~0ull == val );
                             set_rm64( val );
                         }
-                        else if ( 0x66 == _prefix_size )
+                        else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = get_rm16() - 1;
                             set_PSZ( val );
@@ -8320,7 +8320,7 @@ _prefix_is_set:
                         unhandled();
                     case 6: // push
                     {
-                        if ( 0x66 == _prefix_size )
+                        if ( 0x66 == _prefix.size )
                             unhandled();
                         push( get_rm64() );
                         break;

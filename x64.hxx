@@ -98,6 +98,15 @@ typedef struct REXInfo
     };
 } REXInfo_t;
 
+typedef struct PrefixInfo
+{
+    union // use a union because some compilers don't otherwise optimize setting all to 0 at once for each instruction in 32-bit mode
+    {
+        struct { uint8_t rex, size, sse2_repeat, segment; };
+        uint32_t All;
+    };
+} PrefixInfo_t;
+
 // gnu on amd64 and x86 has 10-byte long doubles with the same format as x87 floating point (ieee80).
 // msvc maps long double to 8-byte doubles, so use x87 emulation instead.
 // gnu on non-amd64/x86 ISAs claim to have 80-bit long doubles, but I haven't been able to get them to work. they use 8-byte long doubles like msvc.
@@ -322,10 +331,7 @@ private:
         return buf;
     } //render_flags
 
-    uint8_t _prefix_rex;                // 0 for none. 0x4x
-    uint8_t _prefix_size;               // 0 for none. can be 0x66 (operand size 16) or 0x67 (address size 32)
-    uint8_t _prefix_sse2_repeat;        // 0 for none. f2 repne/repnz, f3 rep/repe/repz. f3 can also mean multibyte. f2 can also mean bnd (memory protection)
-    uint8_t _prefix_segment;            // 0 for none. 0x64 for fs: or 0x65 for gs:
+    PrefixInfo _prefix;
 
     // decoding state and functions
 
@@ -394,7 +400,7 @@ private:
 
     inline uint8_t get_reg8()
     {
-        if ( 0 == _prefix_rex && _reg >= 4 )
+        if ( 0 == _prefix.rex && _reg >= 4 )
         {
             assert( _reg <= 7 );
             return regs[ _reg & 3 ].h;
@@ -404,7 +410,7 @@ private:
 
     inline void set_reg8( uint8_t val )
     {
-        if ( 0 == _prefix_rex && _reg >= 4 )
+        if ( 0 == _prefix.rex && _reg >= 4 )
         {
             assert( _reg <= 7 );
             regs[ _reg & 3 ].h = val;
@@ -415,7 +421,7 @@ private:
 
     inline uint8_t * get_reg_ptr8()
     {
-        if ( ( 0 == _prefix_rex ) && ( _reg >= 4 ) )
+        if ( ( 0 == _prefix.rex ) && ( _reg >= 4 ) )
         {
             assert( _reg <= 7 );
             return ( & regs[ _reg & 3 ].h ); // ah, ch, dh, bh
@@ -429,7 +435,7 @@ private:
         if ( _mod < 3 )
             return getmem( effective_address() );
 
-        if ( ( 0 == _prefix_rex ) && ( _rm >= 4 ) )
+        if ( ( 0 == _prefix.rex ) && ( _rm >= 4 ) )
         {
             assert( _rm <= 7 );
             return ( & regs[ _rm & 3 ].h ); // ah, ch, dh, bh
@@ -438,14 +444,14 @@ private:
         return & regs[ _rm ].b;
     } //get_rm_ptr8
 
-    inline uint64_t get_rm() { return _rex.W ? get_rm64() : ( 0x66 == _prefix_size ) ? get_rm16() : get_rm32(); }
+    inline uint64_t get_rm() { return _rex.W ? get_rm64() : ( 0x66 == _prefix.size ) ? get_rm16() : get_rm32(); }
 
     inline uint8_t get_rm8()
     {
         if ( _mod < 3 )
             return getui8( effective_address() );
 
-        if ( ( 0 == _prefix_rex ) && ( _rm >= 4 ) )
+        if ( ( 0 == _prefix.rex ) && ( _rm >= 4 ) )
         {
             assert( _rm <= 7 );
             return ( regs[ _rm & 3 ].h ); // ah, ch, dh, bh
@@ -496,7 +502,7 @@ private:
             setui8( effective_address(), val );
         else
         {
-            if ( 0 == _prefix_rex && _rm >= 4 )
+            if ( 0 == _prefix.rex && _rm >= 4 )
             {
                 assert( _rm <= 7 );
                 regs[ _rm & 3 ].h = val; // ah, ch, dh, bh
@@ -674,7 +680,7 @@ private:
         }
     } //set_rmx32
 
-    uint8_t op_width() { return ( _rex.W ? 8 : ( 0x66 == _prefix_size ) ? 2 : 4 ); }
+    uint8_t op_width() { return ( _rex.W ? 8 : ( 0x66 == _prefix.size ) ? 2 : 4 ); }
     const char * rm_displacement_string();
     const char * rm_string( uint8_t width, bool is_xmm = false );
     const char * register_name( uint8_t reg, uint8_t width = 8, bool is_xmm = false );
