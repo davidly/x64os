@@ -1543,9 +1543,25 @@ void x64::trace_state()
             }
             break;
         }
+        case 0x27: // daa  decimal adjust after al addition
+        {
+            if ( mode32 )
+                tracer.Trace( "daa\n" );
+            else
+                unhandled();
+            break;
+        }
         case 0x2e: // prefix for CS or branch not taken prediction
         {
             tracer.Trace( "prefixCS_Branch  # ignored\n" );
+            break;
+        }
+        case 0x2f: // das  decimal adjust after al subtraction
+        {
+            if ( mode32 )
+                tracer.Trace( "das\n" );
+            else
+                unhandled();
             break;
         }
         case 0x37: // aaa
@@ -1893,7 +1909,7 @@ void x64::trace_state()
         {
             _rm = ( op & 7 );
             decode_rex();
-            tracer.Trace( "mov %s, %#x\n", register_name( _rm, 8 ), getui8( rip.q + 1 ) );
+            tracer.Trace( "mov %s, %#x\n", register_name( _rm, 1 ), getui8( rip.q ) );
             break;
         }
         case 0xae: // scasb  compare al with byte at edi/rdi then set status flags
@@ -6624,7 +6640,59 @@ _prefix_is_set:
                 }
                 break;
             }
+            case 0x27: // daa  decimal adjust after al addition
+            {
+                if ( mode32 )
+                {
+                    uint8_t old_al = regs[ rax ].b;
+                    uint8_t al_check = flag_a() ? 0x9F : 0x99;
+
+                    if ( ( ( old_al & 0xf ) > 9 ) || flag_a() )
+                    {
+                        regs[ rax ].b += 6;
+                        setflag_a( true );
+                    }
+
+                    if ( ( old_al > al_check ) || flag_c() )
+                    {
+                        regs[ rax ].b += 0x60;
+                        setflag_c( true );
+                    }
+                    set_PSZ( regs[ rax ].b );
+                }
+                else
+                    unhandled();
+                break;
+            }
             case 0x2e: { break; } // prefix for CS or branch not taken prediction
+            case 0x2f: // das  decimal adjust after al subtraction
+            {
+                if ( mode32 )
+                {
+                    uint8_t old_al = regs[ rax ].b;
+                    uint8_t al_check = flag_a() ? 0x9F : 0x99;
+                
+                    if ( ( ( old_al & 0xf ) > 9 ) || flag_a() )
+                    {
+                        regs[ rax ].b -= 6;
+                        setflag_a( true );
+                    }
+                    else
+                        setflag_a( false );
+                
+                    if ( ( old_al > al_check ) || flag_c() )
+                    {
+                        regs[ rax ].b -= 0x60;
+                        setflag_c( true );
+                    }
+                    else
+                        setflag_c( false );
+                    set_PSZ( regs[ rax ].b );
+                }
+                else
+                    unhandled();
+                break;
+            }
             case 0x37: // aaa
             {
                 if ( mode32 )
@@ -6662,8 +6730,8 @@ _prefix_is_set:
                     {
                         setflag_a( false );
                         setflag_c( false );
-                        regs[ rax ].b &= 0xf;
                     }
+                    regs[ rax ].b &= 0xf;
                 }
                 else
                     unhandled();
@@ -6681,14 +6749,14 @@ _prefix_is_set:
                         {
                             uint16_t val = 1 + regs[ reg ].w;
                             set_PSZ( val );
-                            setflag_o( 0 == val );
+                            setflag_o( 0x8000 == val );
                             regs[ reg ].w = val;
                         }
                         else
                         {
                             uint32_t val = 1 + regs[ reg ].d;
                             set_PSZ( val );
-                            setflag_o( 0 == val );
+                            setflag_o( 0x80000000 == val );
                             regs[ reg ].d = val;
                         }
                     }
@@ -6698,14 +6766,14 @@ _prefix_is_set:
                         {
                             uint16_t val = regs[ reg ].w - 1;
                             set_PSZ( val );
-                            setflag_o( 0xffff == val );
+                            setflag_o( 0x7fff == val );
                             regs[ reg ].w = val;
                         }
                         else
                         {
                             uint32_t val = regs[ reg ].d - 1;
                             set_PSZ( val );
-                            setflag_o( ~0 == val );
+                            setflag_o( 0x7fffffff == val );
                             regs[ reg ].d = val;
                         }
                     }
