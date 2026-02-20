@@ -31,7 +31,7 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
     ) )
 ) )
 
-set _sapplist=e_x32 sieve_x32 tttu_x32 aaxlat32
+set _sapplist=e_x32 sieve_x32 tttu_x32 aaxlat32 aaaaas
 ( for %%a in (%_sapplist%) do (
     echo %%a
     echo c_tests/%%a>>%outputfile%

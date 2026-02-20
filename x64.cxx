@@ -1541,9 +1541,25 @@ void x64::trace_state()
             tracer.Trace( "prefixCS_Branch  # ignored\n" );
             break;
         }
+        case 0x37: // aaa
+        {
+            if ( mode32 )
+                tracer.Trace( "aaa\n" );
+            else
+                unhandled();
+            break;
+        }
         case 0x3e: // prefix for DS or branch prediction
         {
             tracer.Trace( "prefixDS_Branch  # ignored\n" );
+            break;
+        }
+        case 0x3f: // aas
+        {
+            if ( mode32 )
+                tracer.Trace( "aas\n" );
+            else
+                unhandled();
             break;
         }
         case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47: // REX prefix on x64 and inc on x32
@@ -6601,10 +6617,50 @@ _prefix_is_set:
                 }
                 break;
             }
-            case 0x2e: // prefix for CS or branch not taken prediction
-            case 0x3e: // prefix for DS or branch prediction
+            case 0x2e: { break; } // prefix for CS or branch not taken prediction
+            case 0x37: // aaa
             {
-                break; // ignored
+                if ( mode32 )
+                {
+                    if ( ( ( regs[ rax ].b & 0xf ) > 9 ) || flag_a() )
+                    {
+                        regs[ rax ].w += 0x106;
+                        setflag_a( true );
+                        setflag_c( true );
+                    }
+                    else
+                    {
+                        setflag_a( false );
+                        setflag_c( false );
+                    }
+                    regs[ rax ].b &= 0xf;
+                }
+                else
+                    unhandled();
+                break;
+            }
+            case 0x3e: { break; } // prefix for DS or branch prediction
+            case 0x3f: // aas
+            {
+                if ( mode32 )
+                {
+                    if ( ( ( regs[ rax ].b & 0xf ) > 9 ) || flag_a() )
+                    {
+                        regs[ rax ].w -= 6;
+                        regs[ rax ].h -= 1;
+                        setflag_a( true );
+                        setflag_c( true );
+                    }
+                    else
+                    {
+                        setflag_a( false );
+                        setflag_c( false );
+                        regs[ rax ].b &= 0xf;
+                    }
+                }
+                else
+                    unhandled();
+                break;
             }
             case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47: // REX prefix if x64 or inc if x32
             case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f: // REX prefix if x64 or dec if x32
