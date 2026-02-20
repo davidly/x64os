@@ -8,4 +8,4 @@ g++ -O2 -ggdb -D X64OS -D _MSC_VER x64os.cxx x64.cxx -I ../djl -D NDEBUG -o x64o
 rem g++ -O2 -ggdb -D X64OS -D _MSC_VER x64.cxx -I ../djl -D NDEBUG -S -fverbose-asm -o x64.s -static
 
 
-
+objdump x64os.exe -d >x64os.txt

@@ -1993,6 +1993,21 @@ void x64::trace_state()
             tracer.Trace( "%s %s, cl\n", shift_names[ _reg ], rm_string( op_width() ) );
             break;
         }
+        case 0xd4: // aam immb
+        {
+            tracer.Trace( "aam %u\n", get_rip8() );
+            break;
+        }
+        case 0xd5: // aad immb
+        {
+            tracer.Trace( "aad %u\n", get_rip8() );
+            break;
+        }
+        case 0xd7: // xlatb  set al to memory byte [(e/r)bx + unsigned al]
+        {
+            tracer.Trace( "xlatb [%s + al]\n", mode32 ? "ebx" : "rbx" );
+            break;
+        }
         case 0xd8:
         {
             uint8_t op1 = get_rip8();
@@ -7356,6 +7371,40 @@ _prefix_is_set:
                 }
                 break;
             }
+            case 0xd4: // aam immb
+            {
+                if ( mode32 )
+                {
+                    uint8_t imm8 = get_rip8();
+                    uint8_t tmp = regs[ rax ].b;
+                    regs[ rax ].h = tmp / imm8;
+                    regs[ rax ].b = tmp % imm8;
+                    set_PSZ( regs[ rax ].b );
+                }
+                else
+                    unhandled();
+                break;
+            }
+            case 0xd5: // aad immb
+            {
+                if ( mode32 )
+                {
+                    uint8_t imm8 = get_rip8();
+                    uint8_t tal = regs[ rax ].b;
+                    uint8_t tah = regs[ rax ].h;
+                    regs[ rax ].b = ( tal + ( tah * imm8 ) ) & 0xff;
+                    regs[ rax ].h = 0;
+                    set_PSZ( regs[ rax ].b );
+                }
+                else
+                    unhandled();
+                break;
+            }
+            case 0xd7: // xlatb  set al to memory byte [ds:(e/r)bx + unsigned al]
+            {
+                regs[ rax ].b = getui8( regs[ rax ].b + ( mode32 ? regs[ rbx ].d : regs[ rbx ].q ) );
+                break;
+            }
             case 0xd8:
             {
                 uint8_t op1 = get_rip8();
@@ -7918,9 +7967,9 @@ _prefix_is_set:
             }
             case 0xe8: // call rel32
             {
-                uint32_t offset = get_rip32();
+                int32_t offset = (int32_t) get_rip32();
                 push( rip.q );
-                rip.q += (int32_t) offset;
+                rip.q += offset;
                 break;
             }
             case 0xe9: // jmp cd  (relative to rip sign-extended 32-bit immediate)

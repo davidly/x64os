@@ -41,7 +41,7 @@ do
     done
 done
 
-for arg in e_x32 sieve_x32 tttu_x32;
+for arg in e_x32 sieve_x32 tttu_x32 aaxlat32;
 do
     echo $arg
     echo c_tests/$arg>>$outputfile
