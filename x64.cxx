@@ -23,10 +23,17 @@
         * much of the code could be optimized if it didn't have to run on big-endian machines.
 
     Most 32-bit instructions are from the i386. Exceptions include:
-        * 486:                              cmpxchg, xadd, invlpg
-        * 586 (pentium):                    cmpxchg8b, rdtsc
-        * 686 (pentium pro, II, III, etc.): cpuid, cmov, fcmov, fcomi, fcomip, fucomi, fucomip, syscall, sysret
-        * later:                            mmx, sse, avx, amx, aes, sha, pclmulqdq, fma, x86-64
+        * 486:                cmpxchg, xadd, invlpg, bswap, invd, wbinvd, (late models): cpuid
+        * 586 (pentium):      cmpxchg8b, rdtsc, cpuid
+        * 686 (pentium pro):  cmov, fcmov, sysenter/sysexit, fcomi, fcomip, fucomi, fucomip
+        * 686 (pentium II):   mmx
+        * 686 (pentium III):  sse, psn
+        * Pentium IV:         sse2, sse3, pause, lfence/mfence/sfence, cflush, monitor/mwait, cmpxchg16b, (late models): ssse3, x86-64
+        * westmere:           aes, pclmulqdq
+        * sandy bridge:       avx
+        * haswell:            fma
+        * goldmont:           sha
+        * sapphire rapids:    amx
 */
 
 #define NOMINMAX
