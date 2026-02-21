@@ -2499,12 +2499,12 @@ void x64::trace_state()
             {
                 case 0: // inc r/m8
                 {
-                    tracer.Trace( "inc %s\n", rm_string( op_width() ) );
+                    tracer.Trace( "inc %s\n", rm_string( 1 ) );
                     break;
                 }
                 case 1: // dec r/m8
                 {
-                    tracer.Trace( "dec %s\n", rm_string( op_width() ) );
+                    tracer.Trace( "dec %s\n", rm_string( 1 ) );
                     break;
                 }
                 default: unhandled();
@@ -8407,7 +8407,7 @@ _prefix_is_set:
                         uint8_t * pdst = get_rm_ptr8();
                         *pdst = *pdst + 1;
                         set_PSZ( *pdst );
-                        setflag_o( 0 == *pdst );
+                        setflag_o( 0x80 == *pdst );
                         break;
                     }
                     case 1: // dec r/m8
@@ -8415,7 +8415,7 @@ _prefix_is_set:
                         uint8_t * pdst = get_rm_ptr8();
                         *pdst = *pdst - 1;
                         set_PSZ( *pdst );
-                        setflag_o( 0 == *pdst );
+                        setflag_o( 0x7f == *pdst );
                         break;
                     }
                     default: unhandled();
@@ -8433,21 +8433,21 @@ _prefix_is_set:
                         {
                             uint64_t val = 1 + get_rm64();
                             set_PSZ( val );
-                            setflag_o( 0 == val );
+                            setflag_o( val == ( 1ull << 63 ) );
                             set_rm64( val );
                         }
                         else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = 1 + get_rm16();
                             set_PSZ( val );
-                            setflag_o( 0 == val );
+                            setflag_o( val == ( 1u << 15 ) );
                             set_rm16( val );
                         }
                         else
                         {
                             uint32_t val = 1 + get_rm32();
                             set_PSZ( val );
-                            setflag_o( 0 == val );
+                            setflag_o( val == ( 1u << 31 ) );
                             set_rm32( val );
                         }
                         break;
@@ -8458,21 +8458,21 @@ _prefix_is_set:
                         {
                             uint64_t val = get_rm64() - 1;
                             set_PSZ( val );
-                            setflag_o( ~0ull == val );
+                            setflag_o( val == ( ( 1ull << 63 ) - 1 ) );
                             set_rm64( val );
                         }
                         else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = get_rm16() - 1;
                             set_PSZ( val );
-                            setflag_o( 0xffff == val );
+                            setflag_o( val == ( ( 1u << 15 ) - 1 ) );
                             set_rm16( val );
                         }
                         else
                         {
                             uint32_t val = get_rm32() - 1;
                             set_PSZ( val );
-                            setflag_o( ~0 == val );
+                            setflag_o( val == ( ( 1u << 31 ) - 1 ) );
                             set_rm32( val );
                         }
                         break;
