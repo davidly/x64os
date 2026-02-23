@@ -29,9 +29,10 @@
         * 686 (pentium II):   mmx
         * 686 (pentium III):  sse, psn
         * Pentium IV:         sse2, sse3, pause, lfence/mfence/sfence, cflush, monitor/mwait, cmpxchg16b, (late models): ssse3, x86-64
+        * nehalem:            sse4.1, sse4.2
         * westmere:           aes, pclmulqdq
         * sandy bridge:       avx
-        * haswell:            fma
+        * haswell:            fma, avx2
         * goldmont:           sha
         * sapphire rapids:    amx
 */
@@ -1698,7 +1699,7 @@ void x64::trace_state()
             {
                 uint16_t imm = (int16_t) (int16_t) get_rip8();
                 uint8_t math = _reg;
-                tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 8 ), imm );
+                tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 2 ), imm );
             }
             else
             {
@@ -1990,7 +1991,7 @@ void x64::trace_state()
         {
             decode_rm();
             if ( 0x66 == _prefix.size )
-                tracer.Trace( "movw %s, %#x\n", rm_string( 8 ), get_rip16() );
+                tracer.Trace( "movw %s, %#x\n", rm_string( 2 ), get_rip16() );
             else if ( _rex.W )
                 tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), (int64_t) (int32_t) get_rip32() );
             else
@@ -4358,8 +4359,8 @@ _prefix_is_set:
                             set_rmx32( 0, xregs[ _reg ].get32( 0 ) );
                         else if ( 0x66 == _prefix.size ) // movupd xmm2/m128, xmm1  move 128 bits of doubles from xmm1 to xmm2/mem
                         {
-                            for ( uint32_t o = 0; o < 2; o++ )
-                                set_rmx64( o, xregs[ _reg ].get64( o ) );
+                            set_rmx64( 0, xregs[ _reg ].get64( 0 ) );
+                            set_rmx64( 1, xregs[ _reg ].get64( 1 ) );
                         }
                         else // movups xmm2/m128, xmm1   move 128 bits of unaligned packed single precision fp from xmm1 to xmm2/mem
                         {
@@ -4518,7 +4519,6 @@ _prefix_is_set:
                     case 0x28: // movaps xmm, xmm/m128   move 4 aligned packed single precision fp values from xmm/m128 to xmm
                     {
                         decode_rm();
-
                         if ( 0x66 == _prefix.size ) // movapd xmm1, xmm2/m128
                         {
                             vec16_t & dst = xregs[ _reg ];
@@ -7270,10 +7270,15 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat ) // f3 is legal. alllow f2
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != regs[ rcx ].q )
+                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_stos( width );
-                        regs[ rcx ].q--;
+                        if ( width <= 2 )
+                            regs[ rcx ].w--;
+                        else if ( 4 == width )
+                            regs[ rcx ].d--;
+                        else
+                            regs[ rcx ].q--;
                     }
                 }
                 else
@@ -8319,8 +8324,8 @@ _prefix_is_set:
                         else
                         {
                             uint32_t dividend = ( ( (uint32_t) regs[ rdx ].w ) << 16 ) | regs[ rax ].w;
-                            regs[ rax ].q = (uint16_t) ( dividend / divisor );
-                            regs[ rdx ].q = (uint16_t) ( dividend % divisor );
+                            regs[ rax ].w = (uint16_t) ( dividend / divisor );
+                            regs[ rdx ].w = (uint16_t) ( dividend % divisor );
                         }
                     }
                     else
@@ -8369,7 +8374,7 @@ _prefix_is_set:
                         {
                             int32_t dividend = ( ( (int32_t) regs[ rdx ].w ) << 16 ) | regs[ rax ].w ;
                             regs[ rax ].w = (uint16_t) (int16_t) ( dividend / divisor );
-                            regs[ rdx ].q = (uint16_t) (int16_t) ( dividend % divisor );
+                            regs[ rdx ].w = (uint16_t) (int16_t) ( dividend % divisor );
                         }
                     }
                     else

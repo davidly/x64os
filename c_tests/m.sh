@@ -20,7 +20,7 @@ fi
 
 mkdir bin"$optlevel" 2>/dev/null
 
-gcc -x c++ -fcf-protection=none -U_FORTIFY_SOURCE -O$optlevel $1.c -o bin$optlevel/$1.elf -lm -l:libstdc++.a -static -fsigned-char -Wno-format -Wno-format-security
+gcc -x c++ -ffunction-sections -fdata-sections -fcf-protection=none -U_FORTIFY_SOURCE -O$optlevel $1.c -o bin$optlevel/$1 -lm -l:libstdc++.a -static -fsigned-char -Wno-format -Wno-format-security -Wl,--gc-sections
 
 # generate s file for reference
 #gcc -x c++ -fcf-protection=none -U_FORTIFY_SOURCE -O$optlevel -S -fverbose-asm $1.c -o bin$optlevel/$1.s -fsigned-char -Wno-format -Wno-format-security
