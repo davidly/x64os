@@ -39,15 +39,17 @@ done
 echo "Waiting for compilation to complete..."
 wait
 
-echo "Generating assembly listings..."
-for arg in ${apps[@]}
-do
-    for optflag in 0 1 2 3 fast;
+if false; then
+    echo "Generating assembly listings..."
+    for arg in ${apps[@]}
     do
-        objdump -d bin"$optflag"/"$arg" > bin"$optflag"/"$arg".txt &
-        objdump -d clangbin"$optflag"/"$arg" > clangbin"$optflag"/"$arg".txt &
+        for optflag in 0 1 2 3 fast;
+        do
+            objdump -d bin"$optflag"/"$arg" > bin"$optflag"/"$arg".txt &
+            objdump -d clangbin"$optflag"/"$arg" > clangbin"$optflag"/"$arg".txt &
+        done
     done
-done
-
-echo "Waiting for assembly listings to complete..."
-wait
+    echo "Waiting for assembly listings to complete..."
+    wait
+fi
+    
