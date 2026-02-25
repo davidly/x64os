@@ -1608,6 +1608,16 @@ void x64::trace_state()
             tracer.Trace( "pop %s\n", mode32 ? register_names32[ _rm ] : register_names[ _rm ] );
             break;
         }
+        case 0x60: // pusha/pushad
+        {
+            tracer.Trace( "pusha\n" );
+            break;
+        }
+        case 0x61: // popa/popad
+        {
+            tracer.Trace( "popa\n" );
+            break;
+        }
         case 0x63: // movsxd reg, r/m. aka gcc movslq
         {
             decode_rm();
@@ -1773,6 +1783,16 @@ void x64::trace_state()
         {
             decode_rm();
             tracer.Trace( "mov %s, %s\n", segment_register_names[ _reg ], rm_string( 8 ) );
+            break;
+        }
+        case 0x8f:
+        {
+            decode_rm();
+            switch( _reg )
+            {
+                case 0: { tracer.Trace( "pop %s\n", rm_string( op_width_def64() ) ); break; }
+                default: unhandled();
+            }
             break;
         }
         case 0x90:
@@ -2543,9 +2563,7 @@ void x64::trace_state()
                     unhandled();
                 case 6: // push
                 {
-                    if ( 0x66 == _prefix.size )
-                        unhandled();
-                    tracer.Trace( "push %s\n", rm_string( 8 ) );
+                    tracer.Trace( "push %s\n", rm_string( op_width_def64() ) );
                     break;
                 }
                 default: unhandled();
@@ -4183,10 +4201,8 @@ uint64_t x64::run()
                                     // segment can be 0x64 for fs: or 0x65 for gs:
 
         #ifndef NDEBUG
-            if ( regs[ rsp ].q <= ( stack_top - stack_size ) )
-                emulator_hard_termination( *this, "stack pointer is below stack memory:", regs[ rsp ].q );
-            if ( regs[ rsp ].q > stack_top + 0x100 ) // give space to get at arguments and AT records
-                emulator_hard_termination( *this, "stack pointer is above the top of its starting point:", regs[ rsp ].q );
+            if ( !is_address_valid( regs[ rsp ].q ) )
+                emulator_hard_termination( *this, "stack pointer isn't set to a valid address:", regs[ rsp ].q );
             if ( rip.q < base )
                 emulator_hard_termination( *this, "rip is lower than memory:", rip.q );
             if ( rip.q >= ( base + mem_size - stack_size ) )
@@ -6796,7 +6812,35 @@ _prefix_is_set:
             {
                 _rm = op & 7;
                 decode_rex();
-                regs[ _rm ].q = pop();
+                if ( 0x66 == _prefix.size )
+                    regs[ _rm ].w = (uint16_t) pop();
+                else
+                    regs[ _rm ].q = pop();
+                break;
+            }
+            case 0x60: // pusha/pushad
+            {
+                uint64_t original_sp = regs[ rsp ].q;
+                push( regs[ rax ].q );
+                push( regs[ rcx ].q );
+                push( regs[ rdx ].q );
+                push( regs[ rbx ].q );
+                push( original_sp );
+                push( regs[ rbp ].q );
+                push( regs[ rsi ].q );
+                push( regs[ rdi ].q );
+                break;
+            }
+            case 0x61: // popa/popad
+            {
+                regs[ rdi ].q = pop();
+                regs[ rsi ].q = pop();
+                regs[ rbp ].q = pop();
+                pop(); // ignore rsp
+                regs[ rbx ].q = pop();
+                regs[ rdx ].q = pop();
+                regs[ rcx ].q = pop();
+                regs[ rax ].q = pop();
                 break;
             }
             case 0x63: // movsxd reg, r/m. also movsxq
@@ -7096,6 +7140,25 @@ _prefix_is_set:
                     unhandled();
                 break;
             }
+            case 0x8f:
+            {
+                decode_rm();
+                switch( _reg )
+                {
+                    case 0:
+                    {
+                        if ( 0x66 == _prefix.size )
+                            set_rm16( (uint16_t) pop() );
+                        else if ( mode32 )
+                            set_rm32( (uint32_t) pop() );
+                        else
+                            set_rm64( pop() );
+                        break;
+                    }
+                    default: unhandled();
+                }
+                break;
+            }
             case 0x90: { break; } // nop exch ax, ax
             case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // xchg ax, r  (widths 16, 32, 64)
             {
@@ -7162,10 +7225,7 @@ _prefix_is_set:
             }
             case 0x9d: // popf
             {
-                if ( 0x66 == _prefix.size )
-                    unhandled();
-                else
-                    rflags = pop();
+                rflags = pop();
                 break;
             }
             case 0x9e: // sahf
@@ -8506,8 +8566,11 @@ _prefix_is_set:
                     case 6: // push
                     {
                         if ( 0x66 == _prefix.size )
-                            unhandled();
-                        push( get_rm64() );
+                            push( get_rm16() );
+                        else if ( mode32 )
+                            push( get_rm32() );
+                        else
+                            push( get_rm64() );
                         break;
                     }
                     default: unhandled();

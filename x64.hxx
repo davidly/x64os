@@ -356,6 +356,13 @@ private:
 
     inline uint64_t pop()
     {
+        if ( 0x66 == _prefix.size )
+        {
+            uint16_t val = getui16( regs[ rsp ].q );
+            regs[ rsp ].q += 2;
+            return val;
+        }
+
         if ( mode32 )
         {
             uint32_t val = getui32( regs[ rsp ].q );
@@ -370,7 +377,12 @@ private:
 
     inline void push( uint64_t val )
     {
-        if ( mode32 )
+        if ( 0x66 == _prefix.size )
+        {
+            regs[ rsp ].q -= 2;
+            setui16( regs[ rsp ].q, (uint16_t) val );
+        }
+        else if ( mode32 )
         {
             regs[ rsp ].q -= 4;
             setui32( regs[ rsp ].d, (uint32_t) val );
@@ -681,6 +693,7 @@ private:
     } //set_rmx32
 
     uint8_t op_width() { return ( _rex.W ? 8 : ( 0x66 == _prefix.size ) ? 2 : 4 ); }
+    uint8_t op_width_def64() { return ( ( 0x66 == _prefix.size ) ? 2 : mode32 ? 4 : 8 ); } // for push/pop/etc.
     const char * rm_displacement_string();
     const char * rm_string( uint8_t width, bool is_xmm = false );
     const char * register_name( uint8_t reg, uint8_t width = 8, bool is_xmm = false );
