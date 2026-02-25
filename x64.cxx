@@ -6849,7 +6849,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ _reg ].q = (int32_t) get_rm32();
                 else if ( 0x66 == _prefix.size )
-                    regs[ _reg ].q = get_rm16();
+                    regs[ _reg ].w = get_rm16();
                 else
                     regs[ _reg ].q = get_rm32();
                 break;
