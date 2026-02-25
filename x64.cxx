@@ -1898,6 +1898,12 @@ void x64::trace_state()
                 tracer.Trace( "movsd (rdi), (rsi)\n" );
             break;
         }
+        case 0xa6: // cmpsb
+        case 0xa7: // cmpsw/cmpsd/cmpsq
+        {
+            tracer.Trace( "cmps%c\n", ( 0xa6 == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
+            break;
+        }
         case 0xa8: // test al, imm8
         {
             tracer.Trace( "test al, %#x\n", get_rip8() );
@@ -1915,15 +1921,24 @@ void x64::trace_state()
             break;
         }
         case 0xaa: // stos m8
-        {
-            tracer.Trace( "stosb rdi\n" );
-            break;
-        }
         case 0xab: // stos
         {
             decode_rex();
-            char w = _rex.W ? 'q' : ( 0x66 == _prefix.size ) ? 'w' : 'd';
-            tracer.Trace( "stos%c rdi\n", w ); // 32-bit edi addressing ignored
+            tracer.Trace( "stos%c\n", ( 0xaa == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
+            break;
+        }
+        case 0xac: // lodsb
+        case 0xad: // lodsw/lodsd/lodsq
+        {
+            decode_rex();
+            tracer.Trace( "lods%c\n", ( 0xac == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
+            break;
+        }
+        case 0xae: // scasb  compare al with byte at edi/rdi then set status flags
+        case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
+        {
+            decode_rex();
+            tracer.Trace( "scas%c\n", ( 0xac == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
         case 0xb0: case 0xb1: case 0xb2: case 0xb3: case 0xb4: case 0xb5: case 0xb6: case 0xb7: // mov r8, imm8
@@ -1931,18 +1946,6 @@ void x64::trace_state()
             _rm = ( op & 7 );
             decode_rex();
             tracer.Trace( "mov %s, %#x\n", register_name( _rm, 1 ), getui8( rip.q ) );
-            break;
-        }
-        case 0xae: // scasb  compare al with byte at edi/rdi then set status flags
-        {
-            tracer.Trace( "scasb\n" );
-            break;
-        }
-        case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
-        {
-            decode_rex();
-            char w = _rex.W  ? 'q' : ( 0x66 == _prefix.size ) ? 'w' : 'd';
-            tracer.Trace( "scas%c\n", w );
             break;
         }
         case 0xb8: case 0xb9: case 0xba: case 0xbb: case 0xbc: case 0xbd: case 0xbe: case 0xbf: // mov reg, 64-bit immediate
@@ -2805,6 +2808,25 @@ void x64::op_stos( uint8_t width )
         regs[ rdi ].q += width;
 } //op_stos
 
+void x64::op_lods( uint8_t width )
+{
+    if ( 1 == width )
+        regs[ rax ].b = getui8( regs[ rsi ].q );
+    else if ( 2 == width )
+        regs[ rax ].w = getui16( regs[ rsi ].q );
+    else if ( 4 == width )
+        regs[ rax ].d = getui32( regs[ rsi ].q );
+    else if ( 8 == width )
+        regs[ rax ].q = getui64( regs[ rsi ].q );
+    else
+        unhandled();
+
+    if ( flag_d() )
+        regs[ rsi ].q -= width;
+    else
+        regs[ rsi ].q += width;
+} //op_lods
+
 void x64::op_movs( uint8_t width )
 {
     if ( 1 == width )
@@ -2829,6 +2851,31 @@ void x64::op_movs( uint8_t width )
         regs[ rsi ].q += width;
     }
 } //op_movs
+
+void x64::op_cmps( uint8_t width )
+{
+    if ( 1 == width )
+        op_sub( getui8( regs[ rsi ].q ), getui8( regs[ rdi ].q ) );
+    else if ( 2 == width )
+        op_sub( getui16( regs[ rsi ].q ), getui16( regs[ rdi ].q ) );
+    else if ( 4 == width )
+        op_sub( getui32( regs[ rsi ].q ), getui32( regs[ rdi ].q ) );
+    else if ( 8 == width )
+        op_sub( getui64( regs[ rsi ].q ), getui64( regs[ rdi ].q ) );
+    else
+        unhandled();
+
+    if ( flag_d() )
+    {
+        regs[ rdi ].q -= width;
+        regs[ rsi ].q -= width;
+    }
+    else
+    {
+        regs[ rdi ].q += width;
+        regs[ rsi ].q += width;
+    }
+} //op_cmps
 
 void x64::op_scas( uint8_t width )
 {
@@ -7143,20 +7190,17 @@ _prefix_is_set:
             case 0x8f:
             {
                 decode_rm();
-                switch( _reg )
+                if ( 0 == _reg )
                 {
-                    case 0:
-                    {
-                        if ( 0x66 == _prefix.size )
-                            set_rm16( (uint16_t) pop() );
-                        else if ( mode32 )
-                            set_rm32( (uint32_t) pop() );
-                        else
-                            set_rm64( pop() );
-                        break;
-                    }
-                    default: unhandled();
+                    if ( 0x66 == _prefix.size )
+                        set_rm16( (uint16_t) pop() );
+                    else if ( mode32 )
+                        set_rm32( (uint32_t) pop() );
+                    else
+                        set_rm64( pop() );
                 }
+                else
+                    unhandled(); // AMD XOP prefix
                 break;
             }
             case 0x90: { break; } // nop exch ax, ax
@@ -7295,14 +7339,45 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat ) // f3 is legal. alllow f2
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != regs[ rcx ].q )
+                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_movs( width );
-                        regs[ rcx ].q--;
+                        if ( width <= 2 )
+                            regs[ rcx ].w--;
+                        else if ( 4 == width )
+                            regs[ rcx ].d--;
+                        else
+                            regs[ rcx ].q--;
                     }
                 }
                 else
                     op_movs( width );
+                break;
+            }
+            case 0xa6: // cmpsb
+            case 0xa7: // cmpsw/cmpsd/cmpsq
+            {
+                decode_rex();
+                uint8_t width = ( 0xa6 == op ) ? 1 : _rex.W ? 8 : ( 0x66 == _prefix.size ) ? 2 : 4;
+                if ( 0 != _prefix.sse2_repeat )
+                {
+                    assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
+                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    {
+                        op_cmps( width );
+                        if ( width <= 2 )
+                            regs[ rcx ].w--;
+                        else if ( 4 == width )
+                            regs[ rcx ].d--;
+                        else
+                            regs[ rcx ].q--;
+                        if ( (  flag_z() && ( 0xf2 == _prefix.sse2_repeat ) ) ||
+                             ( !flag_z() && ( 0xf3 == _prefix.sse2_repeat ) ) )
+                            break;
+                    }
+                }
+                else
+                    op_cmps( width );
                 break;
             }
             case 0xa8: // test al, imm8
@@ -7343,6 +7418,30 @@ _prefix_is_set:
                 }
                 else
                     op_stos( width );
+                break;
+            }
+            case 0xac: // lodsb
+            case 0xad: // lodsw/lodsd/lodsq
+            {
+                decode_rex();
+                uint8_t width = ( 0xac == op ) ? 1 : _rex.W ? 8: ( 0x66 == _prefix.size ) ? 2 : 4;
+
+                if ( 0 != _prefix.sse2_repeat )
+                {
+                    assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
+                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    {
+                        op_lods( width );
+                        if ( width <= 2 )
+                            regs[ rcx ].w--;
+                        else if ( 4 == width )
+                            regs[ rcx ].d--;
+                        else
+                            regs[ rcx ].q--;
+                    }
+                }
+                else
+                    op_lods( width );
                 break;
             }
             case 0xae: // scasb  compare al with byte at edi/rdi then set status flags

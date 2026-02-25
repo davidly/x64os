@@ -402,7 +402,9 @@ private:
     template <typename T> void do_math( uint8_t math, T * pdst, T src );
 
     void op_stos( uint8_t width );
+    void op_lods( uint8_t width );
     void op_movs( uint8_t width );
+    void op_cmps( uint8_t width );
     void op_scas( uint8_t width );
 
     inline uint8_t get_rip8() { return getui8( rip.q++ ); }
