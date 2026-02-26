@@ -1971,7 +1971,7 @@ void x64::trace_state()
         case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
         {
             decode_rex();
-            tracer.Trace( "scas%c\n", ( 0xac == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
+            tracer.Trace( "scas%c\n", ( 0xae == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
         case 0xb0: case 0xb1: case 0xb2: case 0xb3: case 0xb4: case 0xb5: case 0xb6: case 0xb7: // mov r8, imm8

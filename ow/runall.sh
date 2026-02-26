@@ -4,11 +4,15 @@ outputfile="runall_test.txt"
 date_time=$(date)
 echo "$date_time" >$outputfile
 
+# FAILED tests: tmmap (watcom tries to allocate at a given address)
+#               tdir (watcom's syscall wrapper fails when the string is returned. it's confused)
+#               mm, tao, ttypes, nantst, tatomic, tregex (watcom can't compile it)
+
 for arg in tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2 \
-             tstr fileops ttime tm glob tap tsimplef tphi tf ttt td terrno \
-             t_setjmp tex pis lenum \
-             trename nqueens fopentst fact triangle mm_old hidave \
-             termiosf mandle;
+           tstr fileops ttime tm glob tap tsimplef tphi tf ttt td terrno \
+           t_setjmp tex pis lenum \
+           trename nqueens fopentst fact triangle mm_old hidave \
+           termiosf mandle;
 do
     echo $arg
     echo $arg >>$outputfile
