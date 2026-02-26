@@ -34,6 +34,7 @@ Test folders:
   * c_tests: a variety of assembly and C test cases with scripts to build with gcc and clang at optimization levels 0, 1, 2, 3, and fast
   * f_tests: a varity of GNU Fortran test cases and scripts to build them
   * rust_tests: a varity of Rust test cases with scripts to build at optimization levels 0, 1, 2, and 3.
+  * ow: build and test scripts for Open Watcom 2.0 on Windows and Linux. Builds and runs a subset of tests in c_tests in x32os
 
 I've only validated x32os with the c_tests test cases, not Fortran or Rust.
 
