@@ -7257,7 +7257,8 @@ _prefix_is_set:
                 uint16_t val = 0xffff & get_rm();
                 if ( 1 == _reg || _reg > 5 )
                     unhandled();
-                sregs[ _reg ].q = val;
+                if ( 5 != _reg )
+                    sregs[ _reg ].w = val;
                 break;
             }
             case 0x8f:
