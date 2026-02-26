@@ -1,0 +1,1544 @@
+Thu 02/26/2026  7:06:33.44 
+tcmp
+uint8_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+int8_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+uint16_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+int16_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+uint32_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+int32_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+uint64_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+int64_t:
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 1 eq 1 ge 1 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 1 le 1 eq 0 ge 0 gt 0
+  lt 0 le 0 eq 0 ge 1 gt 1
+  lt 0 le 0 eq 0 ge 1 gt 1
+floating point:
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 1 le 1 eq 0 ge 0 gt 0
+  dbl lt 1 le 1 eq 0 ge 0 gt 0
+  ldb lt 1 le 1 eq 0 ge 0 gt 0
+  flt lt 0 le 1 eq 1 ge 1 gt 0
+  dbl lt 0 le 1 eq 1 ge 1 gt 0
+  ldb lt 0 le 1 eq 1 ge 1 gt 0
+  flt lt 0 le 0 eq 0 ge 1 gt 1
+  dbl lt 0 le 0 eq 0 ge 1 gt 1
+  ldb lt 0 le 0 eq 0 ge 1 gt 1
+  flt lt 0 le 0 eq 0 ge 1 gt 1
+  dbl lt 0 le 0 eq 0 ge 1 gt 1
+  ldb lt 0 le 0 eq 0 ge 1 gt 1
+t
+int8_t result: 6
+uint8_t result: 6
+int16_t result: 6
+uint16_t result: 6
+int32_t result: 6
+uint32_t result: 6
+int64_t result: 6
+uint64_t result: 6
+end of the app
+e
+271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
+done
+printint
+n -13
+sieve
+1899 primes.
+simple
+argument 0: simple.elf
+environment variable 0: OS=X32OS
+environment variable 1: TZ=PacificStandardTime+8
+tmuldiv
+app start
+i8 3 * 14: 42
+i8 3 % 14: 3
+i8 3 / 14: 0
+i8 17 * 14: -18
+i8 17 % 14: 3
+i8 17 / 14: 1
+i8 -3 * 14: -42
+i8 -3 % 14: -3
+i8 -3 / 14: 0
+i8 -17 * 14: 18
+i8 -17 % 14: -3
+i8 -17 / 14: -1
+i8 -3 * -14: 42
+i8 -3 % -14: -3
+i8 -3 / -14: 0
+i8 -17 * -14: -18
+i8 -17 % -14: -3
+i8 -17 / -14: 1
+i8 28 * 4: 112
+i8 28 % 4: 0
+i8 28 / 4: 7
+i8 28 * -4: -112
+i8 28 % -4: 0
+i8 28 / -4: -7
+i8 -28 * 4: -112
+i8 -28 % 4: 0
+i8 -28 / 4: -7
+i8 -28 * -4: 112
+i8 -28 % -4: 0
+i8 -28 / -4: 7
+ui8 3 * 14: 42
+ui8 3 % 14: 3
+ui8 3 / 14: 0
+ui8 17 * 14: 238
+ui8 17 % 14: 3
+ui8 17 / 14: 1
+ui8 253 * 14: 214
+ui8 253 % 14: 1
+ui8 253 / 14: 18
+ui8 239 * 14: 18
+ui8 239 % 14: 1
+ui8 239 / 14: 17
+ui8 253 * 242: 42
+ui8 253 % 242: 11
+ui8 253 / 242: 1
+ui8 239 * 242: 238
+ui8 239 % 242: 239
+ui8 239 / 242: 0
+ui8 28 * 4: 112
+ui8 28 % 4: 0
+ui8 28 / 4: 7
+ui8 28 * 252: 144
+ui8 28 % 252: 28
+ui8 28 / 252: 0
+ui8 228 * 4: 144
+ui8 228 % 4: 0
+ui8 228 / 4: 57
+ui8 228 * 252: 112
+ui8 228 % 252: 228
+ui8 228 / 252: 0
+i16 3 * 14: 42
+i16 3 % 14: 3
+i16 3 / 14: 0
+i16 3700 * 14: -13736
+i16 3700 % 14: 4
+i16 3700 / 14: 264
+i16 -3 * 14: -42
+i16 -3 % 14: -3
+i16 -3 / 14: 0
+i16 -3700 * 14: 13736
+i16 -3700 % 14: -4
+i16 -3700 / 14: -264
+i16 -3 * -14: 42
+i16 -3 % -14: -3
+i16 -3 / -14: 0
+i16 -3700 * -14: -13736
+i16 -3700 % -14: -4
+i16 -3700 / -14: 264
+i16 2800 * 4: 11200
+i16 2800 % 4: 0
+i16 2800 / 4: 700
+i16 2800 * -4: -11200
+i16 2800 % -4: 0
+i16 2800 / -4: -700
+i16 -2800 * 4: -11200
+i16 -2800 % 4: 0
+i16 -2800 / 4: -700
+i16 -2800 * -4: 11200
+i16 -2800 % -4: 0
+i16 -2800 / -4: 700
+ui16 3 * 14: 42
+ui16 3 % 14: 3
+ui16 3 / 14: 0
+ui16 3700 * 14: 51800
+ui16 3700 % 14: 4
+ui16 3700 / 14: 264
+ui16 65533 * 14: 65494
+ui16 65533 % 14: 13
+ui16 65533 / 14: 4680
+ui16 61836 * 14: 13736
+ui16 61836 % 14: 12
+ui16 61836 / 14: 4416
+ui16 65533 * 65522: 42
+ui16 65533 % 65522: 11
+ui16 65533 / 65522: 1
+ui16 61836 * 65522: 51800
+ui16 61836 % 65522: 61836
+ui16 61836 / 65522: 0
+ui16 2800 * 4: 11200
+ui16 2800 % 4: 0
+ui16 2800 / 4: 700
+ui16 2800 * 65532: 54336
+ui16 2800 % 65532: 2800
+ui16 2800 / 65532: 0
+ui16 62736 * 4: 54336
+ui16 62736 % 4: 0
+ui16 62736 / 4: 15684
+ui16 62736 * 65532: 11200
+ui16 62736 % 65532: 62736
+ui16 62736 / 65532: 0
+i32 3 * 14: 42
+i32 3 % 14: 3
+i32 3 / 14: 0
+i32 37000 * 14: 518000
+i32 37000 % 14: 12
+i32 37000 / 14: 2642
+i32 -3 * 14: -42
+i32 -3 % 14: -3
+i32 -3 / 14: 0
+i32 -37000 * 14: -518000
+i32 -37000 % 14: -12
+i32 -37000 / 14: -2642
+i32 -3 * -14: 42
+i32 -3 % -14: -3
+i32 -3 / -14: 0
+i32 -37000 * -14: 518000
+i32 -37000 % -14: -12
+i32 -37000 / -14: 2642
+i32 280000 * 4: 1120000
+i32 280000 % 4: 0
+i32 280000 / 4: 70000
+i32 280000 * -4: -1120000
+i32 280000 % -4: 0
+i32 280000 / -4: -70000
+i32 -280000 * 4: -1120000
+i32 -280000 % 4: 0
+i32 -280000 / 4: -70000
+i32 -280000 * -4: 1120000
+i32 -280000 % -4: 0
+i32 -280000 / -4: 70000
+ui32 3 * 14: 42
+ui32 3 % 14: 3
+ui32 3 / 14: 0
+ui32 37000 * 14: 518000
+ui32 37000 % 14: 12
+ui32 37000 / 14: 2642
+ui32 4294967293 * 14: 4294967254
+ui32 4294967293 % 14: 1
+ui32 4294967293 / 14: 306783378
+ui32 4294930296 * 14: 4294449296
+ui32 4294930296 % 14: 6
+ui32 4294930296 / 14: 306780735
+ui32 4294967293 * 4294967282: 42
+ui32 4294967293 % 4294967282: 11
+ui32 4294967293 / 4294967282: 1
+ui32 4294930296 * 4294967282: 518000
+ui32 4294930296 % 4294967282: 4294930296
+ui32 4294930296 / 4294967282: 0
+ui32 280000 * 4: 1120000
+ui32 280000 % 4: 0
+ui32 280000 / 4: 70000
+ui32 280000 * 4294967292: 4293847296
+ui32 280000 % 4294967292: 280000
+ui32 280000 / 4294967292: 0
+ui32 4294687296 * 4: 4293847296
+ui32 4294687296 % 4: 0
+ui32 4294687296 / 4: 1073671824
+ui32 4294687296 * 4294967292: 1120000
+ui32 4294687296 % 4294967292: 4294687296
+ui32 4294687296 / 4294967292: 0
+i64 3 * 14: 42
+i64 3 % 14: 3
+i64 3 / 14: 0
+i64 370000000 * 14: 5180000000
+i64 370000000 % 14: 6
+i64 370000000 / 14: 26428571
+i64 -3 * 14: -42
+i64 -3 % 14: -3
+i64 -3 / 14: 0
+i64 -370000000 * 14: -5180000000
+i64 -370000000 % 14: -6
+i64 -370000000 / 14: -26428571
+i64 -3 * -14: 42
+i64 -3 % -14: -3
+i64 -3 / -14: 0
+i64 -370000000 * -14: 5180000000
+i64 -370000000 % -14: -6
+i64 -370000000 / -14: 26428571
+i64 28000000000000 * 4: 112000000000000
+i64 28000000000000 % 4: 0
+i64 28000000000000 / 4: 7000000000000
+i64 28000000000000 * -4: -112000000000000
+i64 28000000000000 % -4: 0
+i64 28000000000000 / -4: -7000000000000
+i64 -28000000000000 * 4: -112000000000000
+i64 -28000000000000 % 4: 0
+i64 -28000000000000 / 4: -7000000000000
+i64 -28000000000000 * -4: 112000000000000
+i64 -28000000000000 % -4: 0
+i64 -28000000000000 / -4: 7000000000000
+ui64 3 * 14: 42
+ui64 3 % 14: 3
+ui64 3 / 14: 0
+ui64 370000000 * 14: 5180000000
+ui64 370000000 % 14: 6
+ui64 370000000 / 14: 26428571
+ui64 18446744073709551613 * 14: 18446744073709551574
+ui64 18446744073709551613 % 14: 13
+ui64 18446744073709551613 / 14: 1317624576693539400
+ui64 18446744073339551616 * 14: 18446744068529551616
+ui64 18446744073339551616 % 14: 10
+ui64 18446744073339551616 / 14: 1317624576667110829
+ui64 18446744073709551613 * 18446744073709551602: 42
+ui64 18446744073709551613 % 18446744073709551602: 11
+ui64 18446744073709551613 / 18446744073709551602: 1
+ui64 18446744073339551616 * 18446744073709551602: 5180000000
+ui64 18446744073339551616 % 18446744073709551602: 18446744073339551616
+ui64 18446744073339551616 / 18446744073709551602: 0
+ui64 28000000000000 * 4: 112000000000000
+ui64 28000000000000 % 4: 0
+ui64 28000000000000 / 4: 7000000000000
+ui64 28000000000000 * 18446744073709551612: 18446632073709551616
+ui64 28000000000000 % 18446744073709551612: 28000000000000
+ui64 28000000000000 / 18446744073709551612: 0
+ui64 18446716073709551616 * 4: 18446632073709551616
+ui64 18446716073709551616 % 4: 0
+ui64 18446716073709551616 / 4: 4611679018427387904
+ui64 18446716073709551616 * 18446744073709551612: 112000000000000
+ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
+ui64 18446716073709551616 / 18446744073709551612: 0
+tmuldiv ended with great success
+tpi
+314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
+ts
+test multiple shifts
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: fe
+    sizeof T: 1, result: fe
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 7f
+    sizeof T: 1, result: fc
+    sizeof T: 1, result: fc
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 3f
+    sizeof T: 1, result: f8
+    sizeof T: 1, result: f8
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 1f
+    sizeof T: 1, result: f0
+    sizeof T: 1, result: f0
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: f
+    sizeof T: 1, result: e0
+    sizeof T: 1, result: e0
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 7
+    sizeof T: 1, result: c0
+    sizeof T: 1, result: c0
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 3
+    sizeof T: 1, result: 80
+    sizeof T: 1, result: 80
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 1
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: fffe
+    sizeof T: 2, result: fffe
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 7fff
+    sizeof T: 2, result: fffc
+    sizeof T: 2, result: fffc
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 3fff
+    sizeof T: 2, result: fff8
+    sizeof T: 2, result: fff8
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 1fff
+    sizeof T: 2, result: fff0
+    sizeof T: 2, result: fff0
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: fff
+    sizeof T: 2, result: ffe0
+    sizeof T: 2, result: ffe0
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 7ff
+    sizeof T: 2, result: ffc0
+    sizeof T: 2, result: ffc0
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 3ff
+    sizeof T: 2, result: ff80
+    sizeof T: 2, result: ff80
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 1ff
+    sizeof T: 2, result: ff00
+    sizeof T: 2, result: ff00
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: ff
+    sizeof T: 2, result: fe00
+    sizeof T: 2, result: fe00
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 7f
+    sizeof T: 2, result: fc00
+    sizeof T: 2, result: fc00
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 3f
+    sizeof T: 2, result: f800
+    sizeof T: 2, result: f800
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 1f
+    sizeof T: 2, result: f000
+    sizeof T: 2, result: f000
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: f
+    sizeof T: 2, result: e000
+    sizeof T: 2, result: e000
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 7
+    sizeof T: 2, result: c000
+    sizeof T: 2, result: c000
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 3
+    sizeof T: 2, result: 8000
+    sizeof T: 2, result: 8000
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 1
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: fffffffe
+    sizeof T: 4, result: fffffffe
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7fffffff
+    sizeof T: 4, result: fffffffc
+    sizeof T: 4, result: fffffffc
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3fffffff
+    sizeof T: 4, result: fffffff8
+    sizeof T: 4, result: fffffff8
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1fffffff
+    sizeof T: 4, result: fffffff0
+    sizeof T: 4, result: fffffff0
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: fffffff
+    sizeof T: 4, result: ffffffe0
+    sizeof T: 4, result: ffffffe0
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7ffffff
+    sizeof T: 4, result: ffffffc0
+    sizeof T: 4, result: ffffffc0
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3ffffff
+    sizeof T: 4, result: ffffff80
+    sizeof T: 4, result: ffffff80
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1ffffff
+    sizeof T: 4, result: ffffff00
+    sizeof T: 4, result: ffffff00
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: ffffff
+    sizeof T: 4, result: fffffe00
+    sizeof T: 4, result: fffffe00
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7fffff
+    sizeof T: 4, result: fffffc00
+    sizeof T: 4, result: fffffc00
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3fffff
+    sizeof T: 4, result: fffff800
+    sizeof T: 4, result: fffff800
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1fffff
+    sizeof T: 4, result: fffff000
+    sizeof T: 4, result: fffff000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: fffff
+    sizeof T: 4, result: ffffe000
+    sizeof T: 4, result: ffffe000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7ffff
+    sizeof T: 4, result: ffffc000
+    sizeof T: 4, result: ffffc000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3ffff
+    sizeof T: 4, result: ffff8000
+    sizeof T: 4, result: ffff8000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1ffff
+    sizeof T: 4, result: ffff0000
+    sizeof T: 4, result: ffff0000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: ffff
+    sizeof T: 4, result: fffe0000
+    sizeof T: 4, result: fffe0000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7fff
+    sizeof T: 4, result: fffc0000
+    sizeof T: 4, result: fffc0000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3fff
+    sizeof T: 4, result: fff80000
+    sizeof T: 4, result: fff80000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1fff
+    sizeof T: 4, result: fff00000
+    sizeof T: 4, result: fff00000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: fff
+    sizeof T: 4, result: ffe00000
+    sizeof T: 4, result: ffe00000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7ff
+    sizeof T: 4, result: ffc00000
+    sizeof T: 4, result: ffc00000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3ff
+    sizeof T: 4, result: ff800000
+    sizeof T: 4, result: ff800000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1ff
+    sizeof T: 4, result: ff000000
+    sizeof T: 4, result: ff000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: ff
+    sizeof T: 4, result: fe000000
+    sizeof T: 4, result: fe000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7f
+    sizeof T: 4, result: fc000000
+    sizeof T: 4, result: fc000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3f
+    sizeof T: 4, result: f8000000
+    sizeof T: 4, result: f8000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1f
+    sizeof T: 4, result: f0000000
+    sizeof T: 4, result: f0000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: f
+    sizeof T: 4, result: e0000000
+    sizeof T: 4, result: e0000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7
+    sizeof T: 4, result: c0000000
+    sizeof T: 4, result: c0000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 3
+    sizeof T: 4, result: 80000000
+    sizeof T: 4, result: 80000000
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 1
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffffffffffffffe
+    sizeof T: 8, result: fffffffffffffffe
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffffffffffffff
+    sizeof T: 8, result: fffffffffffffffc
+    sizeof T: 8, result: fffffffffffffffc
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fffffffffffffff
+    sizeof T: 8, result: fffffffffffffff8
+    sizeof T: 8, result: fffffffffffffff8
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fffffffffffffff
+    sizeof T: 8, result: fffffffffffffff0
+    sizeof T: 8, result: fffffffffffffff0
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffffffffffffff
+    sizeof T: 8, result: ffffffffffffffe0
+    sizeof T: 8, result: ffffffffffffffe0
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ffffffffffffff
+    sizeof T: 8, result: ffffffffffffffc0
+    sizeof T: 8, result: ffffffffffffffc0
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ffffffffffffff
+    sizeof T: 8, result: ffffffffffffff80
+    sizeof T: 8, result: ffffffffffffff80
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ffffffffffffff
+    sizeof T: 8, result: ffffffffffffff00
+    sizeof T: 8, result: ffffffffffffff00
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffffffffff
+    sizeof T: 8, result: fffffffffffffe00
+    sizeof T: 8, result: fffffffffffffe00
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffffffffffff
+    sizeof T: 8, result: fffffffffffffc00
+    sizeof T: 8, result: fffffffffffffc00
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fffffffffffff
+    sizeof T: 8, result: fffffffffffff800
+    sizeof T: 8, result: fffffffffffff800
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fffffffffffff
+    sizeof T: 8, result: fffffffffffff000
+    sizeof T: 8, result: fffffffffffff000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffffffffffff
+    sizeof T: 8, result: ffffffffffffe000
+    sizeof T: 8, result: ffffffffffffe000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ffffffffffff
+    sizeof T: 8, result: ffffffffffffc000
+    sizeof T: 8, result: ffffffffffffc000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ffffffffffff
+    sizeof T: 8, result: ffffffffffff8000
+    sizeof T: 8, result: ffffffffffff8000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ffffffffffff
+    sizeof T: 8, result: ffffffffffff0000
+    sizeof T: 8, result: ffffffffffff0000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffffffff
+    sizeof T: 8, result: fffffffffffe0000
+    sizeof T: 8, result: fffffffffffe0000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffffffffff
+    sizeof T: 8, result: fffffffffffc0000
+    sizeof T: 8, result: fffffffffffc0000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fffffffffff
+    sizeof T: 8, result: fffffffffff80000
+    sizeof T: 8, result: fffffffffff80000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fffffffffff
+    sizeof T: 8, result: fffffffffff00000
+    sizeof T: 8, result: fffffffffff00000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffffffffff
+    sizeof T: 8, result: ffffffffffe00000
+    sizeof T: 8, result: ffffffffffe00000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ffffffffff
+    sizeof T: 8, result: ffffffffffc00000
+    sizeof T: 8, result: ffffffffffc00000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ffffffffff
+    sizeof T: 8, result: ffffffffff800000
+    sizeof T: 8, result: ffffffffff800000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ffffffffff
+    sizeof T: 8, result: ffffffffff000000
+    sizeof T: 8, result: ffffffffff000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffffff
+    sizeof T: 8, result: fffffffffe000000
+    sizeof T: 8, result: fffffffffe000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffffffff
+    sizeof T: 8, result: fffffffffc000000
+    sizeof T: 8, result: fffffffffc000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fffffffff
+    sizeof T: 8, result: fffffffff8000000
+    sizeof T: 8, result: fffffffff8000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fffffffff
+    sizeof T: 8, result: fffffffff0000000
+    sizeof T: 8, result: fffffffff0000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffffffff
+    sizeof T: 8, result: ffffffffe0000000
+    sizeof T: 8, result: ffffffffe0000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ffffffff
+    sizeof T: 8, result: ffffffffc0000000
+    sizeof T: 8, result: ffffffffc0000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ffffffff
+    sizeof T: 8, result: ffffffff80000000
+    sizeof T: 8, result: ffffffff80000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ffffffff
+    sizeof T: 8, result: ffffffff00000000
+    sizeof T: 8, result: ffffffff00000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffffff
+    sizeof T: 8, result: fffffffe00000000
+    sizeof T: 8, result: fffffffe00000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffffff
+    sizeof T: 8, result: fffffffc00000000
+    sizeof T: 8, result: fffffffc00000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fffffff
+    sizeof T: 8, result: fffffff800000000
+    sizeof T: 8, result: fffffff800000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fffffff
+    sizeof T: 8, result: fffffff000000000
+    sizeof T: 8, result: fffffff000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffffff
+    sizeof T: 8, result: ffffffe000000000
+    sizeof T: 8, result: ffffffe000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ffffff
+    sizeof T: 8, result: ffffffc000000000
+    sizeof T: 8, result: ffffffc000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ffffff
+    sizeof T: 8, result: ffffff8000000000
+    sizeof T: 8, result: ffffff8000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ffffff
+    sizeof T: 8, result: ffffff0000000000
+    sizeof T: 8, result: ffffff0000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffffff
+    sizeof T: 8, result: fffffe0000000000
+    sizeof T: 8, result: fffffe0000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffff
+    sizeof T: 8, result: fffffc0000000000
+    sizeof T: 8, result: fffffc0000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fffff
+    sizeof T: 8, result: fffff80000000000
+    sizeof T: 8, result: fffff80000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fffff
+    sizeof T: 8, result: fffff00000000000
+    sizeof T: 8, result: fffff00000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fffff
+    sizeof T: 8, result: ffffe00000000000
+    sizeof T: 8, result: ffffe00000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ffff
+    sizeof T: 8, result: ffffc00000000000
+    sizeof T: 8, result: ffffc00000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ffff
+    sizeof T: 8, result: ffff800000000000
+    sizeof T: 8, result: ffff800000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ffff
+    sizeof T: 8, result: ffff000000000000
+    sizeof T: 8, result: ffff000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ffff
+    sizeof T: 8, result: fffe000000000000
+    sizeof T: 8, result: fffe000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fff
+    sizeof T: 8, result: fffc000000000000
+    sizeof T: 8, result: fffc000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3fff
+    sizeof T: 8, result: fff8000000000000
+    sizeof T: 8, result: fff8000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1fff
+    sizeof T: 8, result: fff0000000000000
+    sizeof T: 8, result: fff0000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: fff
+    sizeof T: 8, result: ffe0000000000000
+    sizeof T: 8, result: ffe0000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7ff
+    sizeof T: 8, result: ffc0000000000000
+    sizeof T: 8, result: ffc0000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3ff
+    sizeof T: 8, result: ff80000000000000
+    sizeof T: 8, result: ff80000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1ff
+    sizeof T: 8, result: ff00000000000000
+    sizeof T: 8, result: ff00000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: ff
+    sizeof T: 8, result: fe00000000000000
+    sizeof T: 8, result: fe00000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7f
+    sizeof T: 8, result: fc00000000000000
+    sizeof T: 8, result: fc00000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3f
+    sizeof T: 8, result: f800000000000000
+    sizeof T: 8, result: f800000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1f
+    sizeof T: 8, result: f000000000000000
+    sizeof T: 8, result: f000000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: f
+    sizeof T: 8, result: e000000000000000
+    sizeof T: 8, result: e000000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7
+    sizeof T: 8, result: c000000000000000
+    sizeof T: 8, result: c000000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 3
+    sizeof T: 8, result: 8000000000000000
+    sizeof T: 8, result: 8000000000000000
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 1
+test right shifts
+    sizeof T: 1, result: ff
+    sizeof T: 1, result: 7f
+    sizeof T: 2, result: ffff
+    sizeof T: 2, result: 7fff
+    sizeof T: 4, result: ffffffff
+    sizeof T: 4, result: 7fffffff
+    sizeof T: 8, result: ffffffffffffffff
+    sizeof T: 8, result: 7fffffffffffffff
+now test left shifts
+    sizeof T: 1, result: fe
+    sizeof T: 1, result: fe
+    sizeof T: 2, result: fffe
+    sizeof T: 2, result: fffe
+    sizeof T: 4, result: fffffffe
+    sizeof T: 4, result: fffffffe
+    sizeof T: 8, result: fffffffffffffffe
+    sizeof T: 8, result: fffffffffffffffe
+now test comparisons. f, f, f, t, t expected
+    f, f, f, t, t
+    f, f, f, t, t
+more test comparisons. t, f, t, f, t expected
+    t, f, t, f, t
+    t, f, t, f, t
+    t, f, t, f, t
+    t, f, t, f, t
+    t, f, t, f, t
+more test comparisons. f, f, f, t, t expected
+    f, f, f, t, t
+more comparisons. f, f, f, t, t expected
+    f, f, f, t, t
+    f, f, f, t, t
+    f, f, f, t, t
+    f, f, f, t, t
+testing printf
+  string: 'hello'
+  char: 'h'
+  int: 27, 1b
+  negative int: -27, ffffffe5
+  int64_t: 27, 1b
+  negative int64_t: -27, ffffffffffffffe5
+  float: 3.141573
+  negative float: -3.141573
+testing inttoa
+  ui64toa: 18446744073709551615
+  i64toa: -1
+  ui32toa: 4294967295
+  i32toa: -1
+  ui16toa: 65535
+  i16toa: -1
+  ui8toa: 255
+  i8toa: -1
+test shifts and comparisons completed with great success
+tarray
+sum: 0xf8
+sum: 0xf8
+sum: 0xfff8
+sum: 0xfff8
+sum: 0xfffffff8
+sum: 0xfffffff8
+sum: 0xfffffffffffffff8
+sum: 0xfffffffffffffff8
+sum: 0xf8
+sum: 0xf8
+sum: 0xfff8
+sum: 0xfff8
+sum: 0xfffffff8
+sum: 0xfffffff8
+sum: 0xfffffffffffffff8
+sum: 0xfffffffffffffff8
+sum: 0xfff8
+sum: 0xfff8
+sum: 0xf8
+sum: 0xf8
+    0000  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 08  ................................
+    0020  00 00 00 00 00 00 00 02 00 04 00 00 00 ff f8 ff : ff ff ff ff ff ff fe ff fc ff ff ff 02 10 00 00  ................................
+    0040  00 00 00 00 00 04 00 08 00 00 00 fe f0 ff ff ff : ff ff ff ff fc ff f8 ff ff ff 03 18 00 00 00 00  ................................
+    0060  00 00 00 06 00 0c 00 00 00 fd e8 ff ff ff ff ff : ff ff fa ff f4 ff ff ff 04 20 00 00 00 00 00 00  ......................... ......
+    0080  00 08 00 10 00 00 00 fc e0 ff ff ff ff ff ff ff : f8 ff f0 ff ff ff 05 28 00 00 00 00 00 00 00 0a  .......................(........
+    00a0  00 14 00 00 00 fb d8 ff ff ff ff ff ff ff f6 ff : ec ff ff ff 06 30 00 00 00 00 00 00 00 0c 00 18  .....................0..........
+    00c0  00 00 00 fa d0 ff ff ff ff ff ff ff f4 ff e8 ff : ff ff 07 38 00 00 00 00 00 00 00 0e 00 1c 00 00  ...................8............
+    00e0  00 f9 c8 ff ff ff ff ff ff ff f2 ff e4 ff ff ff : 08 40 00 00 00 00 00 00 00 10 00 20 00 00 00 f8  .................@......... ....
+    0100  c0 ff ff ff ff ff ff ff f0 ff e0 ff ff ff 09 48 : 00 00 00 00 00 00 00 12 00 24 00 00 00 f7 b8 ff  ...............H.........$......
+    0120  ff ff ff ff ff ff ee ff dc ff ff ff 0a 50 00 00 : 00 00 00 00 00 14 00 28 00 00 00 f6 b0 ff ff ff  .............P.........(........
+    0140  ff ff ff ff ec ff d8 ff ff ff 0b 58 00 00 00 00 : 00 00 00 16 00 2c 00 00 00 f5 a8 ff ff ff ff ff  ...........X.........,..........
+    0160  ff ff ea ff d4 ff ff ff 0c 60 00 00 00 00 00 00 : 00 18 00 30 00 00 00 f4 a0 ff ff ff ff ff ff ff  .........`.........0............
+    0180  e8 ff d0 ff ff ff 0d 68 00 00 00 00 00 00 00 1a : 00 34 00 00 00 f3 98 ff ff ff ff ff ff ff e6 ff  .......h.........4..............
+    01a0  cc ff ff ff 0e 70 00 00 00 00 00 00 00 1c 00 38 : 00 00 00 f2 90 ff ff ff ff ff ff ff e4 ff c8 ff  .....p.........8................
+    01c0  ff ff 0f 78 00 00 00 00 00 00 00 1e 00 3c 00 00 : 00 f1 88 ff ff ff ff ff ff ff e2 ff c4 ff ff ff  ...x.........<..................
+    01e0  10 80 00 00 00 00 00 00 00 20 00 40 00 00 00 f0 : 80 ff ff ff ff ff ff ff e0 ff c0 ff ff ff 11 88  ......... .@....................
+    0200  00 00 00 00 00 00 00 22 00 44 00 00 00 ef 78 ff : ff ff ff ff ff ff de ff bc ff ff ff 12 90 00 00  .......".D....x.................
+    0220  00 00 00 00 00 24 00 48 00 00 00 ee 70 ff ff ff : ff ff ff ff dc ff b8 ff ff ff 13 98 00 00 00 00  .....$.H....p...................
+    0240  00 00 00 26 00 4c 00 00 00 ed 68 ff ff ff ff ff : ff ff da ff b4 ff ff ff                          ...&.L....h.............
+element 0: 1 = 1 0 0 0
+element 1: 16 = 16 0 0 0
+element 2: 256 = 0 1 0 0
+element 3: 4096 = 0 16 0 0
+element 4: 65536 = 0 0 1 0
+element 5: 1048576 = 0 0 16 0
+element 6: 16777216 = 0 0 0 1
+element 7: 268435456 = 0 0 0 16
+tarray completed with great success
+tbits
+uint8_t:
+  and 3, or 7, xor 4, nota f8, notb fc
+  and 5, or ff, xor fa, nota f8, notb 2
+  and 1, or fb, xor fa, nota 6, notb fc
+  and f9, or fd, xor 4, nota 6, notb 2
+  and ff, or ff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota 8, notb fc
+  and f5, or ff, xor a, nota 8, notb 2
+  and 1, or b, xor a, nota f6, notb fc
+  and 9, or 9, xor 0, nota f6, notb f6
+int8_t:
+  and 3, or 7, xor 4, nota fffffffffffffff8, notb fffffffffffffffc
+  and 5, or ffffffffffffffff, xor fffffffffffffffa, nota fffffffffffffff8, notb 2
+  and 1, or fffffffffffffffb, xor fffffffffffffffa, nota 6, notb fffffffffffffffc
+  and fffffffffffffff9, or fffffffffffffffd, xor 4, nota 6, notb 2
+  and ffffffffffffffff, or ffffffffffffffff, xor 0, nota 0, notb 0
+  and 3, or fffffffffffffff7, xor fffffffffffffff4, nota 8, notb fffffffffffffffc
+  and fffffffffffffff5, or ffffffffffffffff, xor a, nota 8, notb 2
+  and 1, or b, xor a, nota fffffffffffffff6, notb fffffffffffffffc
+  and 9, or 9, xor 0, nota fffffffffffffff6, notb fffffffffffffff6
+uint16_t:
+  and 3, or 7, xor 4, nota fff8, notb fffc
+  and 5, or ffff, xor fffa, nota fff8, notb 2
+  and 1, or fffb, xor fffa, nota 6, notb fffc
+  and fff9, or fffd, xor 4, nota 6, notb 2
+  and ffff, or ffff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota ff08, notb fffc
+  and f5, or ffff, xor ff0a, nota ff08, notb 2
+  and 1, or ff0b, xor ff0a, nota f6, notb fffc
+  and ff09, or ff09, xor 0, nota f6, notb f6
+int16_t:
+  and 3, or 7, xor 4, nota fffffffffffffff8, notb fffffffffffffffc
+  and 5, or ffffffffffffffff, xor fffffffffffffffa, nota fffffffffffffff8, notb 2
+  and 1, or fffffffffffffffb, xor fffffffffffffffa, nota 6, notb fffffffffffffffc
+  and fffffffffffffff9, or fffffffffffffffd, xor 4, nota 6, notb 2
+  and ffffffffffffffff, or ffffffffffffffff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota ffffffffffffff08, notb fffffffffffffffc
+  and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
+  and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
+  and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+uint32_t:
+  and 3, or 7, xor 4, nota fffffff8, notb fffffffc
+  and 5, or ffffffff, xor fffffffa, nota fffffff8, notb 2
+  and 1, or fffffffb, xor fffffffa, nota 6, notb fffffffc
+  and fffffff9, or fffffffd, xor 4, nota 6, notb 2
+  and ffffffff, or ffffffff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota ffffff08, notb fffffffc
+  and f5, or ffffffff, xor ffffff0a, nota ffffff08, notb 2
+  and 1, or ffffff0b, xor ffffff0a, nota f6, notb fffffffc
+  and ffffff09, or ffffff09, xor 0, nota f6, notb f6
+int32_t:
+  and 3, or 7, xor 4, nota fffffffffffffff8, notb fffffffffffffffc
+  and 5, or ffffffffffffffff, xor fffffffffffffffa, nota fffffffffffffff8, notb 2
+  and 1, or fffffffffffffffb, xor fffffffffffffffa, nota 6, notb fffffffffffffffc
+  and fffffffffffffff9, or fffffffffffffffd, xor 4, nota 6, notb 2
+  and ffffffffffffffff, or ffffffffffffffff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota ffffffffffffff08, notb fffffffffffffffc
+  and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
+  and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
+  and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+uint64_t:
+  and 3, or 7, xor 4, nota fffffffffffffff8, notb fffffffffffffffc
+  and 5, or ffffffffffffffff, xor fffffffffffffffa, nota fffffffffffffff8, notb 2
+  and 1, or fffffffffffffffb, xor fffffffffffffffa, nota 6, notb fffffffffffffffc
+  and fffffffffffffff9, or fffffffffffffffd, xor 4, nota 6, notb 2
+  and ffffffffffffffff, or ffffffffffffffff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota ffffffffffffff08, notb fffffffffffffffc
+  and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
+  and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
+  and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+int64_t:
+  and 3, or 7, xor 4, nota fffffffffffffff8, notb fffffffffffffffc
+  and 5, or ffffffffffffffff, xor fffffffffffffffa, nota fffffffffffffff8, notb 2
+  and 1, or fffffffffffffffb, xor fffffffffffffffa, nota 6, notb fffffffffffffffc
+  and fffffffffffffff9, or fffffffffffffffd, xor 4, nota 6, notb 2
+  and ffffffffffffffff, or ffffffffffffffff, xor 0, nota 0, notb 0
+  and 3, or f7, xor f4, nota ffffffffffffff08, notb fffffffffffffffc
+  and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
+  and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
+  and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+trw
+O_CREATE 40
+O_RDWR 2
+O_TRUNC 200
+trw completed with great success
+trw2
+pass 0 with element count 1
+pass 1 with element count 7
+pass 2 with element count 20
+pass 3 with element count 32
+pass 4 with element count 63
+pass 5 with element count 64
+pass 6 with element count 65
+pass 7 with element count 77
+pass 8 with element count 127
+pass 9 with element count 128
+pass 10 with element count 129
+pass 11 with element count 701
+trw2.elf completed with great success
+tstr
+testing strlen
+testing strchr and strrchr
+testing strstr
+testing memcpy and memcmp
+testing printf
+63 (63): bcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl
+ 8 ( 8): ijklmnop
+42 (42): cdefghijklmnopqrstuvwxyzabcdefghijklmnopqr
+30 (30): pqrstuvwxyzabcdefghijklmnopqrs
+62 (62): rstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza
+68 (68): ghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv
+14 (14): hijklmnopqrstu
+13 (13): tuvwxyzabcdef
+68 (68): mnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab
+60 (60): ghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn
+22 (22): cdefghijklmnopqrstuvwx
+49 (49): cdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy
+17 (17): bcdefghijklmnopqr
+50 (50): xyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu
+ 7 ( 7): vwxyzab
+23 (23): vwxyzabcdefghijklmnopqr
+14 (14): klmnopqrstuvwx
+62 (62): uvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd
+70 (70): zabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq
+ 3 ( 3): abc
+testing wcslen
+testing wcschr and wcsrchr
+testing wcsstr
+tstr completed with great success
+fileops
+current offset: 0
+result of fseek: 0
+file length from ftell: 0
+empty file length: 0
+result of fseek: 0
+result of fwrite (should be 1): 1
+current offset: 8320
+result of fseek: 0
+file length from ftell: 8320
+8192 + 128 = 8320 file length from portable_filelen: 8320
+result of fseek to middle of file: 0
+result of fwrite to middle of file (should be 1): 1
+current offset: 0
+result of fseek: 0
+file length from ftell: 8320
+8192 + 128 = 8320 file length: 8320
+result of read at offset 0: 512
+result of read at offset 512: 512
+result of read at offset 1024: 512
+result of read at offset 1536: 512
+result of read at offset 2048: 512
+result of read at offset 2560: 512
+result of read at offset 3072: 512
+result of read at offset 3584: 512
+result of read at offset 4096: 512
+result of read at offset 4608: 512
+result of read at offset 5120: 512
+result of read at offset 5632: 512
+result of read at offset 6144: 512
+result of read at offset 6656: 512
+result of read at offset 7168: 512
+result of read at offset 7680: 512
+result of read at offset 8192: 128
+testing backwards read
+result of read at offset 8192: 128
+result of read at offset 7680: 512
+result of read at offset 7168: 512
+result of read at offset 6656: 512
+result of read at offset 6144: 512
+result of read at offset 5632: 512
+result of read at offset 5120: 512
+result of read at offset 4608: 512
+result of read at offset 4096: 512
+result of read at offset 3584: 512
+result of read at offset 3072: 512
+result of read at offset 2560: 512
+result of read at offset 2048: 512
+result of read at offset 1536: 512
+result of read at offset 1024: 512
+result of read at offset 512: 512
+result of read at offset 0: 512
+fileops has completed with great success
+ttime
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 26, hour 7, min 6, sec 35
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 26, hour 10, min 6, sec 35
+tm
+tm has completed with great success
+glob
+in CTest constructor
+top main
+value of ctest::foo: 666
+end of main
+in ~CTest destructor
+tap
+starting, should tend towards 1.2020569031595942854...
+  at           10 iterations: 1.19753198567419305580
+  at          100 iterations: 1.20200740065967814910
+  at         1000 iterations: 1.20205640365934329770
+next implementation...
+  at           10 iterations: 1.25000000000000000000
+  at          100 iterations: 1.23456790123456783270
+  at         1000 iterations: 1.21212121212121215490
+  at        10000 iterations: 1.19875329657156548540
+tap completed with great success
+tsimplef
+float 3.141593
+f1 2.500000 * f2 3.500000 = 8.750000
+    div = 0.714286
+    add = 6.000000
+    sub = -1.000000
+d1 9.720000 * d2 13.321000 = 129.480120
+    div = 0.729675
+    add = 23.041000
+    sub = -3.601000
+tsimplef completed with great success
+tphi
+should tend towards 1.61803398874989484820458683436563811772030
+  at  5 iterations: 1.6250000000000000
+  at 10 iterations: 1.6179775280898876
+  at 15 iterations: 1.6180344478216819
+  at 20 iterations: 1.6180339850173580
+  at 25 iterations: 1.6180339887802426
+  at 30 iterations: 1.6180339887496482
+  at 35 iterations: 1.6180339887498969
+  at 40 iterations: 1.6180339887498949
+done
+tf
+float converted by floattoa: -1.23456699
+float converted by floattoa: 1.23456699
+float converted by floattoa: 34.56700000
+float from printf: 45.678000
+division result: 333.333333, square root 18.257419
+float converted with floattoa: -27.108399
+result of 20.2 * -1.342: -27.108400
+result of 20.2 * -1.342 as a double: -27.108400
+pi in radians: 0.523599
+sinf of 30 degress is 0.500000
+sinhf of 0.5 is 0.521095
+cosf of 30 degrees is 0.866025
+cosh of 0.5 (in radians) is 1.127626
+tanf of 30 degrees is 0.577350
+atanf of 1.000000 is 0.785398
+atan2f of 0.3, 0.2 is 0.982794
+acosf of 0.3 is 1.266104
+asinf of 0.3 is 0.304693
+tanhf of 2.2 is 0.304693
+logf of 0.3: -1.203973
+log10f of 300: 2.477121
+pi has mantissa: 0.785398, exponent 2
+floor of 1.1: 1.000000 == 1
+ceil of 1.1: 2.000000 == 2
+floor of -1.8: -2.000000 == -2
+ceil of -1.8: -1.000000 == -1
+l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
+test tf completed with great success
+ttt
+6493 moves
+1 iterations
+td
+sprintf double 3.14159265358979311600
+double from printf: 3.14159265358979311600
+float from printf: 1.202057
+double from printf r: -3.776373
+sqrt of pi: 1.772454
+pi in radians: 0.523599
+sin of 30 degress is 0.500000
+cos of 30 degrees is 0.866025
+tan of 30 degrees is 0.577350
+atan of 1.000000 is 0.785398
+atan2 of 0.3, 0.2 is 0.982794
+acos of 0.3 is 1.266104
+asin of 0.3 is 0.304693
+tanh of 2.2 is 0.304693
+log of 0.3: -1.203973
+log10 of 300: 2.477121
+l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,
+pi has mantissa: 0.785398, exponent 2
+r should be 1.0: 1.000000
+  r high point 3187071009115104228600000000000000000000000000000000000000.000000
+floor of 1.1: 1.000000 == 1
+ceil of 1.1: 2.000000 == 2
+floor of -1.8: -2.000000 == -2
+ceil of -1.8: -1.000000 == -1
+floor of 1.1: 1.000000 == 1
+ceil of 1.1: 2.000000 == 2
+floor of -1.8: -2.000000 == -2
+ceil of -1.8: -1.000000 == -1
+test td completed with great success
+terrno
+errno opening a file for read that doesn't exist: 2 (2 file not found expected)
+errno doing write to stdin file descriptor: 13. (13 permission denied expected)
+errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
+success
+t_setjmp
+second
+back in main
+falling out of main
+tex
+top of tex
+I am unwound, x should be 44: 44
+caught exception exceptional
+attempting large allocations
+caught exception bad_alloc
+leaving main
+pis
+startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
+startInChunks: 0, limitInChunks 4
+percent complete: 25.000000
+percent complete: 50.000000
+percent complete: 75.000000
+percent complete: 100.000000
+results are valid
+final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
+lenum
+linux file system enumeration completed with great success
+trename
+trename completed with great success
+nqueens
+  size    solutions
+     1            1
+     2            0
+     3            0
+     4            2
+     5           10
+     6            4
+     7           40
+     8           92
+     9          352
+    10          724
+fopentst
+O_CREAT: 0x40
+O_TRUNC: 0x200
+O_ASYNC: 0x2000
+O_BINARY: 0
+O_TEXT: 0
+O_FSYNC: 0x1000
+O_SYNC: 0x1000
+O_RDONLY: 0
+O_WRONLY: 0x1
+O_RDWR: 0x2
+O_APPEND: 0x400
+O_EXCL: 0x80
+O_DIRECTORY: 0x10000
+len in pfl: 70
+length of file before initial close: 70
+length from stat: 70
+length from fstat: 70
+tz: 'PST+8', year: 2026, month 2, day 26, hour 7, min 6, sec 36
+len in pfl: 0
+exiting fopentst with great success
+fact
+factorial( 15 ) = 1307674368000
+triangle
+triangle( 200 ) = 20100
+mm_old
+filla
+fillb
+fillc
+starting mult
+summ is : 465880
+hidave
+hi dave
+-3.141593
+-27.108400
+int 666: 666
+termiosf
+lflag:
+ icanon 0x2
+ echonl 0x40
+ echok 0x20
+ echoke 0x800
+ echoe 0x10
+ echo 0x8
+ extproc 0x10000
+ echoprt 0x400
+ econl 0x40
+ isig 0x1
+ iexten 0x8000
+ echoctl 0x200
+ tostop 0x100
+oflag
+ opost 0x1
+ ocrnl 0x8
+ onocr 0x10
+ onlret 0x20
+iflag
+ ixon 0x400
+ ixoff 0x1000
+ icrnl 0x100
+ inlcr 0x40
+ igncr 0x80
+ iuclc 0x200
+ imaxbel 0x2000
+ brkint 0x2
+ inpck 0x10
+ istrip 0x20
+ ignbrk 0x1
+ ignpar 0x4
+ parmrk 0x8
+ ixany 0x800
+ iutf8 0x4000
+cflag
+ cs5 0
+ cs6 0x10
+ cs7 0x20
+ csize 0x30
+ cstopb 0x40
+ cread 0x80
+ parenb 0x100
+ cs8 0x30
+ hupcl 0x400
+ clocal 0x800
+ parodd 0x200
+cc_c
+ VMIN 0x6
+ VTIME 0x5
+ VINTR 0
+ VQUIT 0x1
+ VERASE 0x2
+ VKILL 0x3
+ VEOF 0x4
+ VSWTC 0x7
+ VSTART 0x8
+ VSTOP 0x9
+ VSUSP 0xa
+ VEOL 0xb
+ VEOL2 0x10
+ VREPRINT 0xc
+ VWERASE 0xe
+ VLNEXT 0xf
+ VDISCARD 0xd
+tcsetattr
+ TCSANOW 0
+ TCSADRAIN 0x1
+ TCSAFLUSH 0x2
+TIOCGWINSZ 0x5413
+c_cc elements: 0x13
+termiosf completed with great success
+mandle
+000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
+000001111111111111111122222222333557BF75433222211111000000000000000000000000000
+000111111111111111112222222233445C      643332222111110000000000000000000000000
+011111111111111111222222233444556C      654433332211111100000000000000000000000
+11111111111111112222233346 D978 BCF    DF9 6556F4221111110000000000000000000000
+111111111111122223333334469                 D   6322111111000000000000000000000
+1111111111222333333334457DB                    85332111111100000000000000000000
+11111122234B744444455556A                      96532211111110000000000000000000
+122222233347BAA7AB776679                         A32211111110000000000000000000
+2222233334567        9A                         A532221111111000000000000000000
+222333346679                                    9432221111111000000000000000000
+234445568  F                                   B5432221111111000000000000000000
+                                              864332221111111000000000000000000
+234445568  F                                   B5432221111111000000000000000000
+222333346679                                    9432221111111000000000000000000
+2222233334567        9A                         A532221111111000000000000000000
+122222233347BAA7AB776679                         A32211111110000000000000000000
+11111122234B744444455556A                      96532211111110000000000000000000
+1111111111222333333334457DB                    85332111111100000000000000000000
+111111111111122223333334469                 D   6322111111000000000000000000000
+11111111111111112222233346 D978 BCF    DF9 6556F4221111110000000000000000000000
+011111111111111111222222233444556C      654433332211111100000000000000000000000
+000111111111111111112222222233445C      643332222111110000000000000000000000000
+000001111111111111111122222222333557BF75433222211111000000000000000000000000000
+000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
+000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
+000001111111111111111122222222333557BF75433222211111000000000000000000000000000
+000111111111111111112222222233445C      643332222111110000000000000000000000000
+011111111111111111222222233444556C      654433332211111100000000000000000000000
+11111111111111112222233346 D978 BCF    DF9 6556F4221111110000000000000000000000
+111111111111122223333334469                 D   6322111111000000000000000000000
+1111111111222333333334457DB                    85332111111100000000000000000000
+11111122234B744444455556A                      96532211111110000000000000000000
+122222233347BAA7AB776679                         A32211111110000000000000000000
+2222233334567        9A                         A532221111111000000000000000000
+222333346679                                    9432221111111000000000000000000
+234445568  F                                   B5432221111111000000000000000000
+                                              864332221111111000000000000000000
+234445568  F                                   B5432221111111000000000000000000
+222333346679                                    9432221111111000000000000000000
+2222233334567        9A                         A532221111111000000000000000000
+122222233347BAA7AB776679                         A32211111110000000000000000000
+11111122234B744444455556A                      96532211111110000000000000000000
+1111111111222333333334457DB                    85332111111100000000000000000000
+111111111111122223333334469                 D   6322111111000000000000000000000
+11111111111111112222233346 D978 BCF    DF9 6556F4221111110000000000000000000000
+011111111111111111222222233444556C      654433332211111100000000000000000000000
+000111111111111111112222222233445C      643332222111110000000000000000000000000
+000001111111111111111122222222333557BF75433222211111000000000000000000000000000
+000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
+000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
+000001111111111111111122222222333557BF75433222211111000000000000000000000000000
+000111111111111111112222222233445C      643332222111110000000000000000000000000
+011111111111111111222222233444556C      654433332211111100000000000000000000000
+11111111111111112222233346 D978 BCF    DF9 6556F4221111110000000000000000000000
+111111111111122223333334469                 D   6322111111000000000000000000000
+1111111111222333333334457DB                    85332111111100000000000000000000
+11111122234B744444455556A                      96532211111110000000000000000000
+122222233347BAA7AB776679                         A32211111110000000000000000000
+2222233334567        9A                         A532221111111000000000000000000
+222333346679                                    9432221111111000000000000000000
+234445568  F                                   B5432221111111000000000000000000
+                                              864332221111111000000000000000000
+234445568  F                                   B5432221111111000000000000000000
+222333346679                                    9432221111111000000000000000000
+2222233334567        9A                         A532221111111000000000000000000
+122222233347BAA7AB776679                         A32211111110000000000000000000
+11111122234B744444455556A                      96532211111110000000000000000000
+1111111111222333333334457DB                    85332111111100000000000000000000
+111111111111122223333334469                 D   6322111111000000000000000000000
+11111111111111112222233346 D978 BCF    DF9 6556F4221111110000000000000000000000
+011111111111111111222222233444556C      654433332211111100000000000000000000000
+000111111111111111112222222233445C      643332222111110000000000000000000000000
+000001111111111111111122222222333557BF75433222211111000000000000000000000000000
+000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
+mandle completed with great success
+Thu 02/26/2026  7:06:37.31 

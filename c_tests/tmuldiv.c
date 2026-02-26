@@ -16,7 +16,11 @@ enum { false, true };
 
 typedef unsigned int uint;
 
+#ifdef WATCOM
+#define _noinline
+#else
 #define _noinline __attribute__((noinline))
+#endif
 
 #define ab( x ) ( x < 0 ) ? ( -x ) : ( x )
 
@@ -103,7 +107,9 @@ _noinline void test_ui64( uint64_t ui64A, uint64_t ui64B )
 int main()
 {
     printf( "app start\n" );
+#ifndef WATCOM // this causes flush to access memory above the address space
     fflush( stdout );
+#endif
 
     test_i8( (int8_t) 3, (int8_t) 14 );
     test_i8( (int8_t) 17, (int8_t) 14 );
@@ -194,7 +200,9 @@ int main()
     test_ui64( (uint64_t) -28000000000000, (uint64_t) -4L );
 
     printf( "tmuldiv ended with great success\n" );
+#ifndef WATCOM
     fflush( stdout );
+#endif
     return 0;
 } 
 

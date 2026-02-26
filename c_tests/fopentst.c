@@ -14,6 +14,7 @@
 #include <process.h>
 #include <string.h>
 #include <io.h>
+#include <time.h>
 #endif
 
 #define SEEK_SET 0

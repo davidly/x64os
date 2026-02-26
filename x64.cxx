@@ -119,7 +119,7 @@ void x64::trace_state()
     if ( ( 0x66 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
 
-//    tracer.TraceBinaryData( getmem( 0x5e8c80 ), 10, 2 );
+//    tracer.TraceBinaryData( getmem( 0xa925b38 ), 8, 2 );
 
     uint64_t ip = ( 0 == _prefix.rex ) ? rip.q : ( rip.q - 1 );
     if ( 0 != _prefix.size )
@@ -157,11 +157,11 @@ void x64::trace_state()
             len += snprintf( & reg_string[ len ], 32, "%s:%llx ", register_name( r ), regs[ r ].q );
 
 #if 0 // too verbose and almost never used except for glibc using fs for global state
-    if ( 0 != fs )
-        len += snprintf( & reg_string[ len ], 32, "fs:%llx ", fs.q );
+    if ( 0 != sregs[ rfs ].q )
+        len += snprintf( & reg_string[ len ], 32, "fs:%llx ", sregs[ rfs ].q );
 
-    if ( 0 != gs )
-        len += snprintf( & reg_string[ len ], 32, "gs:%llx ", gs.q );
+    if ( 0 != sregs[ rgs ].q )
+        len += snprintf( & reg_string[ len ], 32, "gs:%llx ", sregs[ rgs ].q );
 #endif
 
     // for a __mc68000__ limitation this must be slit into two traces
@@ -223,12 +223,39 @@ void x64::trace_state()
             }
             break;
         }
+        case 0x06: case 0x0e: case 0x16: case 0x1e: // push es, cs, ss, ds
+        {
+            if ( mode32 )
+                tracer.Trace( "push %s\n", segment_register_names[ ( op >> 3 ) & 3 ] );
+            else
+                unhandled();
+            break;
+        }
+        case 0x07: case 0x17: case 0x1f: // pop es, ss, ds. cs is invalid
+        {
+            if ( mode32 )
+                tracer.Trace( "pop %s\n", segment_register_names[ ( op >> 3 ) & 3 ] );
+            else
+                unhandled();
+            break;
+        }
         case 0x0f:
         {
             uint8_t op1 = get_rip8();
 
             switch( op1 )
             {
+                case 0:
+                {
+                    decode_rm();
+                    switch ( _reg )
+                    {
+                        case 4: { tracer.Trace( "verr %s\n", rm_string( 2 ) ); break; } // verr r/m16
+                        case 5: { tracer.Trace( "verw %s\n", rm_string( 2 ) ); break; } // verw r/m16
+                        default: { unhandled(); }
+                    }
+                    break;
+                }
                 case 5:
                 {
                     tracer.Trace( "syscall\n" );
@@ -1631,7 +1658,7 @@ void x64::trace_state()
         }
         case 0x64: case 0x65: // prefix for fs: and gs:
         {
-            tracer.Trace( "prefix_segment %s  # %#llx\n", ( 0x64 == op ) ? "fs:" : "gs", ( 0x64 == op ) ? rfs.q : rgs.q );
+            tracer.Trace( "prefix_segment %s  # %#llx\n", ( 0x64 == op ) ? "fs:" : "gs", ( 0x64 == op ) ? sregs[ rfs ].q : sregs[ rgs ].q );
             break;
         }
         case 0x66: // prefix x66 make operands 16-bit or xmm
@@ -1771,6 +1798,12 @@ void x64::trace_state()
         {
             decode_rm();
             tracer.Trace( "mov %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
+            break;
+        }
+        case 0x8c: // mov r/m, sreg (only moves 16 bits)
+        {
+            decode_rm();
+            tracer.Trace( "mov %s, %s\n", rm_string( 8 ), segment_register_names[ _reg ] );
             break;
         }
         case 0x8d: // lea
@@ -2050,6 +2083,12 @@ void x64::trace_state()
             tracer.Trace( "%s %s\n", shift_names[ _reg ], rm_string( op_width() ) );
             break;
         }
+        case 0xd2: // shift r/m8, cl
+        {
+            decode_rm();
+            tracer.Trace( "%s %s, cl\n", shift_names[ _reg ], rm_string( 1 ) );
+            break;
+        }
         case 0xd3: // shift r/m, cl   16/32/64
         {
             decode_rm();
@@ -2302,6 +2341,8 @@ void x64::trace_state()
                     tracer.Trace( "fst %s\n", rm_string( 8 ) );
                 else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
                     tracer.Trace( "fstp %s\n", rm_string( 8 ) );
+                else if ( 7 == _reg ) // fstsw m2byte
+                    tracer.Trace( "fstsw %s\n", rm_string( 8 ) );
                 else
                     unhandled();
             }
@@ -2443,6 +2484,8 @@ void x64::trace_state()
                 tracer.Trace( "negb %s\n", rm_string( 1 ) );
             else if ( 4 == _reg ) // mul r/m8
                 tracer.Trace( "mulb %s\n", rm_string( 1 ) );
+            else if ( 5 == _reg ) // imulb r/m8
+                tracer.Trace( "imulb %s\n", rm_string( 1 ) );
             else if ( 6 == _reg ) // div r/m8
                 tracer.Trace( "divb %s\n", rm_string( 1 ) );
             else if ( 7 == _reg ) // div r/m8
@@ -3374,9 +3417,9 @@ uint64_t x64::effective_address()
     if ( 0 != _prefix.segment )
     {
         if ( 0x64 == _prefix.segment )
-            ea += rfs.q;
+            ea += sregs[ rfs ].q;
         else if ( 0x65 == _prefix.segment )
-            ea += rgs.q;
+            ea += sregs[ rgs ].q;
         else
             unhandled();
     }
@@ -4371,12 +4414,39 @@ _prefix_is_set:
                 }
                 break;
             }
+            case 0x06: case 0x0e: case 0x16: case 0x1e: // push es, cs, ss, ds
+            {
+                if ( mode32 )
+                    push( sregs[ ( op >> 3 ) & 3 ].w );
+                else
+                    unhandled();
+                break;
+            }
+            case 0x07: case 0x17: case 0x1f: // pop es, ss, ds.  cs is invalid
+            {
+                if ( mode32 )
+                    sregs[ ( op >> 3 ) & 3 ].q = pop();
+                else
+                    unhandled();
+                break;
+            }
             case 0x0f:
             {
                 uint8_t op1 = get_rip8();
 
                 switch ( op1 )
                 {
+                    case 0:
+                    {
+                        decode_rm();
+                        switch ( _reg )
+                        {
+                            case 4: { setflag_z( true ); break; } // verr r/m16
+                            case 5: { setflag_z( true ); break; } // verw r/m16
+                            default: { unhandled(); }
+                        }
+                        break;
+                    }
                     case 5: // syscall  64-bit linux
                     {
                         emulator_invoke_svc( *this );
@@ -7149,9 +7219,25 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ _reg ].q = get_rm64();
                 else if ( 0x66 == _prefix.size )
-                    regs[ _reg ].q = get_rm16();
+                    regs[ _reg ].w = get_rm16();
                 else
                     regs[ _reg ].q = get_rm32();
+                break;
+            }
+            case 0x8c: // mov r/m 16 or 64, Sreg (but only moves 16 bits)
+            {
+                decode_rm();
+                uint16_t val = 0;
+                if ( _reg > 5 )
+                    unhandled();
+                val = sregs[ _reg ].w;
+
+                if ( _rex.W )
+                    set_rm64( val );
+                else if ( 0x66 == _prefix.size )
+                    set_rm16( val );
+                else
+                    set_rm32( val );
                 break;
             }
             case 0x8d: // lea
@@ -7169,22 +7255,9 @@ _prefix_is_set:
             {
                 decode_rm();
                 uint16_t val = 0xffff & get_rm();
-                if ( 0 == _reg )
-                    res.q = val;
-                else if ( 1 == _reg )
-                    unhandled(); // rcs = val; // not valid
-                else if ( 2 == _reg )
-                    rss.q = val;
-                else if ( 3 == _reg )
-                    rds.q = val;
-                else if ( 4 == _reg )
-                    rfs.q = val;
-                else if ( 5 == _reg )
-                {
-                    //rgs.q = val;
-                }
-                else
+                if ( 1 == _reg || _reg > 5 )
                     unhandled();
+                sregs[ _reg ].q = val;
                 break;
             }
             case 0x8f:
@@ -7284,7 +7357,7 @@ _prefix_is_set:
             }
             case 0xa0: // mov al, moffs8
             {
-                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
                 if ( _rex.W )
                     regs[ rax ].b = getui8( get_rip64() );
@@ -7296,7 +7369,7 @@ _prefix_is_set:
             }
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
-                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
                 if ( _rex.W )
                     regs[ rax ].q = getui64( get_rip64() );
@@ -7308,7 +7381,7 @@ _prefix_is_set:
             }
             case 0xa2: // mov moffs8, al
             {
-                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
                 if ( _rex.W )
                     setui8( get_rip64(), regs[ rax ].b );
@@ -7320,7 +7393,7 @@ _prefix_is_set:
             }
             case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
             {
-                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? rfs.q : ( 0x65 == _prefix.segment ) ? rgs.q : 0;
+                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
                 if ( _rex.W )
                     setui64( get_rip64(), regs[ rax ].q );
@@ -7635,6 +7708,18 @@ _prefix_is_set:
                     op_shift( &val, _reg, 1 );
                     set_rm32z( val );
                 }
+                break;
+            }
+            case 0xd2: // shift r/m8, cl
+            {
+                decode_rm();
+                uint8_t shift = regs[ rcx ].b;
+                if ( 0 == shift )
+                    break;
+                shift &= 0x7;
+                uint8_t val = get_rm8();
+                op_shift( &val, _reg, shift );
+                set_rm8( val );
                 break;
             }
             case 0xd3: // shift r/m, cl   16/32/64
@@ -8098,6 +8183,8 @@ _prefix_is_set:
                         set_rmdouble( peek_fp( 0 ).getd() );
                     else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
                         set_rmdouble( pop_fp().getd() );
+                    else if ( 7 == _reg ) // fstsw m2byte
+                        set_rm16( x87_fpu_status_word );
                     else
                         unhandled();
                 }
@@ -8316,7 +8403,13 @@ _prefix_is_set:
                 }
                 else if ( 4 == _reg ) // mul r/m8
                 {
-                    regs[ rax ].q = (uint16_t) get_rm8() * (uint16_t) regs[ rax ].b;
+                    regs[ rax ].w = (uint16_t) get_rm8() * (uint16_t) regs[ rax ].b;
+                    setflag_o( 0 != regs[ rax ].h );
+                    setflag_c( 0 != regs[ rax ].h );
+                }
+                else if ( 5 == _reg ) // imulb r/m8
+                {
+                    regs[ rax ].w = (int16_t) get_rm8() * (int16_t) regs[ rax ].b;
                     setflag_o( 0 != regs[ rax ].h );
                     setflag_c( 0 != regs[ rax ].h );
                 }
@@ -8330,7 +8423,7 @@ _prefix_is_set:
                     else
                     {
                         uint16_t dividend = regs[ rax ].w;
-                        regs[ rax ].q = (uint8_t) ( dividend / divisor );
+                        regs[ rax ].b = (uint8_t) ( dividend / divisor );
                         regs[ rax ].h = (uint8_t) ( dividend % divisor );
                     }
                 }
@@ -8344,7 +8437,7 @@ _prefix_is_set:
                     else
                     {
                         int16_t dividend = regs[ rax ].w;
-                        regs[ rax ].q = (uint8_t) ( dividend / divisor );
+                        regs[ rax ].b = (uint8_t) ( dividend / divisor );
                         regs[ rax ].h = (uint8_t) ( dividend % divisor );
                     }
                 }

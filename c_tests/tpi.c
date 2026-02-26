@@ -38,7 +38,9 @@ int main() {
                     printf( "0%.3d", result );
                 else
                     printf( "%.4d", c + d / 10000 );
+#ifndef WATCOM
                 fflush( stdout );
+#endif
             }
             c = d % 10000;
         }

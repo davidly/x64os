@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifndef WATCOM
 template <class T> T __max( T a, T b )
 {
     if ( a > b )
@@ -17,6 +18,7 @@ template <class T> T __min( T a, T b )
         return a;
     return b;
 }
+#endif
 
 int gcd( int m, int n )
 {

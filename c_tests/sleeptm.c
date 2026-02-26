@@ -7,7 +7,10 @@
 #include <cerrno>
 #include <sys/times.h>
 #include <sys/resource.h>
+
+#ifndef WATCOM
 #include <x86intrin.h>
+#endif
 
 using namespace std::chrono;
 

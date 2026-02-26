@@ -45,7 +45,9 @@ int main( int argc, char * argv[] )
                 show_error( "unable to write to file" );
         }
 
+#ifndef WATCOM
         fdatasync( fd );
+#endif
         fsync( fd );
         close( fd );
 

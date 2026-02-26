@@ -4,6 +4,7 @@
 #include <cfloat>
 #include <assert.h>
 #include <new>
+#include <stdlib.h>
 
 using namespace std;
 

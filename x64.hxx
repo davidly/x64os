@@ -174,6 +174,13 @@ struct x64
     static const size_t r14 = 14;
     static const size_t r15 = 15;
 
+    static const size_t res = 0;
+    static const size_t rcs = 1;
+    static const size_t rss = 2;
+    static const size_t rds = 3;
+    static const size_t rfs = 4;
+    static const size_t rgs = 5;
+
     bool trace_instructions( bool trace );         // enable/disable tracing each instruction
     void end_emulation( void );                    // make the emulator return at the start of the next instruction
     uint64_t run( void );
@@ -269,21 +276,21 @@ struct x64
     inline uint8_t getui8( uint64_t o ) { return * (uint8_t *) getmem( o ); }
     inline void setui8( uint64_t o, uint8_t val ) { * (uint8_t *) getmem( o ) = val; }
 
-    reg8_t regs[ 16 ];               // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
-    vec16_t xregs[ 16 ];             // xmm0 through 15
-    float80_t fregs[ 8 ];            // 80-bit numbers are stored in this fp stack, while math is done on a physical x87 with gnu or via emulation
-    reg8_t rip;                      // instruction pointer
-    reg8_t res, rcs, rss, rds, rfs, rgs; // fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
+    reg8_t regs[ 16 ];              // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
+    vec16_t xregs[ 16 ];            // xmm0 through 15
+    float80_t fregs[ 8 ];           // 80-bit numbers are stored in this fp stack, while math is done on a physical x87 with gnu or via emulation
+    reg8_t rip;                     // instruction pointer
+    reg8_t sregs[ 6 ];              // segment registers es/cs/ss/ds/fs/gs. fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
     uint32_t mxcsr;
-    uint16_t x87_fpu_control_word;   // for fldcw, fstcw/fnstcw. applies to sse as well as x87
-    uint16_t x87_fpu_status_word;    // for fstsw/fnstsw.
-    uint8_t fp_sp;                   // current stack pointer for fregs[]
-    bool mode32;                     // true for 32-bit CPU vs 64-bit
+    uint16_t x87_fpu_control_word;  // for fldcw, fstcw/fnstcw. applies to sse as well as x87
+    uint16_t x87_fpu_status_word;   // for fstsw/fnstsw.
+    uint8_t fp_sp;                  // current stack pointer for fregs[]
+    bool mode32;                    // true for 32-bit CPU vs 64-bit
 
     void Mode32( bool m32 ) { mode32 = m32; } // flip from 64-bit long mode to 32-bit compatibility mode for running 32-bit apps. or back.
 
-    uint64_t & reg_fs() { return rfs.q; }
-    uint64_t & reg_gs() { return rgs.q; }
+    uint64_t & reg_fs() { return sregs[ rfs ].q; }
+    uint64_t & reg_gs() { return sregs[ rgs ].q; }
 
 private:
                       // 0                                   8                                16

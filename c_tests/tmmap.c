@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <cstdlib>
 #include <cstring>
+#include <string.h>
 #include <cerrno>
+
+#ifdef WATCOM
+#define MREMAP_MAYMOVE 1
+#endif
 
 void validate( void * amaps[], size_t i, size_t size )
 {
@@ -69,6 +75,7 @@ int main( int argc, char * argv[] )
         amaps[ i ] = 0;
     }
 
+#ifndef WATCOM // no mremap in Watcom C
     // reallocate the odd entries to be twice or four times as large as they were
 
     for ( size_t i = 1; i < cmaps; i += 2 )
@@ -87,6 +94,7 @@ int main( int argc, char * argv[] )
         memset( ( (uint8_t *) p ) + size, i + 'a', new_size - size ); // just initialize the new portion
         amaps[ i ] = p;
     }
+#endif
 
     // allocate even entries as 8k each
 

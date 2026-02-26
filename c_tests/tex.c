@@ -1,7 +1,16 @@
 #include <stdio.h>
 #include <exception>
 
+#ifdef WATCOM
+#include <new>
+#define noexcept
+#endif
+
 using namespace std;
+
+#ifdef WATCOM
+void my_oom_handler() { throw std::bad_alloc(); }
+#endif
 
 class CUnwound
 {
@@ -26,6 +35,9 @@ struct exceptional : std::exception
 int main()
 {
     printf( "top of tex\n" );
+#ifdef WATCOM
+    std::set_new_handler(my_oom_handler);
+#endif
 
     try
     {
@@ -54,10 +66,18 @@ int main()
         }
         printf( "large allocations succeeded?!? (%d)\n", successful );
     }
+#ifdef WATCOM
+    catch ( std::bad_alloc & e )
+    {
+        printf( "caught exception bad_alloc\n" );
+    }
+#endif
     catch ( exception & e )
     {
         printf( "caught a standard execption: %s\n", e.what() );
+#ifndef WATCOM
         fflush( stdout );
+#endif
     }
     catch ( ... )
     {

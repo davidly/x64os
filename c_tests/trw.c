@@ -27,7 +27,9 @@ int main()
     //printf( "S_IRWXU %x\n", S_IRWXU );
     //printf( "S_IRWXG %x\n", S_IRWXU );
     //printf( "S_IRWXO %x\n", S_IRWXO );
+#ifndef WATCOM
     fflush( stdout );
+#endif
 #endif
 
     int fd = open( "trw.dat", O_CREAT | O_RDWR | O_TRUNC, 0x1ff );
@@ -46,7 +48,9 @@ int main()
             show_error( "unable to write to file" );
     }
 
+#ifndef WATCOM
     fdatasync( fd );
+#endif
     fsync( fd );
     close( fd );
 

@@ -1,7 +1,14 @@
+#define _USE_MATH_DEFINES 
 #include <stdio.h>
 #include <stdint.h>
 #include <cmath>
 #include <float.h>
+
+#ifdef WATCOM
+#include <math>
+#define fabsf fabs
+#define fabsl fabs
+#endif
 
 #if defined(__SIZEOF_INT128__)
 typedef __int128 int128_t;

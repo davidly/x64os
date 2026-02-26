@@ -7,10 +7,30 @@
 #include <float.h>
 #include <stdint.h>
 
-#if defined( __mc68000__ ) || defined( sparc )
+#if defined( __mc68000__ ) || defined( sparc ) || defined( WATCOM )
 #define LDBL_TESTS 0
 #else
 #define LDBL_TESTS 1
+#endif
+
+#ifdef WATCOM
+#define fabsf fabs
+#define powf pow
+#define M_PI 3.1415927
+#define tanf tan
+#define atanf atan
+#define sinf sin
+#define asinf asin
+#define cosf cos
+#define acosf acos
+#define sqrtf sqrt
+#define sinf sin
+#define sinhf sinh
+#define atan2f atan2
+#define tanhf tanh
+#define logf log
+#define log10f log10
+#define frexpf frexp
 #endif
 
 #if defined(__SIZEOF_INT128__)

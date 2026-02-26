@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <cstring>
 #include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
 #include <cwchar>
 #include <locale.h>
 

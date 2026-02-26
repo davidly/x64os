@@ -2,10 +2,13 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifndef WATCOM
 #include <sys/param.h>
+#endif
 #include <cerrno>
 #include <cstring>
 #include <cstddef>
+#include <string.h>
 
 int main( int argc, char * argv[] )
 {

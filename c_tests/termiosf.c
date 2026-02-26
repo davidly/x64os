@@ -6,8 +6,10 @@
 
 struct TermRaw
 {
-    termios orig{};
-    bool enabled = false;
+    termios orig;
+    bool enabled;
+
+    TermRaw() { enabled = false; }
 
     int enable()
     {
@@ -47,12 +49,12 @@ struct TermRaw
         return tcsetattr( STDIN_FILENO, TCSAFLUSH, &orig );
     }
 
-  ~TermRaw() { disable(); }
+    ~TermRaw() { disable(); }
 };
 
 static int getWindowSize(int& rows, int& cols)
 {
-    winsize ws{};
+    winsize ws;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) return -1;
     rows = (int)ws.ws_row;
     cols = (int)ws.ws_col;
@@ -65,17 +67,23 @@ int main()
     printf( " icanon %#x\n", ICANON );
     printf( " echonl %#x\n", ECHONL );
     printf( " echok %#x\n", ECHOK );
+#ifdef ECHOKE
     printf( " echoke %#x\n", ECHOKE );
+#endif
     printf( " echoe %#x\n", ECHOE );
     printf( " echo %#x\n", ECHO ); 
-    #ifdef EXTPROC    
+#ifdef EXTPROC    
     printf( " extproc %#x\n", EXTPROC );
-    #endif
+#endif
+#ifdef ECHOPRT
     printf( " echoprt %#x\n", ECHOPRT );
+#endif
     printf( " econl %#x\n", ECHONL );
     printf( " isig %#x\n", ISIG );
     printf( " iexten %#x\n", IEXTEN );
+#ifdef ECHOCTL
     printf( " echoctl %#x\n", ECHOCTL );
+#endif
 #ifdef TOSTOP
     printf( " tostop %#x\n", TOSTOP );
 #endif
@@ -135,7 +143,9 @@ int main()
 #ifdef CMSPAR
     printf( " cmspar %#x\n", CMSPAR );
 #endif
+#ifdef CRTSCTS
     printf( " crtscts %#x\n", CRTSCTS );
+#endif
 
     printf( "cc_c\n" );
     printf( " VMIN %#x\n", VMIN );

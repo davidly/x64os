@@ -42,11 +42,13 @@ done
 echo "Waiting for compilation to complete..."
 wait
 
-for optflag in 0 1 2 3 fast;
-do
-    objdump -d x32bin"$optflag"/"$1" > x32bin"$optflag"/"$1".txt &
-    objdump -d x32clangbin"$optflag"/"$1" > x32clangbin"$optflag"/"$1".txt &
-done
+if false; then
+    for optflag in 0 1 2 3 fast;
+    do
+        objdump -d x32bin"$optflag"/"$1" > x32bin"$optflag"/"$1".txt &
+        objdump -d x32clangbin"$optflag"/"$1" > x32clangbin"$optflag"/"$1".txt &
+    done
 
-echo "Waiting for assembly listings to complete..."
-wait
+    echo "Waiting for assembly listings to complete..."
+    wait
+fi

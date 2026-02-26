@@ -83,9 +83,13 @@ int main( int argc, char * argv[] )
 
     // linux (unlike windows or cp/m) supports renaming a file over an existing file!\n" );
     char acdir[ 100 ];
+#ifdef WATCOM // getcwd fails on watcom
+    strcpy( acdir, "." );
+#else
     char * pcwd = getcwd( acdir, sizeof( acdir ) );
     if ( 0 == pcwd )
         error( "getcwd failed" );
+#endif
 
     if ( strcmp( acdir, "." ) ) // test this if we're not running on CP/M 68K, which has no directories 
     {

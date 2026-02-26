@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <stdio.h>
 
 template <typename T> void mandle()
 {

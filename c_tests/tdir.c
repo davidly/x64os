@@ -143,6 +143,7 @@ int main( int argc, char * argv[] )
         exit( 1 );
     }
 
+#ifndef WATCOM
     char resolved[ PATH_MAX ];
     char * presolved = realpath( foldername, resolved );
     if ( 0 == presolved )
@@ -156,6 +157,7 @@ int main( int argc, char * argv[] )
         printf( "realpath of child folder '%s' doesn't match getcwd result '%s'\n", presolved, pcwd );
         exit( 1 );
     }
+#endif
 
     result = rmdir( foldername );
     if ( 0 != result )
