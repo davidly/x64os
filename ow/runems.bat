@@ -1,13 +1,8 @@
 @echo off
 setlocal
 
-set outputfile=runall_test.txt
+set outputfile=runems_test.txt
 echo %date% %time% >%outputfile%
-
-rem FAILED tests: tmmap (watcom tries to allocate at a given address)
-rem               tdir (watcom's syscall wrapper fails when the string is returned. it's confused)
-rem               mm, tao, ttypes, nantst, tatomic, tregex (watcom can't compile it)
-rem               ff, an, ba all fail in compilation, have missing code, or with bad code at execution time
 
 set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2 ^
              tstr fileops ttime tm glob tap tsimplef tphi tf ttt td terrno ^
@@ -20,7 +15,14 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
     echo %%a>>%outputfile%
     copy ..\c_tests\%%a.c . > NUL 2>&1
     call m.bat %%a
-    ..\x32os %%a.elf >>%outputfile%
+
+    ..\x64os -h:100 ..\bin\x32os %%a.elf >>%outputfile%
+    ..\x32os -h:100 ..\x32bin\x32os %%a.elf >>%outputfile%
+    ..\..\rvos\rvos -h:100 ..\..\rvos\bin\x32os %%a.elf >>%outputfile%
+    ..\..\armos\armos -h:100 ..\..\armos\bin\x32os %%a.elf >>%outputfile%
+    ..\..\m68\m68 -h:100 ..\..\m68\bin\x32os %%a.elf >>%outputfile%
+    ..\..\sparcos\sparcos -h:100 ..\..\sparcos\bin\x32os %%a.elf >>%outputfile%
+
     del %%a.c > NUL 2>&1
     del %%a.obj > NUL 2>&1
     del %%a.elf > NUL 2>&1
