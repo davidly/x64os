@@ -2112,6 +2112,7 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 244, emulator_sys_set_thread_area },
     { 252, SYS_exit_group },
     { 258, SYS_set_tid_address },
+    { 265, SYS_clock_gettime },
     { 267, SYS_clock_nanosleep },
     { 270, SYS_tgkill },
     { 295, SYS_openat },

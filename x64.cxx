@@ -1884,34 +1884,34 @@ void x64::trace_state()
         }
         case 0xa0: // mov al, moffs8
         {
-            tracer.Trace( "mov al, moffs8\n" );
+            tracer.Trace( "mov al, [seg:%#x]  # moffs8\n", get_rip32() );
             break;
         }
         case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
         {
             decode_rex();
             if ( _rex.W )
-                tracer.Trace( "mov rax, moffs64  # %llx\n", get_rip64() );
+                tracer.Trace( "mov rax, [%#llx] # moffs64\n", get_rip64() );
             else if ( 0x66 == _prefix.size )
-                tracer.Trace( "mov ax, moffs16  # %#x\n", get_rip16() );
+                tracer.Trace( "mov ax, [seg:%#x]  # moffs16\n", get_rip32() );
             else
-                tracer.Trace( "mov eax, moffs32  # %#x\n", get_rip32() );
+                tracer.Trace( "mov eax, [seg:%#x]  # moffs32\n", get_rip32() );
             break;
         }
         case 0xa2: // mov moffs8, al
         {
-            tracer.Trace( "mov moffs8, al\n" );
+            tracer.Trace( "mov [seg:%#x], al  # moffs8\n", get_rip32() );
             break;
         }
         case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
         {
             decode_rex();
             if ( _rex.W )
-                tracer.Trace( "mov moffs64, rax\n" );
+                tracer.Trace( "mov [%#llx], rax  # moffs64\n", get_rip64() );
             else if ( 0x66 == _prefix.size )
-                tracer.Trace( "mov moffs16, ax\n" );
+                tracer.Trace( "mov [seg:%#x], ax  # moffs16\n", get_rip32() );
             else
-                tracer.Trace( "mov moffs32, eax\n" );
+                tracer.Trace( "mov [seg:%#x], eax  # moffs32\n", get_rip32() );
             break;
         }
         case 0xa4: // movsb m, m  RSI to RDI
@@ -7363,7 +7363,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ rax ].b = getui8( get_rip64() );
                 else if ( 0x66 == _prefix.size )
-                    regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip16() ) );
+                    regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip32() ) );
                 else
                     regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip32() ) );
                 break;
@@ -7375,7 +7375,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ rax ].q = getui64( get_rip64() );
                 else if ( 0x66 == _prefix.size )
-                    regs[ rax ].q = getui16( lower32_address( segment_offset + get_rip16() ) );
+                    regs[ rax ].q = getui16( lower32_address( segment_offset + get_rip32() ) );
                 else
                     regs[ rax ].q = getui32( lower32_address( segment_offset + get_rip32() ) );
                 break;
@@ -7387,7 +7387,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     setui8( get_rip64(), regs[ rax ].b );
                 else if ( 0x66 == _prefix.size )
-                    setui8( lower32_address( segment_offset + get_rip16() ), regs[ rax ].b );
+                    setui8( lower32_address( segment_offset + get_rip32() ), regs[ rax ].b );
                 else
                     setui8( lower32_address( segment_offset + get_rip32() ), regs[ rax ].b );
                 break;
@@ -7399,7 +7399,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     setui64( get_rip64(), regs[ rax ].q );
                 else if ( 0x66 == _prefix.size )
-                    setui16( lower32_address( segment_offset + get_rip16() ), regs[ rax ].w );
+                    setui16( lower32_address( segment_offset + get_rip32() ), regs[ rax ].w );
                 else
                     setui32( lower32_address( segment_offset + get_rip32() ), regs[ rax ].d );
                 break;
