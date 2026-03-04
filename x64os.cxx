@@ -91,6 +91,9 @@
         #ifdef __mc68000__
             DIR * fdopendir( int fd );
             extern "C" int lstat( const char * path, struct stat * statbuf );
+            extern "C" int pipe2( int pipefd[2], int flags );
+            extern "C" int wait4( pid_t pid, int * wstatus, int options, struct rusage * ru );
+            extern "C" char * realpath( const char *__restrict path, char *__restrict resolved_path );
         #endif
     #endif
 
@@ -4841,13 +4844,27 @@ void emulator_invoke_svc( CPUClass & cpu )
 
             if ( !strcmp( pathname, "/proc/self/exe" ) )
             {
-                int result = -1;
-                int len = (int) strlen( g_acLoadedApp );
-                if ( bufsiz >= ( 1 + len ) )
+                char acResolved[ EMULATOR_MAX_PATH ];
+#if defined( _WIN32 )
+                if ( 0 != _fullpath( g_acLoadedApp, acResolved, sizeof( acResolved ) ) )
                 {
-                    strcpy( buf, g_acLoadedApp );
-                    result = len;
+                    int len = (int) strlen( acResolved );
+                    assert( ':' == acResolved[ 1 ] );
+                    len -= 2;
+                    memmove( acResolved, acResolved + 2, len + 1 );
+                    backslash_to_slash( acResolved );
+#else
+                if ( 0 != realpath( g_acLoadedApp, acResolved ) )
+                {
+                    int len = (int) strlen( acResolved );
+#endif
+                    if ( bufsiz >= ( 1 + len ) )
+                    {
+                        strcpy( buf, acResolved );
+                        result = len;
+                    }
                 }
+
                 update_result_errno( cpu, result );
                 break;
             }
