@@ -8737,11 +8737,9 @@ _prefix_is_set:
                     }
                     case 2: // call
                     {
+                        uint64_t target = mode32 ? get_rm32() : get_rm64();
                         push( rip.q );
-                        if ( mode32 )
-                            rip.q = get_rm32();
-                        else
-                            rip.q = get_rm64();
+                        rip.q = target;
                         break;
                     }
                     case 3: // call  (inter-segment)
