@@ -124,7 +124,7 @@ using namespace std::chrono;
     #define ACCESS_REG( x ) cpu.regs[ x ]
     #define CPU_IS_LITTLE_ENDIAN true
 
-    #define REG_PC cpu.pc
+    #define REG_PROGRAM_COUNTER cpu.pc
     #define REG_SYSCALL 8
     #define REG_RESULT 0
     #define REG_ARG0 0
@@ -148,7 +148,7 @@ using namespace std::chrono;
     #define ACCESS_REG( x ) cpu.regs[ x ]
     #define CPU_IS_LITTLE_ENDIAN true
 
-    #define REG_PC cpu.pc
+    #define REG_PROGRAM_COUNTER cpu.pc
     #define REG_SYSCALL RiscV::a7
     #define REG_RESULT RiscV::a0
     #define REG_ARG0 RiscV::a0
@@ -172,7 +172,7 @@ using namespace std::chrono;
     #define ACCESS_REG( x ) cpu.dregs[ x ].l
     #define CPU_IS_LITTLE_ENDIAN false
 
-    #define REG_PC cpu.pc
+    #define REG_PROGRAM_COUNTER cpu.pc
     #define REG_SYSCALL 0
     #define REG_RESULT 0
     #define REG_ARG0 1
@@ -196,7 +196,7 @@ using namespace std::chrono;
     #define ACCESS_REG( x ) cpu.Sparc_reg( x )
     #define CPU_IS_LITTLE_ENDIAN false
 
-    #define REG_PC cpu.pc
+    #define REG_PROGRAM_COUNTER cpu.pc
     #define REG_SYSCALL 1 // g1
     #define REG_RESULT 8  // o0
     #define REG_ARG0 8    // o0..o5
@@ -220,7 +220,7 @@ using namespace std::chrono;
     #define ACCESS_REG( x ) cpu.regs[ x ].q
     #define CPU_IS_LITTLE_ENDIAN true
 
-    #define REG_PC cpu.rip.q
+    #define REG_PROGRAM_COUNTER cpu.rip.q
     #define REG_SYSCALL x64::rax
     #define REG_RESULT x64::rax
     #define REG_ARG0 x64::rdi
@@ -244,7 +244,7 @@ using namespace std::chrono;
     #define ACCESS_REG( x ) cpu.regs[ x ].d
     #define CPU_IS_LITTLE_ENDIAN true
 
-    #define REG_PC cpu.rip.d
+    #define REG_PROGRAM_COUNTER cpu.rip.d
     #define REG_SYSCALL x64::rax
     #define REG_RESULT x64::rax
     #define REG_ARG0 x64::rbx
@@ -5361,21 +5361,21 @@ void emulator_hard_termination( CPUClass & cpu, const char *pcerr, uint64_t erro
     uint64_t offset = 0;
 #if defined( M68 ) || defined( SPARCOS ) || defined( X32OS )
     uint32_t offset32 = 0;
-    const char * psymbol = emulator_symbol_lookup( REG_PC, offset32 );
+    const char * psymbol = emulator_symbol_lookup( REG_PROGRAM_COUNTER, offset32 );
     offset = offset32;
 #else
-    const char * psymbol = emulator_symbol_lookup( REG_PC, offset );
+    const char * psymbol = emulator_symbol_lookup( REG_PROGRAM_COUNTER, offset );
 #endif
 
     if ( psymbol[ 0 ] )
     {
-        tracer.Trace( "pc: %llx %s + %llx\n", REG_PC, psymbol, offset );
-        printf( "pc: %llx %s + %llx\n", (uint64_t) REG_PC, psymbol, offset );
+        tracer.Trace( "pc: %llx %s + %llx\n", REG_PROGRAM_COUNTER, psymbol, offset );
+        printf( "pc: %llx %s + %llx\n", (uint64_t) REG_PROGRAM_COUNTER, psymbol, offset );
     }
     else
     {
-        tracer.Trace( "pc: %llx\n", REG_PC );
-        printf( "pc: %llx\n", (uint64_t) REG_PC );
+        tracer.Trace( "pc: %llx\n", REG_PROGRAM_COUNTER );
+        printf( "pc: %llx\n", (uint64_t) REG_PROGRAM_COUNTER );
     }
 
     tracer.Trace( "address space %llx to %llx\n", (uint64_t) g_base_address, (uint64_t) g_base_address + memory.size() );
