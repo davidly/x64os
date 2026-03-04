@@ -4,10 +4,6 @@ outputfile="runall_test.txt"
 date_time=$(date)
 echo "$date_time" >$outputfile
 
-# FAILED tests: tmmap (watcom tries to allocate at a given address)
-#               tdir (watcom's syscall wrapper fails when the string is returned. it's confused)
-#               mm, tao, ttypes, nantst, tatomic, tregex (watcom can't compile it)
-
 for arg in tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2 \
            tstr fileops ttime tm glob tap tsimplef tphi tf ttt td terrno \
            t_setjmp tex pis lenum \
@@ -17,10 +13,11 @@ do
     echo $arg
     echo $arg >>$outputfile
     cp ../c_tests/$arg.c .
-    ./m.sh $arg
+    ./mn.sh $arg
     ../x32os $arg.elf >>$outputfile
     rm $arg.c > /dev/null 2>&1
     rm $arg.o > /dev/null 2>&1
+    rm $arg.map > /dev/null 2>&1
     rm $arg.elf > /dev/null 2>&1
 done
 

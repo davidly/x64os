@@ -6,7 +6,6 @@ export EDPATH=$WATCOM/eddat
 export INCLUDE=$WATCOM/lh:$WATCOM/h
 
 # -oe=160 generates faulty code including i64 -3 * -14 = 0
-# use of x87 fp emulation with -fpc produces incorrect results for several tests
 
 wcl386 -q -oh -oi -ol+ -ei -ot -ombr -fp3 -3r -cc++ -xs -xr $1.c -bcl=LINUX -k8192 -fe=$1.elf -DWATCOM -DNDEBUG
 

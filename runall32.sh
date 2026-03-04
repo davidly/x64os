@@ -87,6 +87,15 @@ do
     $_x32oscmd c_tests/x32clangbin$optflag/tgets <c_tests/tgets.txt >>$outputfile
 done    
 
+echo test targs
+for optflag in 0 1 2 3 fast;
+do
+    echo test c_tests/x32bin$optflag/targs >>$outputfile
+    $_x32oscmd "-e:solo=iu;group=i-dle" c_tests/x32bin$optflag/targs a bb ccc dddd>>$outputfile
+    echo test c_tests/x32clangbin$optflag/targs >>$outputfile
+    $_x32oscmd "-e:solo=iu;group=i-dle" c_tests/x32clangbin$optflag/targs a bb ccc dddd >>$outputfile
+done    
+
 for arg in e sieve ttt primes mm
 do
    echo $arg

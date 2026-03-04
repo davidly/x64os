@@ -75,6 +75,15 @@ set _folderlist=bin0 bin1 bin2 bin3 binfast
     %_runcmd% c_tests\%_folderprefix%clang%%f\tgets <c_tests\tgets.txt>>%outputfile%
 ) )
 
+echo test targs
+set _folderlist=bin0 bin1 bin2 bin3 binfast
+( for %%f in (%_folderlist%) do (
+    echo test c_tests/%_folderprefix%%%f/targs>>%outputfile%
+    %_runcmd% -e:solo=iu;group=i-dle c_tests\%_folderprefix%%%f\targs a bb ccc dddd >>%outputfile%
+    echo test c_tests/%_folderprefix%clang%%f/targs>>%outputfile%
+    %_runcmd% -e:solo=iu;group=i-dle c_tests\%_folderprefix%clang%%f\targs a bb ccc dddd >>%outputfile%
+) )
+
 set _fortranlist=e sieve ttt primes mm
 ( for %%a in (%_fortranlist%) do (
     echo %%a

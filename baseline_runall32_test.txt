@@ -1,4 +1,4 @@
-Tue 02/24/2026 15:52:35.59 
+Tue 03/03/2026  6:18:29.98 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -58871,7 +58871,7 @@ testing with -0.0:
 nan test completed with great success
 c_tests/x32bin0/sleeptm
 clk_tck / number of linux ticks per second: 100
-getrusage user time in ms: 1031, system time 0
+getrusage user time in ms: 1046, system time 0
 sleepy time ended with great success
 c_tests/x32clangbin0/sleeptm
 clk_tck / number of linux ticks per second: 100
@@ -59117,7 +59117,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 41
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59137,7 +59137,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 41
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59157,7 +59157,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59177,7 +59177,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59197,7 +59197,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59217,7 +59217,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59237,7 +59237,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59257,7 +59257,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59277,7 +59277,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59297,7 +59297,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 24, hour 15, min 53, sec 42
+tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -61545,7 +61545,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-762 ms for 1 iterations
+721 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61594,7 +61594,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-211 ms for 1 iterations
+202 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61643,7 +61643,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-205 ms for 1 iterations
+198 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61692,7 +61692,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-215 ms for 1 iterations
+205 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61741,7 +61741,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-215 ms for 1 iterations
+205 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61938,6 +61938,116 @@ read: 'a' == 97 == 0x61
 read: '
 ' == 10 == 0xa
 tgets completed with great success
+test c_tests/x32bin0/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32bin0/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32clangbin0/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32clangbin0/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32bin1/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32bin1/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32clangbin1/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32clangbin1/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32bin2/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32bin2/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32clangbin2/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32clangbin2/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32bin3/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32bin3/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32clangbin3/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32clangbin3/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32binfast/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32binfast/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
+test c_tests/x32clangbinfast/targs
+argc: 5
+argv[ 0 ]: 'c_tests/x32clangbinfast/targs'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificStandardTime+8'
 f_tests/x32bin/e
  27 1 8 2 8 1 8 2 8 4 5 9 0 4 5 2 3 5 3 6 0 2 8 7 4 7 1 3 5 2 6 6 2 4 9 7 7 5 7 2 4 7 0 9 3 6 9 9 9 5 9 5 7 4 9 6 6 9 6 7 6 2 7 7 2 4 0 7 6 6 3 0 3 5 3 5 4 7 5 9 4 5 7 1 3 8 2 1 7 8 5 2 5 1 6 6 4 2 7 4 2 7 4 6 6 3 9 1 9 3 2 0 0 3 0 5 9 9 2 1 8 1 7 4 1 3 5 9 6 6 2 9 0 4 3 5 7 2 9 0 0 3 3 4 2 9 5 2 6 0 5 9 5 6 3 0 7 3 8 1 3 2 3 2 8 6 2 7 9 4 3 4 9 0 7 6 3 2 3 3 8 2 9 8 8 0 7 5 3 1 9  done
 f_tests/x32bin/sieve
@@ -61976,4 +62086,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Tue 02/24/2026 15:54:02.59 
+Tue 03/03/2026  6:19:55.10 

@@ -84,6 +84,15 @@ do
     $_x64oscmd c_tests/clangbin$optflag/tgets <c_tests/tgets.txt >>$outputfile
 done    
 
+echo test targs
+for optflag in 0 1 2 3 fast;
+do
+    echo test c_tests/bin$optflag/targs >>$outputfile
+    $_x64oscmd "-e:solo=iu;group=i-dle" c_tests/bin$optflag/targs a bb ccc dddd >>$outputfile
+    echo test c_tests/clangbin$optflag/targs >>$outputfile
+    $_x64oscmd "-e:solo=iu;group=i-dle" c_tests/clangbin$optflag/targs a bb ccc dddd >>$outputfile
+done    
+
 for arg in e td ttt fileops ato tap real tphi mysort tmm;
 do
     echo $arg
