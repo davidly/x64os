@@ -2179,7 +2179,7 @@ static const StoRV SparcToRiscV[] = // per https://gpages.juszkiewicz.com.pl/sys
     { 17, SYS_brk },
     { 19, SYS_lseek },
     { 20, SYS_getpid },
-    { 42, SYS_pipe },
+    { 42, emulator_sys_pipe },
     { 43, SYS_times },
     { 54, SYS_ioctl },
     { 58, emulator_sys_readlink },
@@ -2516,8 +2516,8 @@ void emulator_invoke_svc( CPUClass & cpu )
             else if ( 2 == op ) // F_SETFD
             {
 #ifdef _WIN32
-                assert( false );
-                result = -1;
+                int flags = (int) ACCESS_REG( REG_ARG2 );
+                result = 0; // lie for now
 #else
                 int flags = (int) ACCESS_REG( REG_ARG2 );
                 result = 0; // lie for now
@@ -2821,8 +2821,15 @@ void emulator_invoke_svc( CPUClass & cpu )
             int descriptor = (int) ACCESS_REG( REG_ARG0 );
             int offset = (int) ACCESS_REG( REG_ARG1 );
             int origin = (int) ACCESS_REG( REG_ARG2 );
+            long result = -1;
 
-            long result = lseek( descriptor, offset, origin );
+            if ( descriptor < 0 ) // Windows AVs in lseek in this case, and the Open Watcom 2 compiler C runtime does this after failing to open /etc/localtime
+                errno = 9; // bad file descriptor
+            else
+            {
+                result = lseek( descriptor, offset, origin );
+                tracer.Trace( "  result of lseek: %#lx, error %d\n", result, errno );
+            }
             update_result_errno( cpu, result );
             break;
         }
@@ -4846,13 +4853,15 @@ void emulator_invoke_svc( CPUClass & cpu )
             {
                 char acResolved[ EMULATOR_MAX_PATH ];
 #if defined( _WIN32 )
-                if ( 0 != _fullpath( g_acLoadedApp, acResolved, sizeof( acResolved ) ) )
+                if ( 0 != _fullpath( acResolved, g_acLoadedApp, sizeof( acResolved ) ) )
                 {
+                    tracer.Trace( "    resolved path = '%s'\n", acResolved );
                     int len = (int) strlen( acResolved );
                     assert( ':' == acResolved[ 1 ] );
                     len -= 2;
                     memmove( acResolved, acResolved + 2, len + 1 );
                     backslash_to_slash( acResolved );
+                    tracer.Trace( "    final resolved path = '%s'\n", acResolved );
 #else
                 if ( 0 != realpath( g_acLoadedApp, acResolved ) )
                 {
