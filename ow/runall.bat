@@ -19,10 +19,12 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
     echo %%a
     echo %%a>>%outputfile%
     copy ..\c_tests\%%a.c . > NUL 2>&1
-    call m.bat %%a
+    call mn.bat %%a
     ..\x32os %%a.elf >>%outputfile%
     del %%a.c > NUL 2>&1
     del %%a.obj > NUL 2>&1
+    del %%a.o > NUL 2>&1
+    del %%a.map > NUL 2>&1
     del %%a.elf > NUL 2>&1
     ) )
 ) )

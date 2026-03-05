@@ -1,5 +1,6 @@
-Fri 02/27/2026  5:55:17.06 
+Thu 03/05/2026  6:20:26.59 
 tcmp
+x64os tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -175,6 +176,7 @@ floating point:
   flt lt 0 le 0 eq 0 ge 1 gt 1
   dbl lt 0 le 0 eq 0 ge 1 gt 1
   ldb lt 0 le 0 eq 0 ge 1 gt 1
+x32os tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -350,6 +352,7 @@ floating point:
   flt lt 0 le 0 eq 0 ge 1 gt 1
   dbl lt 0 le 0 eq 0 ge 1 gt 1
   ldb lt 0 le 0 eq 0 ge 1 gt 1
+rvos tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -525,6 +528,7 @@ floating point:
   flt lt 0 le 0 eq 0 ge 1 gt 1
   dbl lt 0 le 0 eq 0 ge 1 gt 1
   ldb lt 0 le 0 eq 0 ge 1 gt 1
+armos tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -700,6 +704,7 @@ floating point:
   flt lt 0 le 0 eq 0 ge 1 gt 1
   dbl lt 0 le 0 eq 0 ge 1 gt 1
   ldb lt 0 le 0 eq 0 ge 1 gt 1
+m68 tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -875,6 +880,7 @@ floating point:
   flt lt 0 le 0 eq 0 ge 1 gt 1
   dbl lt 0 le 0 eq 0 ge 1 gt 1
   ldb lt 0 le 0 eq 0 ge 1 gt 1
+sparcos tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -1051,6 +1057,7 @@ floating point:
   dbl lt 0 le 0 eq 0 ge 1 gt 1
   ldb lt 0 le 0 eq 0 ge 1 gt 1
 t
+x64os t
 int8_t result: 6
 uint8_t result: 6
 int16_t result: 6
@@ -1060,6 +1067,7 @@ uint32_t result: 6
 int64_t result: 6
 uint64_t result: 6
 end of the app
+x32os t
 int8_t result: 6
 uint8_t result: 6
 int16_t result: 6
@@ -1069,6 +1077,7 @@ uint32_t result: 6
 int64_t result: 6
 uint64_t result: 6
 end of the app
+rvos t
 int8_t result: 6
 uint8_t result: 6
 int16_t result: 6
@@ -1078,6 +1087,7 @@ uint32_t result: 6
 int64_t result: 6
 uint64_t result: 6
 end of the app
+armos t
 int8_t result: 6
 uint8_t result: 6
 int16_t result: 6
@@ -1087,6 +1097,7 @@ uint32_t result: 6
 int64_t result: 6
 uint64_t result: 6
 end of the app
+m68 t
 int8_t result: 6
 uint8_t result: 6
 int16_t result: 6
@@ -1096,6 +1107,7 @@ uint32_t result: 6
 int64_t result: 6
 uint64_t result: 6
 end of the app
+sparcos t
 int8_t result: 6
 uint8_t result: 6
 int16_t result: 6
@@ -1106,46 +1118,71 @@ int64_t result: 6
 uint64_t result: 6
 end of the app
 e
+x64os e
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
+x32os e
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
+rvos e
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
+armos e
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
+m68 e
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
+sparcos e
 271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
 done
 printint
+x64os printint
 n -13
+x32os printint
 n -13
+rvos printint
 n -13
+armos printint
 n -13
+m68 printint
 n -13
+sparcos printint
 n -13
 sieve
+x64os sieve
 1899 primes.
+x32os sieve
 1899 primes.
+rvos sieve
 1899 primes.
+armos sieve
 1899 primes.
+m68 sieve
 1899 primes.
+sparcos sieve
 1899 primes.
 simple
+x64os simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
+x32os simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
+rvos simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
+armos simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
+m68 simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
+sparcos simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
 tmuldiv
+x64os tmuldiv
 app start
 i8 3 * 14: 42
 i8 3 % 14: 3
@@ -1388,6 +1425,7 @@ ui64 18446716073709551616 * 18446744073709551612: 112000000000000
 ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
 ui64 18446716073709551616 / 18446744073709551612: 0
 tmuldiv ended with great success
+x32os tmuldiv
 app start
 i8 3 * 14: 42
 i8 3 % 14: 3
@@ -1630,6 +1668,7 @@ ui64 18446716073709551616 * 18446744073709551612: 112000000000000
 ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
 ui64 18446716073709551616 / 18446744073709551612: 0
 tmuldiv ended with great success
+rvos tmuldiv
 app start
 i8 3 * 14: 42
 i8 3 % 14: 3
@@ -1872,6 +1911,7 @@ ui64 18446716073709551616 * 18446744073709551612: 112000000000000
 ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
 ui64 18446716073709551616 / 18446744073709551612: 0
 tmuldiv ended with great success
+armos tmuldiv
 app start
 i8 3 * 14: 42
 i8 3 % 14: 3
@@ -2114,6 +2154,7 @@ ui64 18446716073709551616 * 18446744073709551612: 112000000000000
 ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
 ui64 18446716073709551616 / 18446744073709551612: 0
 tmuldiv ended with great success
+m68 tmuldiv
 app start
 i8 3 * 14: 42
 i8 3 % 14: 3
@@ -2356,6 +2397,7 @@ ui64 18446716073709551616 * 18446744073709551612: 112000000000000
 ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
 ui64 18446716073709551616 / 18446744073709551612: 0
 tmuldiv ended with great success
+sparcos tmuldiv
 app start
 i8 3 * 14: 42
 i8 3 % 14: 3
@@ -2599,13 +2641,20 @@ ui64 18446716073709551616 % 18446744073709551612: 18446716073709551616
 ui64 18446716073709551616 / 18446744073709551612: 0
 tmuldiv ended with great success
 tpi
+x64os tpi
 314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
+x32os tpi
 314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
+rvos tpi
 314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
+armos tpi
 314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
+m68 tpi
 314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
+sparcos tpi
 314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535
 ts
+x64os ts
 test multiple shifts
     sizeof T: 1, result: ff
     sizeof T: 1, result: ff
@@ -3140,6 +3189,7 @@ testing inttoa
   ui8toa: 255
   i8toa: -1
 test shifts and comparisons completed with great success
+x32os ts
 test multiple shifts
     sizeof T: 1, result: ff
     sizeof T: 1, result: ff
@@ -3674,6 +3724,7 @@ testing inttoa
   ui8toa: 255
   i8toa: -1
 test shifts and comparisons completed with great success
+rvos ts
 test multiple shifts
     sizeof T: 1, result: ff
     sizeof T: 1, result: ff
@@ -4208,6 +4259,7 @@ testing inttoa
   ui8toa: 255
   i8toa: -1
 test shifts and comparisons completed with great success
+armos ts
 test multiple shifts
     sizeof T: 1, result: ff
     sizeof T: 1, result: ff
@@ -4742,6 +4794,7 @@ testing inttoa
   ui8toa: 255
   i8toa: -1
 test shifts and comparisons completed with great success
+m68 ts
 test multiple shifts
     sizeof T: 1, result: ff
     sizeof T: 1, result: ff
@@ -5276,6 +5329,7 @@ testing inttoa
   ui8toa: 255
   i8toa: -1
 test shifts and comparisons completed with great success
+sparcos ts
 test multiple shifts
     sizeof T: 1, result: ff
     sizeof T: 1, result: ff
@@ -5811,6 +5865,7 @@ testing inttoa
   i8toa: -1
 test shifts and comparisons completed with great success
 tarray
+x64os tarray
 sum: 0xf8
 sum: 0xf8
 sum: 0xfff8
@@ -5859,6 +5914,7 @@ element 5: 1048576 = 0 0 16 0
 element 6: 16777216 = 0 0 0 1
 element 7: 268435456 = 0 0 0 16
 tarray completed with great success
+x32os tarray
 sum: 0xf8
 sum: 0xf8
 sum: 0xfff8
@@ -5907,6 +5963,7 @@ element 5: 1048576 = 0 0 16 0
 element 6: 16777216 = 0 0 0 1
 element 7: 268435456 = 0 0 0 16
 tarray completed with great success
+rvos tarray
 sum: 0xf8
 sum: 0xf8
 sum: 0xfff8
@@ -5955,6 +6012,7 @@ element 5: 1048576 = 0 0 16 0
 element 6: 16777216 = 0 0 0 1
 element 7: 268435456 = 0 0 0 16
 tarray completed with great success
+armos tarray
 sum: 0xf8
 sum: 0xf8
 sum: 0xfff8
@@ -6003,6 +6061,7 @@ element 5: 1048576 = 0 0 16 0
 element 6: 16777216 = 0 0 0 1
 element 7: 268435456 = 0 0 0 16
 tarray completed with great success
+m68 tarray
 sum: 0xf8
 sum: 0xf8
 sum: 0xfff8
@@ -6051,6 +6110,7 @@ element 5: 1048576 = 0 0 16 0
 element 6: 16777216 = 0 0 0 1
 element 7: 268435456 = 0 0 0 16
 tarray completed with great success
+sparcos tarray
 sum: 0xf8
 sum: 0xf8
 sum: 0xfff8
@@ -6100,6 +6160,7 @@ element 6: 16777216 = 0 0 0 1
 element 7: 268435456 = 0 0 0 16
 tarray completed with great success
 tbits
+x64os tbits
 uint8_t:
   and 3, or 7, xor 4, nota f8, notb fc
   and 5, or ff, xor fa, nota f8, notb 2
@@ -6180,6 +6241,7 @@ int64_t:
   and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
   and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
   and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+x32os tbits
 uint8_t:
   and 3, or 7, xor 4, nota f8, notb fc
   and 5, or ff, xor fa, nota f8, notb 2
@@ -6260,6 +6322,7 @@ int64_t:
   and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
   and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
   and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+rvos tbits
 uint8_t:
   and 3, or 7, xor 4, nota f8, notb fc
   and 5, or ff, xor fa, nota f8, notb 2
@@ -6340,6 +6403,7 @@ int64_t:
   and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
   and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
   and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+armos tbits
 uint8_t:
   and 3, or 7, xor 4, nota f8, notb fc
   and 5, or ff, xor fa, nota f8, notb 2
@@ -6420,6 +6484,7 @@ int64_t:
   and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
   and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
   and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+m68 tbits
 uint8_t:
   and 3, or 7, xor 4, nota f8, notb fc
   and 5, or ff, xor fa, nota f8, notb 2
@@ -6500,6 +6565,7 @@ int64_t:
   and f5, or ffffffffffffffff, xor ffffffffffffff0a, nota ffffffffffffff08, notb 2
   and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
   and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
+sparcos tbits
 uint8_t:
   and 3, or 7, xor 4, nota f8, notb fc
   and 5, or ff, xor fa, nota f8, notb 2
@@ -6581,31 +6647,38 @@ int64_t:
   and 1, or ffffffffffffff0b, xor ffffffffffffff0a, nota f6, notb fffffffffffffffc
   and ffffffffffffff09, or ffffffffffffff09, xor 0, nota f6, notb f6
 trw
+x64os trw
 O_CREATE 40
 O_RDWR 2
 O_TRUNC 200
 trw completed with great success
+x32os trw
 O_CREATE 40
 O_RDWR 2
 O_TRUNC 200
 trw completed with great success
+rvos trw
 O_CREATE 40
 O_RDWR 2
 O_TRUNC 200
 trw completed with great success
+armos trw
 O_CREATE 40
 O_RDWR 2
 O_TRUNC 200
 trw completed with great success
+m68 trw
 O_CREATE 40
 O_RDWR 2
 O_TRUNC 200
 trw completed with great success
+sparcos trw
 O_CREATE 40
 O_RDWR 2
 O_TRUNC 200
 trw completed with great success
 trw2
+x64os trw2
 pass 0 with element count 1
 pass 1 with element count 7
 pass 2 with element count 20
@@ -6619,6 +6692,7 @@ pass 9 with element count 128
 pass 10 with element count 129
 pass 11 with element count 701
 trw2.elf completed with great success
+x32os trw2
 pass 0 with element count 1
 pass 1 with element count 7
 pass 2 with element count 20
@@ -6632,6 +6706,7 @@ pass 9 with element count 128
 pass 10 with element count 129
 pass 11 with element count 701
 trw2.elf completed with great success
+rvos trw2
 pass 0 with element count 1
 pass 1 with element count 7
 pass 2 with element count 20
@@ -6645,6 +6720,7 @@ pass 9 with element count 128
 pass 10 with element count 129
 pass 11 with element count 701
 trw2.elf completed with great success
+armos trw2
 pass 0 with element count 1
 pass 1 with element count 7
 pass 2 with element count 20
@@ -6658,6 +6734,7 @@ pass 9 with element count 128
 pass 10 with element count 129
 pass 11 with element count 701
 trw2.elf completed with great success
+m68 trw2
 pass 0 with element count 1
 pass 1 with element count 7
 pass 2 with element count 20
@@ -6671,6 +6748,7 @@ pass 9 with element count 128
 pass 10 with element count 129
 pass 11 with element count 701
 trw2.elf completed with great success
+sparcos trw2
 pass 0 with element count 1
 pass 1 with element count 7
 pass 2 with element count 20
@@ -6685,6 +6763,7 @@ pass 10 with element count 129
 pass 11 with element count 701
 trw2.elf completed with great success
 tstr
+x64os tstr
 testing strlen
 testing strchr and strrchr
 testing strstr
@@ -6714,6 +6793,7 @@ testing wcslen
 testing wcschr and wcsrchr
 testing wcsstr
 tstr completed with great success
+x32os tstr
 testing strlen
 testing strchr and strrchr
 testing strstr
@@ -6743,6 +6823,7 @@ testing wcslen
 testing wcschr and wcsrchr
 testing wcsstr
 tstr completed with great success
+rvos tstr
 testing strlen
 testing strchr and strrchr
 testing strstr
@@ -6772,6 +6853,7 @@ testing wcslen
 testing wcschr and wcsrchr
 testing wcsstr
 tstr completed with great success
+armos tstr
 testing strlen
 testing strchr and strrchr
 testing strstr
@@ -6801,6 +6883,7 @@ testing wcslen
 testing wcschr and wcsrchr
 testing wcsstr
 tstr completed with great success
+m68 tstr
 testing strlen
 testing strchr and strrchr
 testing strstr
@@ -6830,6 +6913,7 @@ testing wcslen
 testing wcschr and wcsrchr
 testing wcsstr
 tstr completed with great success
+sparcos tstr
 testing strlen
 testing strchr and strrchr
 testing strstr
@@ -6860,6 +6944,7 @@ testing wcschr and wcsrchr
 testing wcsstr
 tstr completed with great success
 fileops
+x64os fileops
 current offset: 0
 result of fseek: 0
 file length from ftell: 0
@@ -6912,6 +6997,7 @@ result of read at offset 1024: 512
 result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
+x32os fileops
 current offset: 0
 result of fseek: 0
 file length from ftell: 0
@@ -6964,6 +7050,7 @@ result of read at offset 1024: 512
 result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
+rvos fileops
 current offset: 0
 result of fseek: 0
 file length from ftell: 0
@@ -7016,6 +7103,7 @@ result of read at offset 1024: 512
 result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
+armos fileops
 current offset: 0
 result of fseek: 0
 file length from ftell: 0
@@ -7068,6 +7156,7 @@ result of read at offset 1024: 512
 result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
+m68 fileops
 current offset: 0
 result of fseek: 0
 file length from ftell: 0
@@ -7120,6 +7209,7 @@ result of read at offset 1024: 512
 result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
+sparcos fileops
 current offset: 0
 result of fseek: 0
 file length from ftell: 0
@@ -7173,57 +7263,76 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 ttime
-before TZ is set: tz: '(null)', year: 2026, month 2, day 27, hour 9, min 4, sec 54
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 27, hour 9, min 4, sec 54
+x64os ttime
+before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+x32os ttime
 before TZ is set: tz: '(null)', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
-before TZ is set: tz: '(null)', year: 2026, month 2, day 27, hour 9, min 4, sec 54
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 27, hour 9, min 4, sec 54
-before TZ is set: tz: '(null)', year: 2026, month 2, day 27, hour 9, min 4, sec 55
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 27, hour 9, min 4, sec 55
-before TZ is set: tz: '(null)', year: 2026, month 2, day 27, hour 9, min 4, sec 55
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 27, hour 9, min 4, sec 55
-before TZ is set: tz: '(null)', year: 2026, month 2, day 27, hour 9, min 4, sec 55
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 27, hour 9, min 4, sec 55
+rvos ttime
+before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+armos ttime
+before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+m68 ttime
+before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+sparcos ttime
+before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
 tm
+x64os tm
 tm has completed with great success
+x32os tm
 tm has completed with great success
+rvos tm
 tm has completed with great success
+armos tm
 tm has completed with great success
+m68 tm
 tm has completed with great success
+sparcos tm
 tm has completed with great success
 glob
+x64os glob
 in CTest constructor
 top main
 value of ctest::foo: 666
 end of main
 in ~CTest destructor
+x32os glob
 in CTest constructor
 top main
 value of ctest::foo: 666
 end of main
 in ~CTest destructor
+rvos glob
 in CTest constructor
 top main
 value of ctest::foo: 666
 end of main
 in ~CTest destructor
+armos glob
 in CTest constructor
 top main
 value of ctest::foo: 666
 end of main
 in ~CTest destructor
+m68 glob
 in CTest constructor
 top main
 value of ctest::foo: 666
 end of main
 in ~CTest destructor
+sparcos glob
 in CTest constructor
 top main
 value of ctest::foo: 666
 end of main
 in ~CTest destructor
 tap
+x64os tap
 starting, should tend towards 1.2020569031595942854...
   at           10 iterations: 1.19753198567419305580
   at          100 iterations: 1.20200740065967814910
@@ -7234,6 +7343,7 @@ next implementation...
   at         1000 iterations: 1.21212121212121215490
   at        10000 iterations: 1.19875329657156548540
 tap completed with great success
+x32os tap
 starting, should tend towards 1.2020569031595942854...
   at           10 iterations: 1.19753198567419305580
   at          100 iterations: 1.20200740065967814910
@@ -7244,6 +7354,7 @@ next implementation...
   at         1000 iterations: 1.21212121212121215490
   at        10000 iterations: 1.19875329657156548540
 tap completed with great success
+rvos tap
 starting, should tend towards 1.2020569031595942854...
   at           10 iterations: 1.19753198567419305580
   at          100 iterations: 1.20200740065967814910
@@ -7254,6 +7365,7 @@ next implementation...
   at         1000 iterations: 1.21212121212121215490
   at        10000 iterations: 1.19875329657156548540
 tap completed with great success
+armos tap
 starting, should tend towards 1.2020569031595942854...
   at           10 iterations: 1.19753198567419305580
   at          100 iterations: 1.20200740065967814910
@@ -7264,6 +7376,7 @@ next implementation...
   at         1000 iterations: 1.21212121212121215490
   at        10000 iterations: 1.19875329657156548540
 tap completed with great success
+m68 tap
 starting, should tend towards 1.2020569031595942854...
   at           10 iterations: 1.19753198567419305580
   at          100 iterations: 1.20200740065967814910
@@ -7274,6 +7387,7 @@ next implementation...
   at         1000 iterations: 1.21212121212121215490
   at        10000 iterations: 1.19875329657156548540
 tap completed with great success
+sparcos tap
 starting, should tend towards 1.2020569031595942854...
   at           10 iterations: 1.19753198567419305580
   at          100 iterations: 1.20200740065967814910
@@ -7285,6 +7399,7 @@ next implementation...
   at        10000 iterations: 1.19875329657156548540
 tap completed with great success
 tsimplef
+x64os tsimplef
 float 3.141593
 f1 2.500000 * f2 3.500000 = 8.750000
     div = 0.714286
@@ -7295,6 +7410,7 @@ d1 9.720000 * d2 13.321000 = 129.480120
     add = 23.041000
     sub = -3.601000
 tsimplef completed with great success
+x32os tsimplef
 float 3.141593
 f1 2.500000 * f2 3.500000 = 8.750000
     div = 0.714286
@@ -7305,6 +7421,7 @@ d1 9.720000 * d2 13.321000 = 129.480120
     add = 23.041000
     sub = -3.601000
 tsimplef completed with great success
+rvos tsimplef
 float 3.141593
 f1 2.500000 * f2 3.500000 = 8.750000
     div = 0.714286
@@ -7315,6 +7432,7 @@ d1 9.720000 * d2 13.321000 = 129.480120
     add = 23.041000
     sub = -3.601000
 tsimplef completed with great success
+armos tsimplef
 float 3.141593
 f1 2.500000 * f2 3.500000 = 8.750000
     div = 0.714286
@@ -7325,6 +7443,7 @@ d1 9.720000 * d2 13.321000 = 129.480120
     add = 23.041000
     sub = -3.601000
 tsimplef completed with great success
+m68 tsimplef
 float 3.141593
 f1 2.500000 * f2 3.500000 = 8.750000
     div = 0.714286
@@ -7335,6 +7454,7 @@ d1 9.720000 * d2 13.321000 = 129.480120
     add = 23.041000
     sub = -3.601000
 tsimplef completed with great success
+sparcos tsimplef
 float 3.141593
 f1 2.500000 * f2 3.500000 = 8.750000
     div = 0.714286
@@ -7346,6 +7466,7 @@ d1 9.720000 * d2 13.321000 = 129.480120
     sub = -3.601000
 tsimplef completed with great success
 tphi
+x64os tphi
 should tend towards 1.61803398874989484820458683436563811772030
   at  5 iterations: 1.6250000000000000
   at 10 iterations: 1.6179775280898876
@@ -7356,6 +7477,7 @@ should tend towards 1.61803398874989484820458683436563811772030
   at 35 iterations: 1.6180339887498969
   at 40 iterations: 1.6180339887498949
 done
+x32os tphi
 should tend towards 1.61803398874989484820458683436563811772030
   at  5 iterations: 1.6250000000000000
   at 10 iterations: 1.6179775280898876
@@ -7366,6 +7488,7 @@ should tend towards 1.61803398874989484820458683436563811772030
   at 35 iterations: 1.6180339887498969
   at 40 iterations: 1.6180339887498949
 done
+rvos tphi
 should tend towards 1.61803398874989484820458683436563811772030
   at  5 iterations: 1.6250000000000000
   at 10 iterations: 1.6179775280898876
@@ -7376,6 +7499,7 @@ should tend towards 1.61803398874989484820458683436563811772030
   at 35 iterations: 1.6180339887498969
   at 40 iterations: 1.6180339887498949
 done
+armos tphi
 should tend towards 1.61803398874989484820458683436563811772030
   at  5 iterations: 1.6250000000000000
   at 10 iterations: 1.6179775280898876
@@ -7386,6 +7510,7 @@ should tend towards 1.61803398874989484820458683436563811772030
   at 35 iterations: 1.6180339887498969
   at 40 iterations: 1.6180339887498949
 done
+m68 tphi
 should tend towards 1.61803398874989484820458683436563811772030
   at  5 iterations: 1.6250000000000000
   at 10 iterations: 1.6179775280898876
@@ -7396,6 +7521,7 @@ should tend towards 1.61803398874989484820458683436563811772030
   at 35 iterations: 1.6180339887498969
   at 40 iterations: 1.6180339887498949
 done
+sparcos tphi
 should tend towards 1.61803398874989484820458683436563811772030
   at  5 iterations: 1.6250000000000000
   at 10 iterations: 1.6179775280898876
@@ -7407,6 +7533,7 @@ should tend towards 1.61803398874989484820458683436563811772030
   at 40 iterations: 1.6180339887498949
 done
 tf
+x64os tf
 float converted by floattoa: -1.23456699
 float converted by floattoa: 1.23456699
 float converted by floattoa: 34.56700000
@@ -7435,6 +7562,7 @@ floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
 test tf completed with great success
+x32os tf
 float converted by floattoa: -1.23456699
 float converted by floattoa: 1.23456699
 float converted by floattoa: 34.56700000
@@ -7463,6 +7591,7 @@ floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
 test tf completed with great success
+rvos tf
 float converted by floattoa: -1.23456699
 float converted by floattoa: 1.23456699
 float converted by floattoa: 34.56700000
@@ -7491,6 +7620,7 @@ floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
 test tf completed with great success
+armos tf
 float converted by floattoa: -1.23456699
 float converted by floattoa: 1.23456699
 float converted by floattoa: 34.56700000
@@ -7519,6 +7649,7 @@ floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
 test tf completed with great success
+m68 tf
 float converted by floattoa: -1.23456699
 float converted by floattoa: 1.23456699
 float converted by floattoa: 34.56700000
@@ -7547,6 +7678,7 @@ floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
 test tf completed with great success
+sparcos tf
 float converted by floattoa: -1.23456699
 float converted by floattoa: 1.23456699
 float converted by floattoa: 34.56700000
@@ -7576,19 +7708,26 @@ ceil of -1.8: -1.000000 == -1
 l,le,l,le,l,le,l,le,l,le,l,le,l,le,l,le,g,ge,g,ge,g,ge,
 test tf completed with great success
 ttt
+x64os ttt
 6493 moves
 1 iterations
+x32os ttt
 6493 moves
 1 iterations
+rvos ttt
 6493 moves
 1 iterations
+armos ttt
 6493 moves
 1 iterations
+m68 ttt
 6493 moves
 1 iterations
+sparcos ttt
 6493 moves
 1 iterations
 td
+x64os td
 sprintf double 3.14159265358979311600
 double from printf: 3.14159265358979311600
 float from printf: 1.202057
@@ -7618,6 +7757,7 @@ ceil of 1.1: 2.000000 == 2
 floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 test td completed with great success
+x32os td
 sprintf double 3.14159265358979311600
 double from printf: 3.14159265358979311600
 float from printf: 1.202057
@@ -7647,6 +7787,7 @@ ceil of 1.1: 2.000000 == 2
 floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 test td completed with great success
+rvos td
 sprintf double 3.14159265358979311600
 double from printf: 3.14159265358979311600
 float from printf: 1.202057
@@ -7676,6 +7817,7 @@ ceil of 1.1: 2.000000 == 2
 floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 test td completed with great success
+armos td
 sprintf double 3.14159265358979311600
 double from printf: 3.14159265358979311600
 float from printf: 1.202057
@@ -7705,6 +7847,7 @@ ceil of 1.1: 2.000000 == 2
 floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 test td completed with great success
+m68 td
 sprintf double 3.14159265358979311600
 double from printf: 3.14159265358979311600
 float from printf: 1.202057
@@ -7734,6 +7877,7 @@ ceil of 1.1: 2.000000 == 2
 floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 test td completed with great success
+sparcos td
 sprintf double 3.14159265358979311600
 double from printf: 3.14159265358979311600
 float from printf: 1.202057
@@ -7764,80 +7908,98 @@ floor of -1.8: -2.000000 == -2
 ceil of -1.8: -1.000000 == -1
 test td completed with great success
 terrno
+x64os terrno
 errno opening a file for read that doesn't exist: 2 (2 file not found expected)
 errno doing write to stdin file descriptor: 13. (13 permission denied expected)
 errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
 success
+x32os terrno
 errno opening a file for read that doesn't exist: 2 (2 file not found expected)
 errno doing write to stdin file descriptor: 13. (13 permission denied expected)
 errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
 success
+rvos terrno
 errno opening a file for read that doesn't exist: 2 (2 file not found expected)
 errno doing write to stdin file descriptor: 13. (13 permission denied expected)
 errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
 success
+armos terrno
 errno opening a file for read that doesn't exist: 2 (2 file not found expected)
 errno doing write to stdin file descriptor: 13. (13 permission denied expected)
 errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
 success
+m68 terrno
 errno opening a file for read that doesn't exist: 2 (2 file not found expected)
 errno doing write to stdin file descriptor: 13. (13 permission denied expected)
 errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
 success
+sparcos terrno
 errno opening a file for read that doesn't exist: 2 (2 file not found expected)
 errno doing write to stdin file descriptor: 13. (13 permission denied expected)
 errno opening a file for read with invalid open flags: 22 (22 invalid argument expected)
 success
 t_setjmp
+x64os t_setjmp
 second
 back in main
 falling out of main
+x32os t_setjmp
 second
 back in main
 falling out of main
+rvos t_setjmp
 second
 back in main
 falling out of main
+armos t_setjmp
 second
 back in main
 falling out of main
+m68 t_setjmp
 second
 back in main
 falling out of main
+sparcos t_setjmp
 second
 back in main
 falling out of main
 tex
+x64os tex
 top of tex
 I am unwound, x should be 44: 44
 caught exception exceptional
 attempting large allocations
 caught exception bad_alloc
 leaving main
+x32os tex
 top of tex
 I am unwound, x should be 44: 44
 caught exception exceptional
 attempting large allocations
 caught exception bad_alloc
 leaving main
+rvos tex
 top of tex
 I am unwound, x should be 44: 44
 caught exception exceptional
 attempting large allocations
 caught exception bad_alloc
 leaving main
+armos tex
 top of tex
 I am unwound, x should be 44: 44
 caught exception exceptional
 attempting large allocations
 caught exception bad_alloc
 leaving main
+m68 tex
 top of tex
 I am unwound, x should be 44: 44
 caught exception exceptional
 attempting large allocations
 caught exception bad_alloc
 leaving main
+sparcos tex
 top of tex
 I am unwound, x should be 44: 44
 caught exception exceptional
@@ -7845,6 +8007,7 @@ attempting large allocations
 caught exception bad_alloc
 leaving main
 pis
+x64os pis
 startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
 startInChunks: 0, limitInChunks 4
 percent complete: 25.000000
@@ -7853,6 +8016,7 @@ percent complete: 75.000000
 percent complete: 100.000000
 results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
+x32os pis
 startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
 startInChunks: 0, limitInChunks 4
 percent complete: 25.000000
@@ -7861,6 +8025,7 @@ percent complete: 75.000000
 percent complete: 100.000000
 results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
+rvos pis
 startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
 startInChunks: 0, limitInChunks 4
 percent complete: 25.000000
@@ -7869,6 +8034,7 @@ percent complete: 75.000000
 percent complete: 100.000000
 results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
+armos pis
 startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
 startInChunks: 0, limitInChunks 4
 percent complete: 25.000000
@@ -7877,6 +8043,7 @@ percent complete: 75.000000
 percent complete: 100.000000
 results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
+m68 pis
 startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
 startInChunks: 0, limitInChunks 4
 percent complete: 25.000000
@@ -7885,6 +8052,7 @@ percent complete: 75.000000
 percent complete: 100.000000
 results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
+sparcos pis
 startingOffset128: 0, startingOffset: 0, countGenerated128 1, countGenerated 128
 startInChunks: 0, limitInChunks 4
 percent complete: 25.000000
@@ -7894,20 +8062,33 @@ percent complete: 100.000000
 results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
 lenum
+x64os lenum
 linux file system enumeration completed with great success
+x32os lenum
 linux file system enumeration completed with great success
+rvos lenum
 linux file system enumeration completed with great success
+armos lenum
 linux file system enumeration completed with great success
+m68 lenum
 linux file system enumeration completed with great success
+sparcos lenum
 linux file system enumeration completed with great success
 trename
+x64os trename
 trename completed with great success
+x32os trename
 trename completed with great success
+rvos trename
 trename completed with great success
+armos trename
 trename completed with great success
+m68 trename
 trename completed with great success
+sparcos trename
 trename completed with great success
 nqueens
+x64os nqueens
   size    solutions
      1            1
      2            0
@@ -7919,6 +8100,7 @@ nqueens
      8           92
      9          352
     10          724
+x32os nqueens
   size    solutions
      1            1
      2            0
@@ -7930,6 +8112,7 @@ nqueens
      8           92
      9          352
     10          724
+rvos nqueens
   size    solutions
      1            1
      2            0
@@ -7941,6 +8124,7 @@ nqueens
      8           92
      9          352
     10          724
+armos nqueens
   size    solutions
      1            1
      2            0
@@ -7952,6 +8136,7 @@ nqueens
      8           92
      9          352
     10          724
+m68 nqueens
   size    solutions
      1            1
      2            0
@@ -7963,6 +8148,7 @@ nqueens
      8           92
      9          352
     10          724
+sparcos nqueens
   size    solutions
      1            1
      2            0
@@ -7975,6 +8161,7 @@ nqueens
      9          352
     10          724
 fopentst
+x64os fopentst
 O_CREAT: 0x40
 O_TRUNC: 0x200
 O_ASYNC: 0x2000
@@ -7992,9 +8179,10 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 27, hour 6, min 7, sec 30
+tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
 len in pfl: 0
 exiting fopentst with great success
+x32os fopentst
 O_CREAT: 0x40
 O_TRUNC: 0x200
 O_ASYNC: 0x2000
@@ -8012,9 +8200,10 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 27, hour 6, min 7, sec 31
+tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
 len in pfl: 0
 exiting fopentst with great success
+rvos fopentst
 O_CREAT: 0x40
 O_TRUNC: 0x200
 O_ASYNC: 0x2000
@@ -8032,9 +8221,10 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 27, hour 6, min 7, sec 31
+tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
 len in pfl: 0
 exiting fopentst with great success
+armos fopentst
 O_CREAT: 0x40
 O_TRUNC: 0x200
 O_ASYNC: 0x2000
@@ -8052,9 +8242,10 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 27, hour 6, min 7, sec 31
+tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
 len in pfl: 0
 exiting fopentst with great success
+m68 fopentst
 O_CREAT: 0x40
 O_TRUNC: 0x200
 O_ASYNC: 0x2000
@@ -8072,9 +8263,10 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 27, hour 6, min 7, sec 31
+tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 4
 len in pfl: 0
 exiting fopentst with great success
+sparcos fopentst
 O_CREAT: 0x40
 O_TRUNC: 0x200
 O_ASYNC: 0x2000
@@ -8092,93 +8284,114 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 27, hour 6, min 7, sec 31
+tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 4
 len in pfl: 0
 exiting fopentst with great success
 fact
+x64os fact
 factorial( 15 ) = 1307674368000
+x32os fact
 factorial( 15 ) = 1307674368000
+rvos fact
 factorial( 15 ) = 1307674368000
+armos fact
 factorial( 15 ) = 1307674368000
+m68 fact
 factorial( 15 ) = 1307674368000
+sparcos fact
 factorial( 15 ) = 1307674368000
 triangle
+x64os triangle
 triangle( 200 ) = 20100
+x32os triangle
 triangle( 200 ) = 20100
+rvos triangle
 triangle( 200 ) = 20100
+armos triangle
 triangle( 200 ) = 20100
+m68 triangle
 triangle( 200 ) = 20100
+sparcos triangle
 triangle( 200 ) = 20100
 mm_old
+x64os mm_old
 filla
 fillb
 fillc
 starting mult
 summ is : 465880
+x32os mm_old
 filla
 fillb
 fillc
 starting mult
 summ is : 465880
+rvos mm_old
 filla
 fillb
 fillc
 starting mult
 summ is : 465880
+armos mm_old
 filla
 fillb
 fillc
 starting mult
 summ is : 465880
+m68 mm_old
 filla
 fillb
 fillc
 starting mult
 summ is : 465880
+sparcos mm_old
 filla
 fillb
 fillc
 starting mult
 summ is : 465880
 hidave
+x64os hidave
 hi dave
 -3.141593
 -27.108400
 int 666: 666
+x32os hidave
 hi dave
 -3.141593
 -27.108400
 int 666: 666
+rvos hidave
 hi dave
 -3.141593
 -27.108400
 int 666: 666
+armos hidave
 hi dave
 -3.141593
 -27.108400
 int 666: 666
+m68 hidave
 hi dave
 -3.141593
 -27.108400
 int 666: 666
+sparcos hidave
 hi dave
 -3.141593
 -27.108400
 int 666: 666
 termiosf
+x64os termiosf
 lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -8200,7 +8413,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -8236,21 +8448,18 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
+x32os termiosf
 lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -8272,7 +8481,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -8308,21 +8516,18 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
+rvos termiosf
 lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -8344,7 +8549,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -8380,21 +8584,18 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
+armos termiosf
 lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -8416,7 +8617,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -8452,21 +8652,18 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
+m68 termiosf
 lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -8488,7 +8685,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -8524,21 +8720,18 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
+sparcos termiosf
 lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -8560,7 +8753,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -8596,9 +8788,10 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
 mandle
+x64os mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000111111111111111112222222233445C      643332222111110000000000000000000000000
@@ -8675,6 +8868,7 @@ mandle
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
+x32os mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000111111111111111112222222233445C      643332222111110000000000000000000000000
@@ -8751,6 +8945,7 @@ mandle completed with great success
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
+rvos mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000111111111111111112222222233445C      643332222111110000000000000000000000000
@@ -8827,6 +9022,7 @@ mandle completed with great success
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
+armos mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000111111111111111112222222233445C      643332222111110000000000000000000000000
@@ -8903,6 +9099,7 @@ mandle completed with great success
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
+m68 mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000111111111111111112222222233445C      643332222111110000000000000000000000000
@@ -8979,6 +9176,7 @@ mandle completed with great success
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
+sparcos mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000111111111111111112222222233445C      643332222111110000000000000000000000000
@@ -9055,4 +9253,4 @@ mandle completed with great success
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
-Fri 02/27/2026  6:07:53.46 
+Thu 03/05/2026  6:33:26.74 

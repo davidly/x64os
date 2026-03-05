@@ -1,4 +1,4 @@
-Thu 02/26/2026  7:06:33.44 
+Wed 03/04/2026 16:23:23.18 
 tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -1209,8 +1209,8 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 2, day 26, hour 7, min 6, sec 35
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 2, day 26, hour 10, min 6, sec 35
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 4, hour 16, min 23, sec 33
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 4, hour 19, min 23, sec 33
 tm
 tm has completed with great success
 glob
@@ -1373,7 +1373,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 2, day 26, hour 7, min 6, sec 36
+tz: 'PST+8', year: 2026, month 3, day 4, hour 16, min 23, sec 39
 len in pfl: 0
 exiting fopentst with great success
 fact
@@ -1396,15 +1396,11 @@ lflag:
  icanon 0x2
  echonl 0x40
  echok 0x20
- echoke 0x800
  echoe 0x10
  echo 0x8
- extproc 0x10000
- echoprt 0x400
  econl 0x40
  isig 0x1
  iexten 0x8000
- echoctl 0x200
  tostop 0x100
 oflag
  opost 0x1
@@ -1426,7 +1422,6 @@ iflag
  ignpar 0x4
  parmrk 0x8
  ixany 0x800
- iutf8 0x4000
 cflag
  cs5 0
  cs6 0x10
@@ -1462,7 +1457,7 @@ tcsetattr
  TCSADRAIN 0x1
  TCSAFLUSH 0x2
 TIOCGWINSZ 0x5413
-c_cc elements: 0x13
+c_cc elements: 0x20
 termiosf completed with great success
 mandle
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
@@ -1541,4 +1536,4 @@ mandle
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
-Thu 02/26/2026  7:06:37.31 
+Wed 03/04/2026 16:23:41.30 
