@@ -2817,7 +2817,7 @@ void emulator_invoke_svc( CPUClass & cpu )
             assert( false );
             int result = -1;
 #elif defined( __APPLE__ ) // no pipe2 on macOS
-            int result = macos_pipe2( pipefd, flags );
+            int result = macos_pipe2( pipefd );
 #else
             int result = pipe2( pipefd, flags );
             if ( -1 != result )
