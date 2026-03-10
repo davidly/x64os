@@ -1,4 +1,4 @@
-Tue 03/03/2026  6:18:29.98 
+Thu 03/05/2026 15:19:59.52 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -12180,35 +12180,35 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 c_tests/x32bin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32clangbin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32bin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32clangbin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32bin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32clangbin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32bin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32clangbin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32binfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32clangbinfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
+before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
 c_tests/x32bin0/tm
 tm has completed with great success
 c_tests/x32clangbin0/tm
@@ -58871,7 +58871,6 @@ testing with -0.0:
 nan test completed with great success
 c_tests/x32bin0/sleeptm
 clk_tck / number of linux ticks per second: 100
-getrusage user time in ms: 1046, system time 0
 sleepy time ended with great success
 c_tests/x32clangbin0/sleeptm
 clk_tck / number of linux ticks per second: 100
@@ -59117,7 +59116,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59137,7 +59136,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59157,7 +59156,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59177,7 +59176,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 34
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59197,7 +59196,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59217,7 +59216,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59237,7 +59236,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59257,7 +59256,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59277,7 +59276,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59297,7 +59296,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 3, hour 6, min 19, sec 35
+tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -61103,6 +61102,8 @@ c_tests/aaaaas
 success
 c_tests/pushpop32
 success
+c_tests/jmpcall32
+success
 c_tests/x32bin0/an david lee
 a delve id
 a delved i
@@ -61545,7 +61546,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-721 ms for 1 iterations
+608 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61594,7 +61595,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-202 ms for 1 iterations
+174 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61643,7 +61644,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-198 ms for 1 iterations
+172 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61692,7 +61693,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-205 ms for 1 iterations
+177 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61741,7 +61742,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-205 ms for 1 iterations
+177 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -62086,4 +62087,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Tue 03/03/2026  6:19:55.10 
+Thu 03/05/2026 15:21:22.72 

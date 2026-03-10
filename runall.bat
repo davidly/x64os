@@ -30,7 +30,7 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
     ) )
 ) )
 
-set _sapplist=e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64
+set _sapplist=e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64
 ( for %%a in (%_sapplist%) do (
     echo %%a
     echo c_tests/%%a>>%outputfile%

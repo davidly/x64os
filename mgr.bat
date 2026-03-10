@@ -2,7 +2,8 @@
 setlocal
 
 rem -O2 generates faster code than -O3 perhaps because smaller code means better cache utility
+rem but I worry about -O2 bugs
 
-g++ -O2 -ggdb -D X64OS -D _MSC_VER x64os.cxx x64.cxx -I ../djl -D NDEBUG -o x64os.exe -static
+g++ -O3 -ggdb -D X64OS -D _MSC_VER x64os.cxx x64.cxx -I ../djl -D NDEBUG -o x64os.exe -static
 
 objdump x64os.exe -d >x64os.txt

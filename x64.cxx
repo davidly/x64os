@@ -114,20 +114,20 @@ template <typename T> inline void do_swap( T & a, T & b ) { T tmp = a; a = b; b 
 
 void x64::trace_state()
 {
-    uint64_t rip_save = rip.q;
-    uint8_t op = getui8( rip.q );
+    uint64_t rip_save = rip;
+    uint8_t op = getui8( rip );
     if ( ( 0x66 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
 
 //    tracer.TraceBinaryData( getmem( 0xa925b38 ), 8, 2 );
 
-    uint64_t ip = ( 0 == _prefix.rex ) ? rip.q : ( rip.q - 1 );
+    uint64_t ip = ( 0 == _prefix.rex ) ? rip : ( rip - 1 );
     if ( 0 != _prefix.size )
         ip--;
     if ( 0 != _prefix.sse2_repeat )
         ip--;
 
-    rip.q++;
+    rip++;
 
     static const char * previous_symbol = 0;
     uint64_t offset;
@@ -210,7 +210,7 @@ void x64::trace_state()
             decode_rex();
             if ( 0x66 == _prefix.size )
             {
-                uint16_t imm = (int16_t) (int16_t) get_rip16();
+                uint16_t imm = get_rip16();
                 tracer.Trace( "%sw ax, %#x\n", math_names[ math ], imm );
             }
             else
@@ -371,7 +371,7 @@ void x64::trace_state()
                 }
                 case 0x1e:
                 {
-                    uint8_t op2 = getui8( rip.q );
+                    uint8_t op2 = getui8( rip );
                     if ( 0xfa == op2 ) // endbr64
                         tracer.Trace( "endbr64\n" );
                     else if ( 0xfb == op2 ) // endbr32
@@ -998,7 +998,7 @@ void x64::trace_state()
                 case 0x88: case 0x89: case 0x8a: case 0x8b: case 0x8c: case 0x8d: case 0x8e: case 0x8f:
                 {
                     int64_t disp = (int32_t) get_rip32();
-                    tracer.Trace( "j%s %lld  # %#llx\n", condition_names[ op1 & 0xf ], disp, rip.q + disp );
+                    tracer.Trace( "j%s %lld  # %#llx\n", condition_names[ op1 & 0xf ], disp, rip + disp );
                     break;
                 }
                 case 0x90: case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // setcc
@@ -1065,7 +1065,7 @@ void x64::trace_state()
                         tracer.Trace( "sfence\n" );
                     else
                     {
-                        rip.q--;
+                        rip--;
                         decode_rm();
                         if ( 2 == _reg )
                             tracer.Trace( "ldmxcsr %s\n", rm_string( 8 ) );
@@ -1706,7 +1706,7 @@ void x64::trace_state()
         case 0x78: case 0x79: case 0x7a: case 0x7b: case 0x7c: case 0x7d: case 0x7e: case 0x7f:
         {
             int8_t val = (int8_t) get_rip8();
-            tracer.Trace( "j%s %d  # %#llx\n", condition_names[ op & 0xf ], val, rip.q + (int64_t) val );
+            tracer.Trace( "j%s %d  # %#llx\n", condition_names[ op & 0xf ], val, rip + (int64_t) val );
             break;
         }
         case 0x80: // math r/m8, i8
@@ -1978,7 +1978,7 @@ void x64::trace_state()
         {
             _rm = ( op & 7 );
             decode_rex();
-            tracer.Trace( "mov %s, %#x\n", register_name( _rm, 1 ), getui8( rip.q ) );
+            tracer.Trace( "mov %s, %#x\n", register_name( _rm, 1 ), getui8( rip ) );
             break;
         }
         case 0xb8: case 0xb9: case 0xba: case 0xbb: case 0xbc: case 0xbd: case 0xbe: case 0xbf: // mov reg, 64-bit immediate
@@ -2131,7 +2131,7 @@ void x64::trace_state()
                 tracer.Trace( "fdivr st(0), st(%u)\n", op1 & 7 );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fadd m32fp
                     tracer.Trace( "fadd %s  # m32fp\n", rm_string( 4, true ) );
@@ -2179,7 +2179,7 @@ void x64::trace_state()
                 tracer.Trace( "%s\n", float_d9_f8[ op1 & 7 ] );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
                     tracer.Trace( "fld %s  # m32fp\n", rm_string( 4 ) );
@@ -2215,7 +2215,7 @@ void x64::trace_state()
                 tracer.Trace( "fucompp\n" );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fiadd m32int  add m32int to st(0) and store in st(0)
                     tracer.Trace( "fiadd %d  # m32int\n", get_rm32() );
@@ -2257,7 +2257,7 @@ void x64::trace_state()
                 tracer.Trace( "finit\n" );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fild m32int
                     tracer.Trace( "fild %d\n", get_rip32() );
@@ -2295,7 +2295,7 @@ void x64::trace_state()
                 tracer.Trace( "fdiv st(%u), st(0)\n", op1 & 7 );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fadd m64fp
                     tracer.Trace( "fadd %s  # m64fp\n", rm_string( 8 ) );
@@ -2331,7 +2331,7 @@ void x64::trace_state()
                 tracer.Trace( "fucomp st(%u)\n", op1 & 7 );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
                     tracer.Trace( "fld %s\n", rm_string( 8 ) );
@@ -2367,7 +2367,7 @@ void x64::trace_state()
                 tracer.Trace( "fcompp\n" );
             else
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fiadd m16int   add m16int to st(0) and store in st(0)
                     tracer.Trace( "fiadd %s  # m16int\n", rm_string( 2 ) );
@@ -2401,7 +2401,7 @@ void x64::trace_state()
                 tracer.Trace( "fnstsw ax\n" );
             else if ( 0 == _prefix.sse2_repeat )
             {
-                rip.q--;
+                rip--;
                 decode_rm();
                 if ( 0 == _reg ) // fild m16int
                     tracer.Trace( "fild %s  # m16int\n", rm_string( 2 ) );
@@ -2443,19 +2443,19 @@ void x64::trace_state()
         case 0xe8: // call rel32
         {
             uint32_t imm = get_rip32();
-            tracer.Trace( "call %d  # %#llx\n", imm, rip.q + (int32_t) imm );
+            tracer.Trace( "call %d  # %#llx\n", imm, rip + (int32_t) imm );
             break;
         }
-        case 0xe9: // jmp cd  (relative to rip.q sign-extended 32-bit immediate)
+        case 0xe9: // jmp cd  (relative to rip sign-extended 32-bit immediate)
         {
             uint32_t imm = get_rip32();
-            tracer.Trace( "jmp %d  # %#llx\n", (int32_t) imm, rip.q + (int32_t) imm );
+            tracer.Trace( "jmp %d  # %#llx\n", (int32_t) imm, rip + (int32_t) imm );
             break;
         }
         case 0xeb: // jmp
         {
             int8_t imm = (int8_t) get_rip8();
-            tracer.Trace( "jmp %d  # %#llx\n", imm, rip.q + imm );
+            tracer.Trace( "jmp %d  # %#llx\n", imm, rip + imm );
             break;
         }
         case 0xf0: // lock
@@ -2620,7 +2620,7 @@ void x64::trace_state()
             unhandled();
     }
 
-    rip.q = rip_save;
+    rip = rip_save;
     clear_decoding();
 } //trace_state
 
@@ -3140,15 +3140,15 @@ template <typename T> void x64::op_shift( T * pval, uint8_t operation, uint8_t s
 
 not_inlined void x64::unhandled()
 {
-    printf( "\n  instruction_start: %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip.q, getui8( rip.q ), base, mem_size, stack_top, stack_size );
+    printf( "\n  instruction_start: %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip, getui8( rip ), base, mem_size, stack_top, stack_size );
     printf( "_prefix.rex %#x, _prefix.size %#x, _prefix.sse2_repeat %#x, _prefix.segment %#x\n", _prefix.rex, _prefix.size, _prefix.sse2_repeat, _prefix.segment );
     printf( "_rex.W %#x, _rex.R %#x, _rex.X %#x, _rex.B %#x\n", _rex.W, _rex.R, _rex.X, _rex.B );
     printf( "_mod %#x, _reg %#x, _rm %#x\n", _mod, _reg, _rm );
-    tracer.Trace( "\n  instruction_start %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip.q, getui8( rip.q ), base, mem_size, stack_top, stack_size );
+    tracer.Trace( "\n  instruction_start %llx, rip %llx, op %x, base %llx, mem_size %llx, stack_top %llx, stack_size %llx\n", _instruction_start, rip, getui8( rip ), base, mem_size, stack_top, stack_size );
     tracer.Trace( "  _mod %u rexW %u, rexR %u, rexX %u, rexB %u, _reg %#x, _rm %#x\n", _mod, _rex.W, _rex.R, _rex.X, _rex.B, _reg, _rm );
     tracer.Trace( "  _displacement: %#llx, sibScale %u, sibIndex %u, sibBase %#x\n", _displacement, _sibScale, _sibIndex, _sibBase );
     force_trace_xregs();
-    emulator_hard_termination( *this, "opcode not handled:", getui8( rip.q ) );
+    emulator_hard_termination( *this, "opcode not handled:", getui8( rip ) );
 } //unhandled
 
 /*
@@ -3363,6 +3363,9 @@ const char * x64::register_name( uint8_t reg, uint8_t byte_width, bool is_xmm )
     return register_names[ reg ];
 } //register_name
 
+// Prefix 0x67 in 64-bit mode could be applied here by accessing all registers including SIB as .d instead of .q.
+// In practice, it'll have no impact for apps build with clang++ and g++, so the performance cost isn't worth it.
+
 uint64_t x64::effective_address()
 {
     uint64_t ea;
@@ -3400,7 +3403,7 @@ uint64_t x64::effective_address()
                 if ( mode32 )
                     ea = _displacement; // no rip-relative addressing in 32-bit mode
                 else
-                    ea = rip.q + _displacement;
+                    ea = rip + _displacement;
             }
             else // [ r/m ]
             {
@@ -4281,7 +4284,7 @@ uint64_t x64::run()
     for ( ;; )
     {
         #ifndef NDEBUG
-            _instruction_start = rip.q; // just for debugging; should probably remove for performance
+            _instruction_start = rip; // just for debugging; should probably remove for performance
         #endif
 
         instruction_count++;        // 14.7% of runtime including _prefix initialization below
@@ -4293,10 +4296,10 @@ uint64_t x64::run()
         #ifndef NDEBUG
             if ( !is_address_valid( regs[ rsp ].q ) )
                 emulator_hard_termination( *this, "stack pointer isn't set to a valid address:", regs[ rsp ].q );
-            if ( rip.q < base )
-                emulator_hard_termination( *this, "rip is lower than memory:", rip.q );
-            if ( rip.q >= ( base + mem_size - stack_size ) )
-                emulator_hard_termination( *this, "rip is higher than it should be:", rip.q );
+            if ( rip < base )
+                emulator_hard_termination( *this, "rip is lower than memory:", rip );
+            if ( rip >= ( base + mem_size - stack_size ) )
+                emulator_hard_termination( *this, "rip is higher than it should be:", rip );
             #if 0 // off by default for performance
             if ( mode32 ) // there is no impact if the high bits are set in mode32, but it's better to run clean
                 for ( uint32_t r = 0; r < 8; r++ )
@@ -4617,11 +4620,11 @@ _prefix_is_set:
                     }
                     case 0x1e:
                     {
-                        uint8_t op2 = getui8( rip.q );
+                        uint8_t op2 = getui8( rip );
                         if ( 0xfa == op2 ) // endbr64
-                            rip.q++;
+                            rip++;
                         else if ( 0xfb == op2 ) // endbr32
-                            rip.q++;
+                            rip++;
                         else
                         {
                             decode_rm();
@@ -4638,13 +4641,13 @@ _prefix_is_set:
                         if ( 0 == op2 )
                             { /* do nothing */ }
                         else if ( 0x40 == op2 )
-                            rip.q += 1;
+                            rip += 1;
                         else if ( 0x44 == op2 )
-                            rip.q += 2;
+                            rip += 2;
                         else if ( 0x80 == op2 )
-                            rip.q += 4;
+                            rip += 4;
                         else if ( 0x84 == op2 )
-                            rip.q += 5;
+                            rip += 5;
                         else
                             unhandled();
                         break;
@@ -5587,7 +5590,7 @@ _prefix_is_set:
                     {
                         int32_t offset = (int32_t) get_rip32();
                         if ( check_condition( op1 & 0xf ) )
-                            rip.q += offset;
+                            rip += offset;
                         break;
                     }
                     case 0x90: case 0x91: case 0x92: case 0x93: case 0x94: case 0x95: case 0x96: case 0x97: // setcc
@@ -5766,9 +5769,9 @@ _prefix_is_set:
                     }
                     case 0xae: // stmxcsr / ldmxcsr
                     {
-                        uint8_t imm = getui8( rip.q );
+                        uint8_t imm = getui8( rip );
                         if ( 0xf0 == imm || 0xf8 == imm ) // mfence / sfence
-                            rip.q++; // do nothing
+                            rip++; // do nothing
                         else
                         {
                             decode_rm();
@@ -7071,7 +7074,7 @@ _prefix_is_set:
             {
                 int16_t offset = (int8_t) get_rip8();
                 if ( check_condition( op & 0xf ) )
-                    rip.q += offset;
+                    rip += offset;
                 break;
             }
             case 0x80: // math r/m8, i8
@@ -7604,13 +7607,13 @@ _prefix_is_set:
             case 0xc2: // ret imm16
             {
                 uint16_t imm16 = get_rip16();
-                rip.q = pop();
+                rip = pop();
                 regs[ rsp ].q += imm16;
                 break;
             }
             case 0xc3: // ret
             {
-                rip.q = pop();
+                rip = pop();
                 break;
             }
             case 0xc6:
@@ -7811,7 +7814,7 @@ _prefix_is_set:
                     poke_fp( 0, do_f80_div( peek_fp( offset ), peek_fp( 0 ) ) );
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fadd m32fp
                         poke_fp( 0, do_f80_add( peek_fp( 0 ), f80_from_f( get_rmfloat() ) ) );
@@ -7954,7 +7957,7 @@ _prefix_is_set:
                     poke_fp( 0, do_f80_cos( peek_fp( 0 ) ) );
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m32fp. pushes m32fp onto the fpu register stack
                         push_fp( float_to_double( getfloat( effective_address() ) ) );
@@ -8019,7 +8022,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m32int  add m32int to st(0) and store in st(0)
                         poke_fp( 0, do_f80_add( f80_from_d( (double) (int32_t) get_rm32() ), peek_fp( 0 ) ) );
@@ -8078,7 +8081,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fild m32int
                         push_fp( (double) (int32_t) get_rm32() );
@@ -8127,7 +8130,7 @@ _prefix_is_set:
                     poke_fp( offset, do_f80_div( peek_fp( offset ), peek_fp( 0 ) ) );
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fadd m64fp
                         poke_fp( 0, do_f80_add( peek_fp( 0 ), f80_from_d( get_rmdouble() ) ) );
@@ -8170,7 +8173,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fld m64fp. convert then push double on the fp stack
                         push_fp( get_rmdouble() );
@@ -8233,7 +8236,7 @@ _prefix_is_set:
                 }
                 else
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fiadd m16int
                         poke_fp( 0, do_f80_add( peek_fp( 0 ), f80_from_d( (double) (int16_t) get_rm16() ) ) );
@@ -8273,7 +8276,7 @@ _prefix_is_set:
                 }
                 else if ( 0 == _prefix.sse2_repeat )
                 {
-                    rip.q--;
+                    rip--;
                     decode_rm();
                     if ( 0 == _reg ) // fild m64int
                         push_fp( (double) (int16_t) get_rm16() );
@@ -8329,7 +8332,7 @@ _prefix_is_set:
                 }
 
                 if ( ( !count_zero ) && ( ( 0xe2 == op ) || ( ( 0xe1 == op ) && flag_z() ) || ( ( 0xe0 == op ) && !flag_z() ) ) )
-                    rip.q += rel;
+                    rip += rel;
                 break;
             }
             case 0xe3: // jcxz / jecxz / jrcxz rel8
@@ -8345,24 +8348,26 @@ _prefix_is_set:
                     jump = ( 0 == regs[ rcx ].d );
 
                 if ( jump )
-                    rip.q += rel;
+                    rip += rel;
                 break;
             }
             case 0xe8: // call rel32
             {
                 int32_t offset = (int32_t) get_rip32();
-                push( rip.q );
-                rip.q += offset;
+                push( rip );
+                rip += offset;
                 break;
             }
             case 0xe9: // jmp cd  (relative to rip sign-extended 32-bit immediate)
             {
-                rip.q += (int64_t) (int32_t) get_rip32();
+                int64_t offset = (int32_t) get_rip32();
+                rip += offset;
                 break;
             }
             case 0xeb: // jmp
             {
-                rip.q += (int64_t) (int8_t) get_rip8();
+                int64_t offset = (int8_t) get_rip8();
+                rip += offset;
                 break;
             }
             case 0xf0: // lock (do nothing since there is just one thread and core supported)
@@ -8738,8 +8743,8 @@ _prefix_is_set:
                     case 2: // call
                     {
                         uint64_t target = mode32 ? get_rm32() : get_rm64();
-                        push( rip.q );
-                        rip.q = target;
+                        push( rip );
+                        rip = target;
                         break;
                     }
                     case 3: // call  (inter-segment)
@@ -8747,9 +8752,9 @@ _prefix_is_set:
                     case 4: // jmp near absolute indirect. rip = 64 bit offset from r/m
                     {
                         if ( mode32 )
-                            rip.q = get_rm32();
+                            rip = get_rm32();
                         else
-                            rip.q = get_rm64();
+                            rip = get_rm64();
                         break;
                     }
                     case 5: // jmp  (inter-segment)
@@ -8770,7 +8775,7 @@ _prefix_is_set:
             }
             default:
             {
-                printf( "default unhandled opcode at rip %#llx, op %#x\n", rip.q, op );
+                printf( "default unhandled opcode at rip %#llx, op %#x\n", rip, op );
                 unhandled();
             }
         } //switch

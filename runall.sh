@@ -38,7 +38,7 @@ do
     done
 done
 
-for arg in e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64;
+for arg in e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64;
 do
     echo $arg
     echo c_tests/$arg>>$outputfile

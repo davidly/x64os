@@ -89,6 +89,7 @@ typedef struct reg8_t // 8-byte register
     };
 } reg8_t;
 
+#pragma pack( push, 1 )
 typedef struct REXInfo
 {
     union // use a union because some compilers don't otherwise optimize setting all to 0 at once for each instruction in 32-bit mode
@@ -106,6 +107,7 @@ typedef struct PrefixInfo
         uint32_t All;
     };
 } PrefixInfo_t;
+#pragma pack(pop)
 
 // gnu on amd64 and x86 has 10-byte long doubles with the same format as x87 floating point (ieee80).
 // msvc maps long double to 8-byte doubles, so use x87 emulation instead.
@@ -190,7 +192,7 @@ struct x64
         memset( this, 0, sizeof( *this ) );
         mode32 = false;                            // start in 64-bit long mode
         x87_fpu_control_word = 0x37f;              // hardware boots in this state
-        rip.q = start;                             // execution starts here
+        rip = start;                               // execution starts here
         stack_size = stack_commit;                 // remember how much of the top of RAM is allocated to the stack
         stack_top = top_of_stack;                  // where the stack started
         regs[ rsp ].q = top_of_stack;              // points at argc with argv, penv, and aux records above it
@@ -279,7 +281,7 @@ struct x64
     reg8_t regs[ 16 ];              // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
     vec16_t xregs[ 16 ];            // xmm0 through 15
     float80_t fregs[ 8 ];           // 80-bit numbers are stored in this fp stack, while math is done on a physical x87 with gnu or via emulation
-    reg8_t rip;                     // instruction pointer
+    uint64_t rip;                   // instruction pointer. always referenced as a .q, so don't use a reg8_t
     reg8_t sregs[ 6 ];              // segment registers es/cs/ss/ds/fs/gs. fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
     uint32_t mxcsr;
     uint16_t x87_fpu_control_word;  // for fldcw, fstcw/fnstcw. applies to sse as well as x87
@@ -291,6 +293,17 @@ struct x64
 
     uint64_t & reg_fs() { return sregs[ rfs ].q; }
     uint64_t & reg_gs() { return sregs[ rgs ].q; }
+
+    void TraceDecoding()
+    {
+        printf( "instruction_start: %#llx\n", _instruction_start );
+        printf( "displacement %lld == %#llx\n", _displacement, _displacement );
+        printf( "_rm %#x, _reg %#x, _mod %#x, _sibScale %#x, _sibIndex %#x, _sibBase %#x\n", _rm, _reg, _mod, _sibScale, _sibIndex, _sibBase );
+
+        tracer.Trace( "instruction_start: %#llx\n", _instruction_start );
+        tracer.Trace( "displacement %lld == %#llx\n", _displacement, _displacement );
+        tracer.Trace( "_rm %#x, _reg %#x, _mod %#x, _sibScale %#x, _sibIndex %#x, _sibBase %#x\n", _rm, _reg, _mod, _sibScale, _sibIndex, _sibBase );
+    } //TraceDecoding
 
 private:
                       // 0                                   8                                16
@@ -392,7 +405,7 @@ private:
         else if ( mode32 )
         {
             regs[ rsp ].q -= 4;
-            setui32( regs[ rsp ].d, (uint32_t) val );
+            setui32( regs[ rsp ].q, (uint32_t) val );
         }
         else
         {
@@ -414,10 +427,10 @@ private:
     void op_cmps( uint8_t width );
     void op_scas( uint8_t width );
 
-    inline uint8_t get_rip8() { return getui8( rip.q++ ); }
-    inline uint16_t get_rip16() { uint16_t val = getui16( rip.q ); rip.q += 2; return val; }
-    inline uint32_t get_rip32() { uint32_t val = getui32( rip.q ); rip.q += 4; return val; }
-    inline uint64_t get_rip64() { uint64_t val = getui64( rip.q ); rip.q += 8; return val; }
+    inline uint8_t get_rip8() { return getui8( rip++ ); }
+    inline uint16_t get_rip16() { uint16_t val = getui16( rip ); rip += 2; return val; }
+    inline uint32_t get_rip32() { uint32_t val = getui32( rip ); rip += 4; return val; }
+    inline uint64_t get_rip64() { uint64_t val = getui64( rip ); rip += 8; return val; }
 
     inline uint8_t get_reg8()
     {
