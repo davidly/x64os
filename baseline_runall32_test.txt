@@ -1,4 +1,4 @@
-Thu 03/05/2026 15:19:59.52 
+Wed 03/11/2026 11:06:46.64 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -1932,43 +1932,43 @@ c_tests/x32clangbinfast/sieve
 c_tests/x32bin0/simple
 argument 0: c_tests/x32bin0/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32clangbin0/simple
 argument 0: c_tests/x32clangbin0/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32bin1/simple
 argument 0: c_tests/x32bin1/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32clangbin1/simple
 argument 0: c_tests/x32clangbin1/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32bin2/simple
 argument 0: c_tests/x32bin2/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32clangbin2/simple
 argument 0: c_tests/x32clangbin2/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32bin3/simple
 argument 0: c_tests/x32bin3/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32clangbin3/simple
 argument 0: c_tests/x32clangbin3/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32binfast/simple
 argument 0: c_tests/x32binfast/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32clangbinfast/simple
 argument 0: c_tests/x32clangbinfast/simple
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 c_tests/x32bin0/tmuldiv
 app start
 i8 3 * 14: 42
@@ -12180,35 +12180,35 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 c_tests/x32bin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin0/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin1/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin2/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbin3/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32binfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32clangbinfast/ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 5, hour 15, min 20, sec 15
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 18, min 20, sec 15
+before TZ is set: tz: 'PacificDaylightTime+8', year: 1969, month 12, day 31, hour 16, min 0, sec 0
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 c_tests/x32bin0/tm
 tm has completed with great success
 c_tests/x32clangbin0/tm
@@ -59116,7 +59116,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 51
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59136,7 +59136,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 51
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59156,7 +59156,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59176,7 +59176,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59196,7 +59196,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59216,7 +59216,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59236,7 +59236,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59256,7 +59256,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59276,7 +59276,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59296,7 +59296,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 15, min 21, sec 3
+tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -61546,7 +61546,7 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-608 ms for 1 iterations
+665 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61595,7 +61595,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-174 ms for 1 iterations
+194 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61644,7 +61644,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-172 ms for 1 iterations
+191 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61693,7 +61693,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-177 ms for 1 iterations
+200 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61742,7 +61742,7 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-177 ms for 1 iterations
+200 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61949,7 +61949,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32clangbin0/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32clangbin0/targs'
@@ -61960,7 +61960,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32bin1/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32bin1/targs'
@@ -61971,7 +61971,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32clangbin1/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32clangbin1/targs'
@@ -61982,7 +61982,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32bin2/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32bin2/targs'
@@ -61993,7 +61993,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32clangbin2/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32clangbin2/targs'
@@ -62004,7 +62004,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32bin3/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32bin3/targs'
@@ -62015,7 +62015,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32clangbin3/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32clangbin3/targs'
@@ -62026,7 +62026,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32binfast/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32binfast/targs'
@@ -62037,7 +62037,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 test c_tests/x32clangbinfast/targs
 argc: 5
 argv[ 0 ]: 'c_tests/x32clangbinfast/targs'
@@ -62048,7 +62048,7 @@ argv[ 4 ]: 'dddd'
 penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
-penv[ 3 ]: 'TZ=PacificStandardTime+8'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
 f_tests/x32bin/e
  27 1 8 2 8 1 8 2 8 4 5 9 0 4 5 2 3 5 3 6 0 2 8 7 4 7 1 3 5 2 6 6 2 4 9 7 7 5 7 2 4 7 0 9 3 6 9 9 9 5 9 5 7 4 9 6 6 9 6 7 6 2 7 7 2 4 0 7 6 6 3 0 3 5 3 5 4 7 5 9 4 5 7 1 3 8 2 1 7 8 5 2 5 1 6 6 4 2 7 4 2 7 4 6 6 3 9 1 9 3 2 0 0 3 0 5 9 9 2 1 8 1 7 4 1 3 5 9 6 6 2 9 0 4 3 5 7 2 9 0 0 3 3 4 2 9 5 2 6 0 5 9 5 6 3 0 7 3 8 1 3 2 3 2 8 6 2 7 9 4 3 4 9 0 7 6 3 2 3 3 8 2 9 8 8 0 7 5 3 1 9  done
 f_tests/x32bin/sieve
@@ -62087,4 +62087,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Thu 03/05/2026 15:21:22.72 
+Wed 03/11/2026 11:08:12.70 

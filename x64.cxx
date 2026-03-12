@@ -2985,7 +2985,7 @@ template <typename T> T x64::op_and( T a, T b )
     set_PSZ( a );
     reset_CO();
     return a;
-} //op_xor
+} //op_and
 
 template <typename T> T x64::op_or( T a, T b )
 {
@@ -7117,27 +7117,27 @@ _prefix_is_set:
             case 0x83: // math sign_extend( imm8 )
             {
                 decode_rm();
-                uint8_t imm8 = get_rip8();
+                int8_t imm8 = (int8_t) get_rip8();
                 uint8_t math = _reg;
 
                 if ( _rex.W ) // if wide/64-bit
                 {
                     uint64_t val = get_rm64();
-                    do_math( math, &val, (uint64_t) (int64_t) (int8_t) imm8 );
+                    do_math( math, &val, (uint64_t) imm8 );
                     if ( 7 != math )
                         set_rm64( val );
                 }
                 else if ( 0x66 == _prefix.size )
                 {
                     uint16_t val = get_rm16();
-                    do_math( math, &val, (uint16_t) (int16_t) (int8_t) imm8 );
+                    do_math( math, &val, (uint16_t) imm8 );
                     if ( 7 != math )
                         set_rm16( val );
                 }
                 else
                 {
                     uint32_t val = get_rm32();
-                    do_math( math, &val, (uint32_t) (int32_t) (int8_t) imm8 );
+                    do_math( math, &val, (uint32_t) imm8 );
                     if ( 7 != math )
                         set_rm32z( val );
                 }
@@ -8353,7 +8353,7 @@ _prefix_is_set:
             }
             case 0xe8: // call rel32
             {
-                int32_t offset = (int32_t) get_rip32();
+                int64_t offset = (int32_t) get_rip32();
                 push( rip );
                 rip += offset;
                 break;
