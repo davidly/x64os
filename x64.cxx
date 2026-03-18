@@ -118,8 +118,8 @@ void x64::trace_state()
     uint8_t op = getui8( rip );
     if ( ( 0x66 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
-
-//    tracer.TraceBinaryData( getmem( 0xa925b38 ), 8, 2 );
+                                      
+//    tracer.TraceBinaryData( getmem( 0xa8d9a40 + 0x4 ), 4, 2 );
 
     uint64_t ip = ( 0 == _prefix.rex ) ? rip : ( rip - 1 );
     if ( 0 != _prefix.size )
@@ -1915,25 +1915,21 @@ void x64::trace_state()
             break;
         }
         case 0xa4: // movsb m, m  RSI to RDI
-        {
-            decode_rex();
-            tracer.Trace( "movsb (rdi), (rsi)\n" );
-            break;
-        }
         case 0xa5: // movsq m, m  RSI to RDI 16/32/64
         {
             decode_rex();
-            if ( 0x66 == _prefix.size )
-                tracer.Trace( "movsw (rdi), (rsi)\n" );
-            else if ( _rex.W )
-                tracer.Trace( "movsq (rdi), (rsi)\n" );
-            else
-                tracer.Trace( "movsd (rdi), (rsi)\n" );
+            if ( 0xf3 == _prefix.sse2_repeat || 0xf2 == _prefix.sse2_repeat ) // f2 is illegal but runs the same as f3
+                tracer.Trace( "rep " );
+            tracer.Trace( "movs%c\n", ( 0xa4 == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
         case 0xa6: // cmpsb
         case 0xa7: // cmpsw/cmpsd/cmpsq
         {
+            if ( 0xf3 == _prefix.sse2_repeat )
+                tracer.Trace( "repe " );
+            else if ( 0xf2 == _prefix.sse2_repeat )
+                tracer.Trace( "repne " );
             tracer.Trace( "cmps%c\n", ( 0xa6 == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
@@ -1957,6 +1953,8 @@ void x64::trace_state()
         case 0xab: // stos
         {
             decode_rex();
+            if ( 0xf3 == _prefix.sse2_repeat || 0xf2 == _prefix.sse2_repeat ) // f2 is illegal but runs the same as f3
+                tracer.Trace( "rep " );
             tracer.Trace( "stos%c\n", ( 0xaa == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
@@ -1964,6 +1962,8 @@ void x64::trace_state()
         case 0xad: // lodsw/lodsd/lodsq
         {
             decode_rex();
+            if ( 0xf3 == _prefix.sse2_repeat || 0xf2 == _prefix.sse2_repeat ) // f2 is illegal but runs the same as f3
+                tracer.Trace( "rep " );
             tracer.Trace( "lods%c\n", ( 0xac == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
@@ -1971,6 +1971,10 @@ void x64::trace_state()
         case 0xaf: // scasw/scasd/scasq. compare a with bytes at edi/rdi then set status flags
         {
             decode_rex();
+            if ( 0xf3 == _prefix.sse2_repeat )
+                tracer.Trace( "repe " );
+            else if ( 0xf2 == _prefix.sse2_repeat )
+                tracer.Trace( "repne " );
             tracer.Trace( "scas%c\n", ( 0xae == op ) ? 'b' : ( 0x66 == _prefix.size ) ? 'w' : _rex.W ? 'q' : 'd' );
             break;
         }
@@ -2054,14 +2058,14 @@ void x64::trace_state()
                 tracer.Trace( "movd %s, %##x\n", rm_string( 4 ), get_rip32() );
             break;
         }
-        case 0xc8:
+        case 0xc8: // enter alloc_size, nesting_level
         {
             uint16_t alloc_size = get_rip16();
             uint8_t nesting_level = get_rip8() % 32;
             tracer.Trace( "enter %u, %u\n", alloc_size, nesting_level );
             break;
         }
-        case 0xc9:
+        case 0xc9: // leave
         {
             tracer.Trace( "leave\n" );
             break;
@@ -6979,7 +6983,7 @@ _prefix_is_set:
                 _prefix.segment = op;
                 goto _prefix_is_set;
             }
-            case 0x66: case 0x67:
+            case 0x66: case 0x67: // width prefixes
             {
                 _prefix.size = op;
                 goto _prefix_is_set;
@@ -7407,7 +7411,7 @@ _prefix_is_set:
                     setui32( lower32_address( segment_offset + get_rip32() ), regs[ rax ].d );
                 break;
             }
-            case 0xa4: // movb m, m  RSI to RDI
+            case 0xa4: // movsb m, m  RSI to RDI
             case 0xa5: // movs m, m  RSI to RDI 16/32/64
             {
                 decode_rex();
@@ -8751,10 +8755,7 @@ _prefix_is_set:
                         unhandled();
                     case 4: // jmp near absolute indirect. rip = 64 bit offset from r/m
                     {
-                        if ( mode32 )
-                            rip = get_rm32();
-                        else
-                            rip = get_rm64();
+                        rip = mode32 ? get_rm32() : get_rm64();
                         break;
                     }
                     case 5: // jmp  (inter-segment)
@@ -8775,7 +8776,7 @@ _prefix_is_set:
             }
             default:
             {
-                printf( "default unhandled opcode at rip %#llx, op %#x\n", rip, op );
+                printf( "default unhandled opcode %#x. rip (which advanced) is currently at %#llx\n", op, rip );
                 unhandled();
             }
         } //switch
