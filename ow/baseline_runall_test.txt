@@ -1,4 +1,4 @@
-Wed 03/04/2026 16:23:23.18 
+Thu 03/12/2026  9:51:24.44 
 tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -195,7 +195,7 @@ sieve
 simple
 argument 0: simple.elf
 environment variable 0: OS=X32OS
-environment variable 1: TZ=PacificStandardTime+8
+environment variable 1: TZ=PacificDaylightTime+8
 tmuldiv
 app start
 i8 3 * 14: 42
@@ -1209,8 +1209,8 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 ttime
-before TZ is set: tz: 'PacificStandardTime+8', year: 2026, month 3, day 4, hour 16, min 23, sec 33
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 4, hour 19, min 23, sec 33
+before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 3, day 12, hour 8, min 51, sec 33
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 12, hour 11, min 51, sec 33
 tm
 tm has completed with great success
 glob
@@ -1373,7 +1373,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 4, hour 16, min 23, sec 39
+tz: 'PST+8', year: 2026, month 3, day 12, hour 8, min 51, sec 39
 len in pfl: 0
 exiting fopentst with great success
 fact
@@ -1536,4 +1536,4 @@ mandle
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
-Wed 03/04/2026 16:23:41.30 
+Thu 03/12/2026  9:51:40.58 

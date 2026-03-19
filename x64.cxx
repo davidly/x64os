@@ -310,7 +310,7 @@ void x64::trace_state()
                         tracer.Trace( "movlps %s, %s\n", xmm_names[ _reg ], rm_string( 4 ) );
                     break;
                 }
-                case 0x13:
+                case 0x13: // movl packed. no scalar forms
                 {
                     if ( 0 != _prefix.sse2_repeat )
                         unhandled();
@@ -321,7 +321,7 @@ void x64::trace_state()
                         tracer.Trace( "movlps %s, %s\n", rm_string( 4 ), xmm_names[ _reg ] );
                     break;
                 }
-                case 0x14:
+                case 0x14: // unpckl packed. no scalar forms
                 {
                     if ( 0 != _prefix.sse2_repeat )
                         unhandled();
@@ -332,7 +332,7 @@ void x64::trace_state()
                         tracer.Trace( "unpcklps %s, %s\n", xmm_names[ _reg ], rm_string( 5, true ) );
                     break;
                 }
-                case 0x15:
+                case 0x15: // unpckh packed. no scalar forms
                 {
                     decode_rm();
                     if ( 0x66 == _prefix.size ) // unpckhpd xmm1, xmm2/m128
@@ -341,7 +341,7 @@ void x64::trace_state()
                         tracer.Trace( "unpckhps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     break;
                 }
-                case 0x16:
+                case 0x16: // mov packed. no scalar forms
                 {
                     decode_rm();
                     if ( 0x66 == _prefix.size ) // movhpd xmm1, m64. moves double from m64 to high qword of xmm1 and doesn't touch low qword
@@ -415,6 +415,7 @@ void x64::trace_state()
                 case 0x2a: // cvtsi2sd xmm1, r32/m32   convert dword to scalar double
                 {
                     decode_rm();
+                    // packed forms are mmx/emms, not sse2
                     if ( 0x66 == _prefix.size )
                         unhandled();
                     if ( 0xf2 == _prefix.sse2_repeat )
@@ -428,6 +429,7 @@ void x64::trace_state()
                 case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer
                 {
                     decode_rm();
+                    // packed forms are mmx/emms, not sse2
                     if ( 0xf2 == _prefix.sse2_repeat )
                         tracer.Trace( "cvttsd2si %s, %s\n", register_name( _reg, _rex.W ? 8 : 4 ), rm_string( 8, true ) );
                     else if ( 0xf3 == _prefix.sse2_repeat )
@@ -513,6 +515,7 @@ void x64::trace_state()
                 case 0x53:
                 {
                     decode_rm();
+                    // packed forms are mmx/emms, not sse2
                     if ( 0 != _prefix.size )
                         unhandled();
                     if ( 0xf3 == _prefix.sse2_repeat ) // rcpss xmm1, xmm2/m32  compute reciprocal of the float in xmm2/m32 and store result in xmm1
@@ -4693,7 +4696,6 @@ _prefix_is_set:
                         if ( 0x66 == _prefix.size )
                             unhandled();
 
-                        xregs[ _reg ].zero();
                         if ( 0xf2 == _prefix.sse2_repeat )  // cvtsi2sd xmm1, r32/m32   convert dword or qword to scalar double
                             xregs[ _reg ].setd( 0, (double) ( _rex.W ? (int64_t) get_rm64() : (int32_t) get_rm32() ) );
                         else if ( 0xf3 == _prefix.sse2_repeat ) // cvtsi2ss xmm1, r32/m32
