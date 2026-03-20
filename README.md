@@ -36,7 +36,9 @@ Test folders:
   * rust_tests: a varity of Rust test cases with scripts to build at optimization levels 0, 1, 2, and 3.
   * ow: build and test scripts for Open Watcom 2.0 on Windows and Linux. Builds and runs a subset of tests in c_tests in x32os
 
-I've only validated x32os with the c_tests test cases, not Fortran or Rust.
+I've only validated x32os with the c_tests and Fortran test cases, not Rust. I've validated x64os with some Zig apps as well.
+
+Go apps won't run since the Go runtime requires at least 5 threads and this emulator only supports one.
 
 In addition to the test cases above, all of the test cases were run in x64os and x32os built for Sparc v8, 68000,
 Arm64, and RISC-V64 in emulators for each of those ISAs. Those can be found in sister repos sparcos, m68,
@@ -45,7 +47,7 @@ armos, and rvos. x64os and x32os were also tested recursively by running itself 
 Also, each of the emulators mentioned above were built for AMD64 and run nested in x64os and x32os with all
 of their respective test cases for validation.
 
-These emulators were built and tested on AMD64, Arm64, x86, and RISC-V 64 physical hardware including standard
+These emulators were built and tested on AMD64, Arm64, Arm32, x86, and RISC-V 64 physical hardware including standard
 Windows/Linux AMD64 machines, Arm64 Windows/Linux, Raspberry PI 5, 32-bit Raspberry PI 4, an M3 macBook, and a RISC-V 64 SBC.
 
-This emulator is about 2x slower than other 64- and 32-bit emulators in sister repos because instruction decoding is complex.
+This emulator is about 2x slower than other 64- and 32-bit emulators in sister repos because AMD/Intel instruction decoding is complex.
