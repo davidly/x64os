@@ -1062,7 +1062,9 @@ void x64::trace_state()
                 case 0xae: // stmxcsr / ldmxcsr
                 {
                     uint8_t imm = get_rip8();
-                    if ( 0xf0 == imm )
+                    if ( 0xe8 == imm )
+                        tracer.Trace( "lfence\n" );
+                    else if ( 0xf0 == imm )
                         tracer.Trace( "mfence\n" );
                     else if ( 0xf8 == imm )
                         tracer.Trace( "sfence\n" );
@@ -5776,7 +5778,7 @@ _prefix_is_set:
                     case 0xae: // stmxcsr / ldmxcsr
                     {
                         uint8_t imm = getui8( rip );
-                        if ( 0xf0 == imm || 0xf8 == imm ) // mfence / sfence
+                        if ( 0xe8 == imm || 0xf0 == imm || 0xf8 == imm ) // lfence / mfence / sfence
                             rip++; // do nothing
                         else
                         {
