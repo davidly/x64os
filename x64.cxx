@@ -7559,13 +7559,13 @@ _prefix_is_set:
             }
             case 0xb0: case 0xb1: case 0xb2: case 0xb3: case 0xb4: case 0xb5: case 0xb6: case 0xb7: // mov r8, imm8
             {
-                _rm = ( op & 7 );
+                _rm = ( op & 7 );     // the REX B (rm) bit is used to access high regs, not the REX R (reg) bit.
                 _mod = 3;
                 decode_rex();
                 set_rm8( get_rip8() ); // no sign or zero extension; just the one byte is updated
                 break;
             }
-            case 0xb8: case 0xb9 : case 0xba : case 0xbb : case 0xbc : case 0xbd : case 0xbe : case 0xbf: // mov reg, 64-bit immediate
+            case 0xb8: case 0xb9 : case 0xba : case 0xbb : case 0xbc : case 0xbd : case 0xbe : case 0xbf: // mov reg, immediate
             {
                 _rm = ( op & 7 );
                 decode_rex();
