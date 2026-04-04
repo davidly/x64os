@@ -1,4 +1,4 @@
-Thu 03/05/2026  6:20:26.59 
+Sat 04/04/2026  8:58:45.76 
 tcmp
 x64os tcmp
 uint8_t:
@@ -7264,23 +7264,23 @@ result of read at offset 0: 512
 fileops has completed with great success
 ttime
 x64os ttime
-before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+before TZ is set: tz: '(null)', year: 2026, month 4, day 4, hour 11, min 13, sec 19
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 4, hour 11, min 13, sec 19
 x32os ttime
 before TZ is set: tz: '(null)', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 1969, month 12, day 31, hour 19, min 0, sec 0
 rvos ttime
-before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+before TZ is set: tz: '(null)', year: 2026, month 4, day 4, hour 11, min 13, sec 19
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 4, hour 11, min 13, sec 19
 armos ttime
-before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+before TZ is set: tz: '(null)', year: 2026, month 4, day 4, hour 11, min 13, sec 19
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 4, hour 11, min 13, sec 19
 m68 ttime
-before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+before TZ is set: tz: '(null)', year: 2026, month 4, day 4, hour 11, min 13, sec 20
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 4, hour 11, min 13, sec 20
 sparcos ttime
-before TZ is set: tz: '(null)', year: 2026, month 3, day 5, hour 9, min 30, sec 21
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 3, day 5, hour 9, min 30, sec 21
+before TZ is set: tz: '(null)', year: 2026, month 4, day 4, hour 11, min 13, sec 20
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 4, hour 11, min 13, sec 20
 tm
 x64os tm
 tm has completed with great success
@@ -8179,7 +8179,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
+tz: 'PST+8', year: 2026, month 4, day 4, hour 8, min 17, sec 9
 len in pfl: 0
 exiting fopentst with great success
 x32os fopentst
@@ -8200,7 +8200,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
+tz: 'PST+8', year: 2026, month 4, day 4, hour 8, min 17, sec 9
 len in pfl: 0
 exiting fopentst with great success
 rvos fopentst
@@ -8221,7 +8221,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
+tz: 'PST+8', year: 2026, month 4, day 4, hour 8, min 17, sec 9
 len in pfl: 0
 exiting fopentst with great success
 armos fopentst
@@ -8242,7 +8242,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 3
+tz: 'PST+8', year: 2026, month 4, day 4, hour 8, min 17, sec 9
 len in pfl: 0
 exiting fopentst with great success
 m68 fopentst
@@ -8263,7 +8263,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 4
+tz: 'PST+8', year: 2026, month 4, day 4, hour 8, min 17, sec 10
 len in pfl: 0
 exiting fopentst with great success
 sparcos fopentst
@@ -8284,7 +8284,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 5, hour 6, min 33, sec 4
+tz: 'PST+8', year: 2026, month 4, day 4, hour 8, min 17, sec 10
 len in pfl: 0
 exiting fopentst with great success
 fact
@@ -9253,4 +9253,47 @@ sparcos mandle
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
-Thu 03/05/2026  6:33:26.74 
+tmmap
+x64os tmmap
+MAP_PRIVATE: 0x2
+MAP_ANONYMOUS: 0x20
+MREMAP_MAYMOVE: 0x1
+PROT_READ: 0x1
+PROT_WRITE: 0x2
+mmap test completed with great success
+x32os tmmap
+MAP_PRIVATE: 0x2
+MAP_ANONYMOUS: 0x20
+MREMAP_MAYMOVE: 0x1
+PROT_READ: 0x1
+PROT_WRITE: 0x2
+mmap test completed with great success
+rvos tmmap
+MAP_PRIVATE: 0x2
+MAP_ANONYMOUS: 0x20
+MREMAP_MAYMOVE: 0x1
+PROT_READ: 0x1
+PROT_WRITE: 0x2
+mmap test completed with great success
+armos tmmap
+MAP_PRIVATE: 0x2
+MAP_ANONYMOUS: 0x20
+MREMAP_MAYMOVE: 0x1
+PROT_READ: 0x1
+PROT_WRITE: 0x2
+mmap test completed with great success
+m68 tmmap
+MAP_PRIVATE: 0x2
+MAP_ANONYMOUS: 0x20
+MREMAP_MAYMOVE: 0x1
+PROT_READ: 0x1
+PROT_WRITE: 0x2
+mmap test completed with great success
+sparcos tmmap
+MAP_PRIVATE: 0x2
+MAP_ANONYMOUS: 0x20
+MREMAP_MAYMOVE: 0x1
+PROT_READ: 0x1
+PROT_WRITE: 0x2
+mmap test completed with great success
+Sat 04/04/2026  9:17:59.29 

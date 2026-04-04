@@ -4,8 +4,7 @@ setlocal
 set outputfile=runall_test.txt
 echo %date% %time% >%outputfile%
 
-rem FAILED tests: tmmap (watcom tries to allocate at a given address)
-rem               tdir (watcom's syscall wrapper fails when the string is returned. it's confused)
+rem FAILED tests: tdir (watcom's syscall wrapper fails when the string is returned. it's confused)
 rem               mm, tao, ttypes, nantst, tatomic, tregex (watcom can't compile it)
 rem               ff, an, ba all fail in compilation, have missing code, or with bad code at execution time
 
@@ -13,7 +12,7 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
              tstr fileops ttime tm glob tap tsimplef tphi tf ttt td terrno ^
              t_setjmp tex pis lenum ^
              trename nqueens fopentst fact triangle mm_old hidave ^
-             termiosf mandle
+             termiosf mandle tmmap
 
 ( for %%a in (%_applist%) do (
     echo %%a

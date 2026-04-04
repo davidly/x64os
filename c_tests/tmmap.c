@@ -118,7 +118,11 @@ int main( int argc, char * argv[] )
     for ( size_t i = 0; i < cmaps; i++ )
     {
         size_t size = ( i + 1 ) * 4096;
+#ifdef WATCOM // they weren't resized above because there is to mremap
+        if ( ! ( i & 1 ) ) size = 8192;
+#else
         size = ( i & 1 ) ? ( i & 2 ) ? 2 * size : 4 * size : 8192;
+#endif
         validate( amaps, i, size );
         int result = munmap( amaps[ i ], size );
         if ( -1 == result )

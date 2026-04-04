@@ -2,7 +2,7 @@
     This is an AMD64 emulator. It supports just real mode, long mode, 64-bit mode.
     Integer, x87, and SSE2 are partially implemented. No other vector instructions are implemented at all (MMX/AVX/etc.).
     That's a tiny fraction of the CPU but enough to run the regression test static Linux binaries.
-    There is also a 32-bit x86 compatibility mode controlled by member variable Mode32. This can be used to run 32-bit binaries.
+    There is also a 32-bit x86 compatibility mode controlled by member variable mode32. This can be used to run 32-bit binaries.
     Prefix code 0x67 to specify 32-bit addresses is not implemented (g++ and clang++ don't use this)
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
     Also tested running nested emulators and their regression tests: this one (x64os/x32os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
