@@ -9,8 +9,71 @@
 #include <cerrno>
 
 #ifdef WATCOM
-#define MREMAP_MAYMOVE 1
-#endif
+    #define MREMAP_MAYMOVE 1
+    
+    /* mremap_ow.c - Open Watcom Linux i386 */
+    
+    #include <stdarg.h>
+    #include <sys/mman.h>
+    #include <errno.h>
+    
+    /* Linux i386 syscall number */
+    #ifndef SYS_mremap
+    #define SYS_mremap 163
+    #endif
+    
+    #ifndef MREMAP_MAYMOVE
+    #define MREMAP_MAYMOVE 1
+    #endif
+    
+    #ifndef MREMAP_FIXED
+    #define MREMAP_FIXED   2
+    #endif
+    
+    /* Optional, only on newer Linux kernels */
+    #ifndef MREMAP_DONTUNMAP
+    #define MREMAP_DONTUNMAP 4
+    #endif
+    
+    /* Raw 5-arg Linux i386 syscall via int 0x80 */
+    static long linux_syscall5(long nr, long a, long b, long c, long d, long e);
+    #pragma aux linux_syscall5 =        \
+        "int 0x80"                      \
+        __parm [__eax] [__ebx] [__ecx] [__edx] [__esi] [__edi] \
+        __value [__eax]                 \
+        __modify [__eax]
+    
+    void *mremap(void *old_address, size_t old_size,
+                 size_t new_size, int flags, ...)
+    {
+        void *new_address = (void *)0;
+        long rc;
+        va_list ap;
+    
+        if (flags & MREMAP_FIXED) {
+            va_start(ap, flags);
+            new_address = va_arg(ap, void *);
+            va_end(ap);
+        }
+    
+        rc = linux_syscall5(
+            SYS_mremap,
+            (long)old_address,
+            (long)old_size,
+            (long)new_size,
+            (long)flags,
+            (long)new_address
+        );
+    
+        /* Linux syscalls return -errno in range -1..-4095 on failure */
+        if ((unsigned long)rc >= (unsigned long)-4095L) {
+            errno = -(int)rc;
+            return MAP_FAILED;
+        }
+    
+        return (void *)rc;
+    }
+#endif // WATACOM
 
 void validate( void * amaps[], size_t i, size_t size )
 {
@@ -75,7 +138,6 @@ int main( int argc, char * argv[] )
         amaps[ i ] = 0;
     }
 
-#ifndef WATCOM // no mremap in Watcom C
     // reallocate the odd entries to be twice or four times as large as they were
 
     for ( size_t i = 1; i < cmaps; i += 2 )
@@ -94,7 +156,6 @@ int main( int argc, char * argv[] )
         memset( ( (uint8_t *) p ) + size, i + 'a', new_size - size ); // just initialize the new portion
         amaps[ i ] = p;
     }
-#endif
 
     // allocate even entries as 8k each
 
@@ -118,11 +179,7 @@ int main( int argc, char * argv[] )
     for ( size_t i = 0; i < cmaps; i++ )
     {
         size_t size = ( i + 1 ) * 4096;
-#ifdef WATCOM // they weren't resized above because there is to mremap
-        if ( ! ( i & 1 ) ) size = 8192;
-#else
         size = ( i & 1 ) ? ( i & 2 ) ? 2 * size : 4 * size : 8192;
-#endif
         validate( amaps, i, size );
         int result = munmap( amaps[ i ], size );
         if ( -1 == result )
