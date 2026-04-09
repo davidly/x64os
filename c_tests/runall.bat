@@ -71,7 +71,7 @@ echo test ff
     %_x64osruncmd% %%f\ff -i . ff.c >>%outputfile%
 ))
 
-set _s_elflist=e_x64 sieve_x64 tttu_x64
+set _s_elflist=e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 jmpcall64 sse2_64 muldiv64
 
 ( for %%a in (%_s_elflist%) do (
     echo test %%a

@@ -33,7 +33,7 @@ do
     done
 done
 
-for arg in sieve_x64 e_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64 sse2_64
+for arg in sieve_x64 e_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64 sse2_64 muldiv64
 do
     echo $arg
     ma.sh $arg

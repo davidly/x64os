@@ -5795,33 +5795,50 @@ _prefix_is_set:
                     case 0xaf: // imul r, r/m  in 16, 32, and 64
                     {
                         decode_rm();
-                        if ( _rex.W )
+
+                        if ( _rex.W ) // 64-bit
                         {
-                            int64_t result128H = 0;
-                            int64_t result128L = CMultiply128::mul_s64_s64( regs[ _reg ].q, get_rm64(), &result128H );
-                            setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
-                            setflag_c( flag_o() );
-                            regs[ _reg ].q = result128L;
+                            int64_t a = (int64_t) regs[ _reg ].q;
+                            int64_t b = (int64_t) get_rm64();
+
+                            int64_t resultHigh = 0;
+                            uint64_t resultLow = CMultiply128::mul_s64_s64( a, b, &resultHigh );
+
+                            regs[ _reg ].q = resultLow;
+
+                            int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
+                            bool cf_of = ( resultHigh != expectedHigh );
+                            setflag_o( cf_of );
+                            setflag_c( cf_of );
+                            // SF/ZF/AF/PF undefined
                         }
-                        else if ( 0x66 == _prefix.size )
+                        else if ( 0x66 == _prefix.size ) // 16-bit
                         {
                             int32_t a = (int16_t) regs[ _reg ].w;
                             int32_t b = (int16_t) get_rm16();
                             int32_t result32 = a * b;
-                            uint16_t result16 = result32 & 0xffff;
-                            setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
-                            setflag_c( flag_o() );
-                            regs[ _reg ].q = result16;
+
+                            uint16_t result16 = (uint16_t) result32;
+                            regs[ _reg ].q = ( regs[ _reg ].q & ~ (uint64_t) 0xffff ) | result16;
+
+                            bool cf_of = ( result32 != (int32_t) (int16_t) result16 );
+                            setflag_o( cf_of );
+                            setflag_c( cf_of );
+                            // SF/ZF/AF/PF undefined
                         }
-                        else
+                        else // 32-bit
                         {
                             int64_t a = (int32_t) regs[ _reg ].d;
                             int64_t b = (int32_t) get_rm32();
                             int64_t result64 = a * b;
-                            uint32_t result32 = result64 & 0xffffffff;
-                            setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
-                            setflag_c( flag_o() );
+
+                            uint32_t result32 = (uint32_t) result64;
                             regs[ _reg ].q = result32;
+
+                            bool cf_of = ( result64 != (int64_t) (int32_t) result32 );
+                            setflag_o( cf_of );
+                            setflag_c( cf_of );
+                            // SF/ZF/AF/PF undefined
                         }
                         break;
                     }
@@ -7002,39 +7019,53 @@ _prefix_is_set:
                 push( val );
                 break;
             }
-            case 0x69: // imul reg, r/m, imm. 16, 32, and 64-bit values (imm 16 or 32)
+            case 0x69: // imul reg, r/m, imm
             {
                 decode_rm();
-                if ( _rex.W )
+
+                if ( _rex.W ) // 64-bit: imm32 sign-extended to 64
                 {
-                    uint64_t imm64 = (int32_t) get_rip32();
-                    int64_t result128H = 0;
-                    uint64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), imm64, &result128H );
-                    setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
-                    setflag_c( flag_o() );
-                    regs[ _reg ].q = result128L;
+                    int64_t a = (int64_t) get_rm64();
+                    int64_t b = (int64_t) (int32_t) get_rip32();
+
+                    int64_t resultHigh = 0;
+                    uint64_t resultLow = CMultiply128::mul_s64_s64( a, b, &resultHigh );
+
+                    regs[ _reg ].q = resultLow;
+
+                    int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
+                    bool cf_of = ( resultHigh != expectedHigh );
+                    setflag_o( cf_of );
+                    setflag_c( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
-                else if ( 0x66 == _prefix.size )
+                else if ( 0x66 == _prefix.size ) // 16-bit: imm16
                 {
-                    uint16_t imm16 = get_rip16();
-                    uint32_t a = (int16_t) get_rm16();
-                    uint32_t b = imm16;
-                    uint32_t result32 = a * b;
-                    uint16_t result16 = result32 & 0xffff;
-                    setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
-                    setflag_c( flag_o() );
-                    regs[ _reg ].q = result16;
+                    int32_t a = (int16_t) get_rm16();
+                    int32_t b = (int16_t) get_rip16();
+                    int32_t result32 = a * b;
+
+                    uint16_t result16 = (uint16_t) result32;
+                    regs[ _reg ].q = ( regs[ _reg ].q & ~ (uint64_t) 0xffff ) | result16;
+
+                    bool cf_of = ( result32 != (int32_t) (int16_t) result16 );
+                    setflag_o( cf_of );
+                    setflag_c( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
-                else
+                else // 32-bit: imm32
                 {
-                    uint32_t imm32 = get_rip32();
-                    uint64_t a = (int32_t) get_rm32();
-                    uint64_t b = imm32;
-                    uint64_t result64 = a * b;
-                    uint32_t result32 = result64 & 0xffffffff;
-                    setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
-                    setflag_c( flag_o() );
+                    int64_t a = (int32_t) get_rm32();
+                    int64_t b = (int32_t) get_rip32();
+                    int64_t result64 = a * b;
+
+                    uint32_t result32 = (uint32_t) result64;
                     regs[ _reg ].q = result32;
+
+                    bool cf_of = ( result64 != (int64_t) (int32_t) result32 );
+                    setflag_o( cf_of );
+                    setflag_c( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
                 break;
             }
@@ -7047,33 +7078,50 @@ _prefix_is_set:
             {
                 decode_rm();
                 int8_t imm8 = get_rip8();
-                if ( _rex.W )
+
+                if ( _rex.W ) // 64-bit
                 {
-                    int64_t result128H = 0;
-                    int64_t result128L = CMultiply128::mul_s64_s64( get_rm64(), (int64_t) imm8, &result128H );
-                    setflag_o( highest_bit( result128H) != highest_bit( result128L ) );
-                    setflag_c( flag_o() );
-                    regs[ _reg ].q = result128L;
+                    int64_t a = (int64_t) get_rm64();
+                    int64_t b = (int64_t) imm8;
+
+                    int64_t resultHigh = 0;
+                    uint64_t resultLow = CMultiply128::mul_s64_s64( a, b, &resultHigh );
+
+                    regs[ _reg ].q = resultLow;
+
+                    int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
+                    bool cf_of = ( resultHigh != expectedHigh );
+                    setflag_o( cf_of );
+                    setflag_c( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
-                else if ( 0x66 == _prefix.size )
+                else if ( 0x66 == _prefix.size ) // 16-bit
                 {
-                    uint32_t a = (int16_t) get_rm16();
-                    uint32_t b = imm8;
-                    uint32_t result32 = a * b;
-                    uint16_t result16 = result32 & 0xffff;
-                    setflag_o( highest_bit( result32 ) != highest_bit( result16 ) );
-                    setflag_c( flag_o() );
-                    regs[ _reg ].q = result16;
+                    int32_t a = (int16_t) get_rm16();
+                    int32_t b = (int32_t) imm8;
+                    int32_t result32 = a * b;
+
+                    uint16_t result16 = (uint16_t) result32;
+                    regs[ _reg ].q = ( regs[ _reg ].q & ~ (uint64_t) 0xffff ) | result16;
+
+                    bool cf_of = ( result32 != (int32_t) (int16_t) result16 );
+                    setflag_o( cf_of );
+                    setflag_c( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
-                else
+                else // 32-bit
                 {
-                    uint64_t a = (int32_t) get_rm32();
-                    uint64_t b = imm8;
-                    uint64_t result64 = a * b;
-                    uint32_t result32 = result64 & 0xffffffff;
-                    setflag_o( highest_bit( result64 ) != highest_bit( result32 ) );
-                    setflag_c( flag_o() );
+                    int64_t a = (int32_t) get_rm32();
+                    int64_t b = (int32_t) imm8;
+                    int64_t result64 = a * b;
+
+                    uint32_t result32 = (uint32_t) result64;
                     regs[ _reg ].q = result32;
+
+                    bool cf_of = ( result64 != (int64_t) (int32_t) result32 );
+                    setflag_o( cf_of );
+                    setflag_c( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
                 break;
             }
@@ -8400,6 +8448,7 @@ _prefix_is_set:
             case 0xf6:
             {
                 decode_rm();
+
                 if ( 0 == _reg ) // test r/m8, imm8
                 {
                     uint8_t val = get_rip8();
@@ -8411,21 +8460,30 @@ _prefix_is_set:
                 {
                     uint8_t val = get_rm8();
                     setflag_c( 0 != val );
-                    val = 0 - val;
-                    set_rm8( val );
-                    set_PSZ( val );
+                    uint8_t result = (uint8_t) ( 0 - val );
+                    setflag_o( 0x80 == val );
+                    set_rm8( result );
+                    set_PSZ( result );
                 }
                 else if ( 4 == _reg ) // mul r/m8
                 {
-                    regs[ rax ].w = (uint16_t) get_rm8() * (uint16_t) regs[ rax ].b;
-                    setflag_o( 0 != regs[ rax ].h );
-                    setflag_c( 0 != regs[ rax ].h );
+                    uint16_t result = (uint16_t) regs[ rax ].b * (uint16_t) get_rm8();
+                    regs[ rax ].w = result;
+
+                    bool cf_of = ( 0 != regs[ rax ].h );
+                    setflag_c( cf_of );
+                    setflag_o( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
-                else if ( 5 == _reg ) // imulb r/m8
+                else if ( 5 == _reg ) // imul r/m8
                 {
-                    regs[ rax ].w = (int16_t) get_rm8() * (int16_t) regs[ rax ].b;
-                    setflag_o( 0 != regs[ rax ].h );
-                    setflag_c( 0 != regs[ rax ].h );
+                    int16_t result = (int16_t) (int8_t) regs[ rax ].b * (int16_t) (int8_t) get_rm8();
+                    regs[ rax ].w = (uint16_t) result;
+
+                    bool cf_of = ( result != (int16_t) (int8_t) result );
+                    setflag_c( cf_of );
+                    setflag_o( cf_of );
+                    // SF/ZF/AF/PF undefined
                 }
                 else if ( 6 == _reg ) // div r/m8
                 {
@@ -8437,23 +8495,45 @@ _prefix_is_set:
                     else
                     {
                         uint16_t dividend = regs[ rax ].w;
-                        regs[ rax ].b = (uint8_t) ( dividend / divisor );
-                        regs[ rax ].h = (uint8_t) ( dividend % divisor );
+                        uint16_t quotient = dividend / divisor;
+                        uint16_t remainder = dividend % divisor;
+
+                        if ( quotient > 0xff )
+                        {
+                            // trap here: divide overflow
+                        }
+                        else
+                        {
+                            regs[ rax ].b = (uint8_t) quotient;
+                            regs[ rax ].h = (uint8_t) remainder;
+                        }
                     }
+                    // flags undefined
                 }
                 else if ( 7 == _reg ) // idiv r/m8
                 {
-                    int16_t divisor = get_rm8();
+                    int16_t divisor = (int8_t) get_rm8();
                     if ( 0 == divisor )
                     {
                         // trap here
                     }
                     else
                     {
-                        int16_t dividend = regs[ rax ].w;
-                        regs[ rax ].b = (uint8_t) ( dividend / divisor );
-                        regs[ rax ].h = (uint8_t) ( dividend % divisor );
+                        int16_t dividend = (int16_t) regs[ rax ].w;
+                        int16_t quotient = dividend / divisor;
+                        int16_t remainder = dividend % divisor;
+
+                        if ( quotient < -128 || quotient > 127 )
+                        {
+                            // trap here: divide overflow
+                        }
+                        else
+                        {
+                            regs[ rax ].b = (uint8_t) (int8_t) quotient;
+                            regs[ rax ].h = (uint8_t) (int8_t) remainder;
+                        }
                     }
+                    // flags undefined
                 }
                 else
                     unhandled();
@@ -8462,7 +8542,8 @@ _prefix_is_set:
             case 0xf7:
             {
                 decode_rm();
-                if ( 0 == _reg ) // test r/m16, imm16   test r/m32, imm32    test r/m64, se( imm32 )
+
+                if ( 0 == _reg ) // test r/m16, imm16   test r/m32, imm32   test r/m64, se( imm32 )
                 {
                     if ( _rex.W )
                     {
@@ -8495,72 +8576,108 @@ _prefix_is_set:
                     {
                         uint64_t val = get_rm64();
                         setflag_c( 0 != val );
-                        val = 0 - val;
-                        set_PSZ( val );
-                        set_rm64( val );
+                        uint64_t result = 0 - val;
+                        setflag_o( 0x8000000000000000ULL == val );
+                        set_PSZ( result );
+                        set_rm64( result );
                     }
                     else if ( 0x66 == _prefix.size )
                     {
                         uint16_t val = get_rm16();
                         setflag_c( 0 != val );
-                        val = 0 - val;
-                        set_PSZ( val );
-                        set_rm16( val );
+                        uint16_t result = (uint16_t) ( 0 - val );
+                        setflag_o( 0x8000 == val );
+                        set_PSZ( result );
+                        set_rm16( result );
                     }
                     else
                     {
                         uint32_t val = get_rm32();
                         setflag_c( 0 != val );
-                        val = 0 - val;
-                        set_PSZ( val );
-                        set_rm32( val );
+                        uint32_t result = 0 - val;
+                        setflag_o( 0x80000000U == val );
+                        set_PSZ( result );
+                        set_rm32( result );
                     }
                 }
                 else if ( 4 == _reg ) // mul
                 {
-                    if ( _rex.W ) // 64-bit
+                    if ( _rex.W ) // 64-bit: RDX:RAX = RAX * r/m64
                     {
                         uint64_t resultHigh;
-                        regs[ rax ].q = CMultiply128::mul_u64_u64( regs[ rax ].q, get_rm64(), &resultHigh );
+                        uint64_t resultLow = CMultiply128::mul_u64_u64( regs[ rax ].q, get_rm64(), &resultHigh );
+                        regs[ rax ].q = resultLow;
                         regs[ rdx ].q = resultHigh;
+
+                        bool cf_of = ( 0 != resultHigh );
+                        setflag_c( cf_of );
+                        setflag_o( cf_of );
+                        // SF/ZF/AF/PF undefined
                     }
-                    else if ( 0x66 == _prefix.size )
+                    else if ( 0x66 == _prefix.size ) // 16-bit: DX:AX = AX * r/m16
                     {
-                        uint32_t result = (uint32_t) regs[ rax ].w * get_rm16();
-                        regs[ rax ].q = result & 0xffff;
-                        regs[ rdx ].q = result >> 16;
+                        uint32_t result = (uint32_t) regs[ rax ].w * (uint32_t) get_rm16();
+                        regs[ rax ].q = ( regs[ rax ].q & ~ (uint64_t) 0xffff ) | (uint16_t) result;
+                        regs[ rdx ].q = ( regs[ rdx ].q & ~ (uint64_t) 0xffff ) | (uint16_t) ( result >> 16 );
+
+                        bool cf_of = ( 0 != ( result >> 16 ) );
+                        setflag_c( cf_of );
+                        setflag_o( cf_of );
+                        // SF/ZF/AF/PF undefined
                     }
-                    else // 32-bit
+                    else // 32-bit: EDX:EAX = EAX * r/m32
                     {
-                        uint64_t result = (uint64_t) regs[ rax ].d * get_rm32();
-                        regs[ rax ].q = result & 0xffffffff;
-                        regs[ rdx ].q = result >> 32;
+                        uint64_t result = (uint64_t) regs[ rax ].d * (uint64_t) get_rm32();
+                        regs[ rax ].q = (uint32_t) result;
+                        regs[ rdx ].q = (uint32_t) ( result >> 32 );
+
+                        bool cf_of = ( 0 != ( result >> 32 ) );
+                        setflag_c( cf_of );
+                        setflag_o( cf_of );
+                        // SF/ZF/AF/PF undefined
                     }
                 }
                 else if ( 5 == _reg ) // imul
                 {
-                    if ( _rex.W ) // 64-bit
+                    if ( _rex.W ) // 64-bit: RDX:RAX = RAX * r/m64
                     {
                         int64_t resultHigh;
-                        regs[ rax ].q = CMultiply128::mul_s64_s64( regs[ rax ].q, get_rm64(), &resultHigh );
-                        regs[ rdx ].q = resultHigh;
+                        uint64_t resultLow = CMultiply128::mul_s64_s64( (int64_t) regs[ rax ].q, (int64_t) get_rm64(), &resultHigh );
+                        regs[ rax ].q = resultLow;
+                        regs[ rdx ].q = (uint64_t) resultHigh;
+
+                        int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
+                        bool cf_of = ( resultHigh != expectedHigh );
+                        setflag_c( cf_of );
+                        setflag_o( cf_of );
+                        // SF/ZF/AF/PF undefined
                     }
-                    else if ( 0x66 == _prefix.size )
+                    else if ( 0x66 == _prefix.size ) // 16-bit: DX:AX = AX * r/m16
                     {
                         int32_t result = (int32_t) (int16_t) regs[ rax ].w * (int32_t) (int16_t) get_rm16();
-                        regs[ rax ].q = result & 0xffff;
-                        regs[ rdx ].q = result >> 16;
+                        regs[ rax ].q = ( regs[ rax ].q & ~ (uint64_t) 0xffff ) | (uint16_t) result;
+                        regs[ rdx ].q = ( regs[ rdx ].q & ~ (uint64_t) 0xffff ) | (uint16_t) ( result >> 16 );
+
+                        bool cf_of = ( result != (int32_t) (int16_t) result );
+                        setflag_c( cf_of );
+                        setflag_o( cf_of );
+                        // SF/ZF/AF/PF undefined
                     }
-                    else // 32-bit
+                    else // 32-bit: EDX:EAX = EAX * r/m32
                     {
                         int64_t result = (int64_t) (int32_t) regs[ rax ].d * (int64_t) (int32_t) get_rm32();
-                        regs[ rax ].q = result & 0xffffffff;
-                        regs[ rdx ].q = ( 0xffffffff & ( result >> 32 ) );
+                        regs[ rax ].q = (uint32_t) result;
+                        regs[ rdx ].q = (uint32_t) ( result >> 32 );
+
+                        bool cf_of = ( result != (int64_t) (int32_t) result );
+                        setflag_c( cf_of );
+                        setflag_o( cf_of );
+                        // SF/ZF/AF/PF undefined
                     }
                 }
                 else if ( 6 == _reg ) // div
                 {
-                    if ( _rex.W ) // 64-bit
+                    if ( _rex.W ) // 64-bit: RDX:RAX / r/m64 -> RAX quotient, RDX remainder
                     {
                         uint64_t divisor = get_rm64();
                         if ( 0 == divisor )
@@ -8572,15 +8689,16 @@ _prefix_is_set:
                             struct UInt128_t dividend;
                             dividend.high = regs[ rdx ].q;
                             dividend.low = regs[ rax ].q;
+
                             uint64_t quotient, remainder;
                             divideUInt128ByUInt64( dividend, divisor, quotient, remainder );
-                            //tracer.Trace( "div. dividend high %#llx, dividend low %#llx, divisor %#llx, quotient %#llx, remainder %#llx\n",
-                            //              dividend.high, dividend.low, divisor, quotient, remainder );
+
+                            // quotient overflow if quotient doesn't fit in 64 bits.
                             regs[ rax ].q = quotient;
                             regs[ rdx ].q = remainder;
                         }
                     }
-                    else if ( 0x66 == _prefix.size )
+                    else if ( 0x66 == _prefix.size ) // 16-bit: DX:AX / r/m16 -> AX quotient, DX remainder
                     {
                         uint32_t divisor = get_rm16();
                         if ( 0 == divisor )
@@ -8589,12 +8707,22 @@ _prefix_is_set:
                         }
                         else
                         {
-                            uint32_t dividend = ( ( (uint32_t) regs[ rdx ].w ) << 16 ) | regs[ rax ].w;
-                            regs[ rax ].w = (uint16_t) ( dividend / divisor );
-                            regs[ rdx ].w = (uint16_t) ( dividend % divisor );
+                            uint32_t dividend = ( ( (uint32_t) regs[ rdx ].w ) << 16 ) | (uint32_t) regs[ rax ].w;
+                            uint32_t quotient = dividend / divisor;
+                            uint32_t remainder = dividend % divisor;
+
+                            if ( quotient > 0xffffU )
+                            {
+                                // trap here: divide overflow
+                            }
+                            else
+                            {
+                                regs[ rax ].q = ( regs[ rax ].q & ~ (uint64_t) 0xffff ) | (uint16_t) quotient;
+                                regs[ rdx ].q = ( regs[ rdx ].q & ~ (uint64_t) 0xffff ) | (uint16_t) remainder;
+                            }
                         }
                     }
-                    else
+                    else // 32-bit: EDX:EAX / r/m32 -> EAX quotient, EDX remainder
                     {
                         uint64_t divisor = get_rm32();
                         if ( 0 == divisor )
@@ -8603,17 +8731,28 @@ _prefix_is_set:
                         }
                         else
                         {
-                            uint64_t dividend = ( regs[ rdx ].q << 32 ) | regs[ rax ].d;
-                            regs[ rax ].q = (uint32_t) ( dividend / divisor );
-                            regs[ rdx ].q = (uint32_t) ( dividend % divisor );
+                            uint64_t dividend = ( (uint64_t) regs[ rdx ].d << 32 ) | (uint64_t) regs[ rax ].d;
+                            uint64_t quotient = dividend / divisor;
+                            uint64_t remainder = dividend % divisor;
+
+                            if ( quotient > 0xffffffffULL )
+                            {
+                                // trap here: divide overflow
+                            }
+                            else
+                            {
+                                regs[ rax ].q = (uint32_t) quotient;
+                                regs[ rdx ].q = (uint32_t) remainder;
+                            }
                         }
                     }
+                    // flags undefined
                 }
                 else if ( 7 == _reg ) // idiv
                 {
-                    if ( _rex.W ) // 64-bit
+                    if ( _rex.W ) // 64-bit: RDX:RAX / r/m64 -> RAX quotient, RDX remainder
                     {
-                        int64_t divisor = get_rm64();
+                        int64_t divisor = (int64_t) get_rm64();
                         if ( 0 == divisor )
                         {
                             // trap here
@@ -8621,15 +8760,17 @@ _prefix_is_set:
                         else
                         {
                             struct Int128_t dividend;
-                            dividend.high = regs[ rdx ].q;
+                            dividend.high = (int64_t) regs[ rdx ].q;
                             dividend.low = regs[ rax ].q;
+
                             int64_t quotient, remainder;
                             divide_i128_by_i64( dividend, divisor, quotient, remainder );
-                            regs[ rax ].q = quotient;
-                            regs[ rdx ].q = remainder;
+
+                            regs[ rax ].q = (uint64_t) quotient;
+                            regs[ rdx ].q = (uint64_t) remainder;
                         }
                     }
-                    else if ( 0x66 == _prefix.size )
+                    else if ( 0x66 == _prefix.size ) // 16-bit: DX:AX / r/m16 -> AX quotient, DX remainder
                     {
                         int32_t divisor = (int16_t) get_rm16();
                         if ( 0 == divisor )
@@ -8638,12 +8779,22 @@ _prefix_is_set:
                         }
                         else
                         {
-                            int32_t dividend = ( ( (int32_t) regs[ rdx ].w ) << 16 ) | regs[ rax ].w ;
-                            regs[ rax ].w = (uint16_t) (int16_t) ( dividend / divisor );
-                            regs[ rdx ].w = (uint16_t) (int16_t) ( dividend % divisor );
+                            int32_t dividend = ( (int32_t) (int16_t) regs[ rdx ].w << 16 ) | (uint16_t) regs[ rax ].w;
+                            int32_t quotient = dividend / divisor;
+                            int32_t remainder = dividend % divisor;
+
+                            if ( quotient < -32768 || quotient > 32767 )
+                            {
+                                // trap here: divide overflow
+                            }
+                            else
+                            {
+                                regs[ rax ].q = ( regs[ rax ].q & ~ (uint64_t) 0xffff ) | (uint16_t) (int16_t) quotient;
+                                regs[ rdx ].q = ( regs[ rdx ].q & ~ (uint64_t) 0xffff ) | (uint16_t) (int16_t) remainder;
+                            }
                         }
                     }
-                    else
+                    else // 32-bit: EDX:EAX / r/m32 -> EAX quotient, EDX remainder
                     {
                         int64_t divisor = (int32_t) get_rm32();
                         if ( 0 == divisor )
@@ -8652,11 +8803,22 @@ _prefix_is_set:
                         }
                         else
                         {
-                            int64_t dividend = ( regs[ rdx ].q << 32 ) | regs[ rax ].d;
-                            regs[ rax ].q = (uint32_t) (int32_t) ( dividend / divisor );
-                            regs[ rdx ].q = (uint32_t) (int32_t) ( dividend % divisor );
+                            int64_t dividend = ( (int64_t) (int32_t) regs[ rdx ].d << 32 ) | (uint32_t) regs[ rax ].d;
+                            int64_t quotient = dividend / divisor;
+                            int64_t remainder = dividend % divisor;
+
+                            if ( quotient < (int64_t) INT32_MIN || quotient > (int64_t) INT32_MAX )
+                            {
+                                // trap here: divide overflow
+                            }
+                            else
+                            {
+                                regs[ rax ].q = (uint32_t) (int32_t) quotient;
+                                regs[ rdx ].q = (uint32_t) (int32_t) remainder;
+                            }
                         }
                     }
+                    // flags undefined
                 }
                 else
                     unhandled();
