@@ -5798,47 +5798,25 @@ _prefix_is_set:
 
                         if ( _rex.W ) // 64-bit
                         {
-                            int64_t a = (int64_t) regs[ _reg ].q;
-                            int64_t b = (int64_t) get_rm64();
-
                             int64_t resultHigh = 0;
-                            uint64_t resultLow = CMultiply128::mul_s64_s64( a, b, &resultHigh );
-
+                            uint64_t resultLow = CMultiply128::mul_s64_s64( (int64_t) regs[ _reg ].q, (int64_t) get_rm64(), &resultHigh );
                             regs[ _reg ].q = resultLow;
-
                             int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
-                            bool cf_of = ( resultHigh != expectedHigh );
-                            setflag_o( cf_of );
-                            setflag_c( cf_of );
-                            // SF/ZF/AF/PF undefined
+                            setflag_CO( resultHigh != expectedHigh ); // SF/ZF/AF/PF undefined
                         }
                         else if ( 0x66 == _prefix.size ) // 16-bit
                         {
-                            int32_t a = (int16_t) regs[ _reg ].w;
-                            int32_t b = (int16_t) get_rm16();
-                            int32_t result32 = a * b;
-
+                            int32_t result32 = (int32_t) (int16_t) regs[ _reg ].w * (int32_t) (int16_t) get_rm16();
                             uint16_t result16 = (uint16_t) result32;
                             regs[ _reg ].q = ( regs[ _reg ].q & ~ (uint64_t) 0xffff ) | result16;
-
-                            bool cf_of = ( result32 != (int32_t) (int16_t) result16 );
-                            setflag_o( cf_of );
-                            setflag_c( cf_of );
-                            // SF/ZF/AF/PF undefined
+                            setflag_CO( result32 != (int32_t) (int16_t) result16 ); // SF/ZF/AF/PF undefined
                         }
                         else // 32-bit
                         {
-                            int64_t a = (int32_t) regs[ _reg ].d;
-                            int64_t b = (int32_t) get_rm32();
-                            int64_t result64 = a * b;
-
+                            int64_t result64 = (int64_t) (int32_t) regs[ _reg ].d * (int64_t) (int32_t) get_rm32();
                             uint32_t result32 = (uint32_t) result64;
                             regs[ _reg ].q = result32;
-
-                            bool cf_of = ( result64 != (int64_t) (int32_t) result32 );
-                            setflag_o( cf_of );
-                            setflag_c( cf_of );
-                            // SF/ZF/AF/PF undefined
+                            setflag_CO( result64 != (int64_t) (int32_t) result32 ); // SF/ZF/AF/PF undefined
                         }
                         break;
                     }
@@ -7025,47 +7003,25 @@ _prefix_is_set:
 
                 if ( _rex.W ) // 64-bit: imm32 sign-extended to 64
                 {
-                    int64_t a = (int64_t) get_rm64();
-                    int64_t b = (int64_t) (int32_t) get_rip32();
-
                     int64_t resultHigh = 0;
-                    uint64_t resultLow = CMultiply128::mul_s64_s64( a, b, &resultHigh );
-
+                    uint64_t resultLow = CMultiply128::mul_s64_s64( (int64_t) get_rm64(), (int64_t) (int32_t) get_rip32(), &resultHigh );
                     regs[ _reg ].q = resultLow;
-
                     int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
-                    bool cf_of = ( resultHigh != expectedHigh );
-                    setflag_o( cf_of );
-                    setflag_c( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( resultHigh != expectedHigh ); // SF/ZF/AF/PF undefined
                 }
                 else if ( 0x66 == _prefix.size ) // 16-bit: imm16
                 {
-                    int32_t a = (int16_t) get_rm16();
-                    int32_t b = (int16_t) get_rip16();
-                    int32_t result32 = a * b;
-
+                    int32_t result32 = (int32_t) (int16_t) get_rm16() * (int32_t) (int16_t) get_rip16();
                     uint16_t result16 = (uint16_t) result32;
                     regs[ _reg ].q = ( regs[ _reg ].q & ~ (uint64_t) 0xffff ) | result16;
-
-                    bool cf_of = ( result32 != (int32_t) (int16_t) result16 );
-                    setflag_o( cf_of );
-                    setflag_c( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( result32 != (int32_t) (int16_t) result16 ); // SF/ZF/AF/PF undefined
                 }
                 else // 32-bit: imm32
                 {
-                    int64_t a = (int32_t) get_rm32();
-                    int64_t b = (int32_t) get_rip32();
-                    int64_t result64 = a * b;
-
+                    int64_t result64 = (int64_t) (int32_t) get_rm32() * (int64_t) (int32_t) get_rip32();
                     uint32_t result32 = (uint32_t) result64;
                     regs[ _reg ].q = result32;
-
-                    bool cf_of = ( result64 != (int64_t) (int32_t) result32 );
-                    setflag_o( cf_of );
-                    setflag_c( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( result64 != (int64_t) (int32_t) result32 ); // SF/ZF/AF/PF undefined
                 }
                 break;
             }
@@ -7081,47 +7037,25 @@ _prefix_is_set:
 
                 if ( _rex.W ) // 64-bit
                 {
-                    int64_t a = (int64_t) get_rm64();
-                    int64_t b = (int64_t) imm8;
-
                     int64_t resultHigh = 0;
-                    uint64_t resultLow = CMultiply128::mul_s64_s64( a, b, &resultHigh );
-
+                    uint64_t resultLow = CMultiply128::mul_s64_s64( (int64_t) get_rm64(), (int64_t) imm8, &resultHigh );
                     regs[ _reg ].q = resultLow;
-
                     int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
-                    bool cf_of = ( resultHigh != expectedHigh );
-                    setflag_o( cf_of );
-                    setflag_c( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( resultHigh != expectedHigh ); // SF/ZF/AF/PF undefined
                 }
                 else if ( 0x66 == _prefix.size ) // 16-bit
                 {
-                    int32_t a = (int16_t) get_rm16();
-                    int32_t b = (int32_t) imm8;
-                    int32_t result32 = a * b;
-
+                    int32_t result32 = (int32_t) (int16_t) get_rm16() * (int32_t) imm8;
                     uint16_t result16 = (uint16_t) result32;
                     regs[ _reg ].q = ( regs[ _reg ].q & ~ (uint64_t) 0xffff ) | result16;
-
-                    bool cf_of = ( result32 != (int32_t) (int16_t) result16 );
-                    setflag_o( cf_of );
-                    setflag_c( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( result32 != (int32_t) (int16_t) result16 ); // SF/ZF/AF/PF undefined
                 }
                 else // 32-bit
                 {
-                    int64_t a = (int32_t) get_rm32();
-                    int64_t b = (int32_t) imm8;
-                    int64_t result64 = a * b;
-
+                    int64_t result64 = (int64_t) (int32_t) get_rm32() * (int64_t) imm8;
                     uint32_t result32 = (uint32_t) result64;
                     regs[ _reg ].q = result32;
-
-                    bool cf_of = ( result64 != (int64_t) (int32_t) result32 );
-                    setflag_o( cf_of );
-                    setflag_c( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( result64 != (int64_t) (int32_t) result32 ); // SF/ZF/AF/PF undefined
                 }
                 break;
             }
@@ -8469,21 +8403,13 @@ _prefix_is_set:
                 {
                     uint16_t result = (uint16_t) regs[ rax ].b * (uint16_t) get_rm8();
                     regs[ rax ].w = result;
-
-                    bool cf_of = ( 0 != regs[ rax ].h );
-                    setflag_c( cf_of );
-                    setflag_o( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( 0 != regs[ rax ].h ); // SF/ZF/AF/PF undefined
                 }
                 else if ( 5 == _reg ) // imul r/m8
                 {
                     int16_t result = (int16_t) (int8_t) regs[ rax ].b * (int16_t) (int8_t) get_rm8();
                     regs[ rax ].w = (uint16_t) result;
-
-                    bool cf_of = ( result != (int16_t) (int8_t) result );
-                    setflag_c( cf_of );
-                    setflag_o( cf_of );
-                    // SF/ZF/AF/PF undefined
+                    setflag_CO( result != (int16_t) (int8_t) result ); // SF/ZF/AF/PF undefined
                 }
                 else if ( 6 == _reg ) // div r/m8
                 {
@@ -8608,33 +8534,21 @@ _prefix_is_set:
                         uint64_t resultLow = CMultiply128::mul_u64_u64( regs[ rax ].q, get_rm64(), &resultHigh );
                         regs[ rax ].q = resultLow;
                         regs[ rdx ].q = resultHigh;
-
-                        bool cf_of = ( 0 != resultHigh );
-                        setflag_c( cf_of );
-                        setflag_o( cf_of );
-                        // SF/ZF/AF/PF undefined
+                        setflag_CO( 0 != resultHigh ); // SF/ZF/AF/PF undefined
                     }
                     else if ( 0x66 == _prefix.size ) // 16-bit: DX:AX = AX * r/m16
                     {
                         uint32_t result = (uint32_t) regs[ rax ].w * (uint32_t) get_rm16();
                         regs[ rax ].q = ( regs[ rax ].q & ~ (uint64_t) 0xffff ) | (uint16_t) result;
                         regs[ rdx ].q = ( regs[ rdx ].q & ~ (uint64_t) 0xffff ) | (uint16_t) ( result >> 16 );
-
-                        bool cf_of = ( 0 != ( result >> 16 ) );
-                        setflag_c( cf_of );
-                        setflag_o( cf_of );
-                        // SF/ZF/AF/PF undefined
+                        setflag_CO( 0 != ( result >> 16 ) ); // SF/ZF/AF/PF undefined
                     }
                     else // 32-bit: EDX:EAX = EAX * r/m32
                     {
                         uint64_t result = (uint64_t) regs[ rax ].d * (uint64_t) get_rm32();
                         regs[ rax ].q = (uint32_t) result;
                         regs[ rdx ].q = (uint32_t) ( result >> 32 );
-
-                        bool cf_of = ( 0 != ( result >> 32 ) );
-                        setflag_c( cf_of );
-                        setflag_o( cf_of );
-                        // SF/ZF/AF/PF undefined
+                        setflag_CO( 0 != ( result >> 32 ) ); // SF/ZF/AF/PF undefined
                     }
                 }
                 else if ( 5 == _reg ) // imul
@@ -8645,34 +8559,22 @@ _prefix_is_set:
                         uint64_t resultLow = CMultiply128::mul_s64_s64( (int64_t) regs[ rax ].q, (int64_t) get_rm64(), &resultHigh );
                         regs[ rax ].q = resultLow;
                         regs[ rdx ].q = (uint64_t) resultHigh;
-
                         int64_t expectedHigh = ( (int64_t) resultLow < 0 ) ? -1 : 0;
-                        bool cf_of = ( resultHigh != expectedHigh );
-                        setflag_c( cf_of );
-                        setflag_o( cf_of );
-                        // SF/ZF/AF/PF undefined
+                        setflag_CO( resultHigh != expectedHigh ); // SF/ZF/AF/PF undefined
                     }
                     else if ( 0x66 == _prefix.size ) // 16-bit: DX:AX = AX * r/m16
                     {
                         int32_t result = (int32_t) (int16_t) regs[ rax ].w * (int32_t) (int16_t) get_rm16();
                         regs[ rax ].q = ( regs[ rax ].q & ~ (uint64_t) 0xffff ) | (uint16_t) result;
                         regs[ rdx ].q = ( regs[ rdx ].q & ~ (uint64_t) 0xffff ) | (uint16_t) ( result >> 16 );
-
-                        bool cf_of = ( result != (int32_t) (int16_t) result );
-                        setflag_c( cf_of );
-                        setflag_o( cf_of );
-                        // SF/ZF/AF/PF undefined
+                        setflag_CO( result != (int32_t) (int16_t) result ); // SF/ZF/AF/PF undefined
                     }
                     else // 32-bit: EDX:EAX = EAX * r/m32
                     {
                         int64_t result = (int64_t) (int32_t) regs[ rax ].d * (int64_t) (int32_t) get_rm32();
                         regs[ rax ].q = (uint32_t) result;
                         regs[ rdx ].q = (uint32_t) ( result >> 32 );
-
-                        bool cf_of = ( result != (int64_t) (int32_t) result );
-                        setflag_c( cf_of );
-                        setflag_o( cf_of );
-                        // SF/ZF/AF/PF undefined
+                        setflag_CO( result != (int64_t) (int32_t) result ); // SF/ZF/AF/PF undefined
                     }
                 }
                 else if ( 6 == _reg ) // div
@@ -8693,7 +8595,7 @@ _prefix_is_set:
                             uint64_t quotient, remainder;
                             divideUInt128ByUInt64( dividend, divisor, quotient, remainder );
 
-                            // quotient overflow if quotient doesn't fit in 64 bits.
+                            // quotient overflow if quotient doesn't fit in 64 bits (not handled yet)
                             regs[ rax ].q = quotient;
                             regs[ rdx ].q = remainder;
                         }

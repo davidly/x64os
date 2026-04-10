@@ -326,6 +326,7 @@ private:
     } //set_PSZ
 
     void reset_CO() { rflags &= ~0x801; }
+    void setflag_CO( bool f ) { setflag_c( f ); setflag_o( f ); }
     void reset_CPAZSO() { rflags &= ~0x8d5; }
 
     bool flag_c() { return ( 0 != ( rflags & ( 1 << 0 ) ) );  } // carry
