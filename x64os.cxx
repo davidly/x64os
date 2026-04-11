@@ -846,8 +846,8 @@ static void usage( char const * perror = 0 )
         printf( "error: %s\n", perror );
 
     printf( "usage: %s <%s arguments> <executable> <app arguments>\n", APP_NAME, APP_NAME );
-#ifdef RVOS
     printf( "  arguments:     -e     environment. semicolon-separated list of name=value pairs\n" );
+#ifdef RVOS
     printf( "                 -g     (internal) generate rcvtable.txt then exit\n" );
 #endif
     printf( "                 -h:X   # of meg for the heap (brk space). 0..1024 are valid. default is 40\n" );
