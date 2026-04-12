@@ -2597,7 +2597,7 @@ void emulator_invoke_svc( CPUClass & cpu )
                 tracer.Trace( "  acPath: '%s', poutwin32: '%s'\n", acPath, poutwin32 );
                 backslash_to_slash( poutwin32 );
                 strcpy( pin, poutwin32 + 2 ); // get past C:
-                result = strlen( pin );
+                result = (SIGNED_REG_TYPE) strlen( pin );
             }
             else
                 tracer.Trace( "  _getcwd failed on win32, errno %d\n", (int) errno );
