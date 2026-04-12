@@ -36,7 +36,6 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
 
     del %%a.c > NUL 2>&1
     del %%a.o > NUL 2>&1
-    del %%a.obj > NUL 2>&1
     del %%a.map > NUL 2>&1
     del %%a.elf > NUL 2>&1
     ) )

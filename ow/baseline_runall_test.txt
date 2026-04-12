@@ -1,4 +1,4 @@
-Sat 04/11/2026 15:34:22.19 
+Sun 04/12/2026  9:20:28.86 
 tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -1209,8 +1209,8 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 ttime
-before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 4, day 11, hour 14, min 34, sec 32
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 11, hour 17, min 34, sec 32
+before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 4, day 12, hour 8, min 20, sec 38
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 12, hour 11, min 20, sec 38
 tm
 tm has completed with great success
 glob
@@ -1375,7 +1375,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 11, hour 14, min 34, sec 38
+tz: 'PST+8', year: 2026, month 4, day 12, hour 8, min 20, sec 44
 len in pfl: 0
 exiting fopentst with great success
 fact
@@ -1545,4 +1545,30 @@ MREMAP_MAYMOVE: 0x1
 PROT_READ: 0x1
 PROT_WRITE: 0x2
 mmap test completed with great success
-Sat 04/11/2026 15:34:40.49 
+ff
+/Users/david/OneDrive/x64os/ow/ff.c
+targs
+argc: 5
+argv[ 0 ]: 'targs.elf'
+argv[ 1 ]: 'a'
+argv[ 2 ]: 'bb'
+argv[ 3 ]: 'ccc'
+argv[ 4 ]: 'dddd'
+penv[ 0 ]: 'OS=X32OS'
+penv[ 1 ]: 'solo=iu'
+penv[ 2 ]: 'group=i-dle'
+penv[ 3 ]: 'TZ=PacificDaylightTime+8'
+tgets
+read: 'f' == 102 == 0x66
+read: 'i' == 105 == 0x69
+read: 'l' == 108 == 0x6c
+read: 'e' == 101 == 0x65
+read: ' ' == 32 == 0x20
+read: 'd' == 100 == 0x64
+read: 'a' == 97 == 0x61
+read: 't' == 116 == 0x74
+read: 'a' == 97 == 0x61
+read: '
+' == 10 == 0xa
+tgets completed with great success
+Sun 04/12/2026  9:20:48.27 
