@@ -1,4 +1,4 @@
-Wed 03/11/2026 11:06:46.64 
+Sun 04/12/2026 12:03:26.50 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -59116,7 +59116,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 51
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59136,7 +59136,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 51
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59156,7 +59156,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59176,7 +59176,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59196,7 +59196,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59216,7 +59216,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59236,7 +59236,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59256,7 +59256,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59276,7 +59276,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59296,7 +59296,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 3, day 11, hour 10, min 7, sec 52
+tz: 'PST+8', year: 2026, month 4, day 12, hour 11, min 4, sec 31
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -61089,21 +61089,6 @@ c_tests/x32clangbinfast/mandle
 000001111111111111111122222222333557BF75433222211111000000000000000000000000000
 000000011111111111111111122222233347E7AB322222111100000000000000000000000000000
 mandle completed with great success
-c_tests/e_x32
-271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
-done
-c_tests/sieve_x32
-1899 primes
-c_tests/tttu_x32
-6493 moves
-c_tests/aaxlat32
-success
-c_tests/aaaaas
-success
-c_tests/pushpop32
-success
-c_tests/jmpcall32
-success
 c_tests/x32bin0/an david lee
 a delve id
 a delved i
@@ -61546,7 +61531,12 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-665 ms for 1 iterations
+706 ms for 1 iterations
+final move count 6493
+exiting the basic interpreter
+c_tests/x32clangbin0/ba c_tests/tp.bas
+parsing input file c_tests/tp.bas
+731 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61595,7 +61585,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-194 ms for 1 iterations
+199 ms for 1 iterations
+final move count 6493
+exiting the basic interpreter
+c_tests/x32clangbin1/ba c_tests/tp.bas
+parsing input file c_tests/tp.bas
+196 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61644,7 +61639,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-191 ms for 1 iterations
+198 ms for 1 iterations
+final move count 6493
+exiting the basic interpreter
+c_tests/x32clangbin2/ba c_tests/tp.bas
+parsing input file c_tests/tp.bas
+187 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61693,7 +61693,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-200 ms for 1 iterations
+207 ms for 1 iterations
+final move count 6493
+exiting the basic interpreter
+c_tests/x32clangbin3/ba c_tests/tp.bas
+parsing input file c_tests/tp.bas
+190 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61742,7 +61747,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-200 ms for 1 iterations
+207 ms for 1 iterations
+final move count 6493
+exiting the basic interpreter
+c_tests/x32clangbinfast/ba c_tests/tp.bas
+parsing input file c_tests/tp.bas
+184 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -62049,6 +62059,21 @@ penv[ 0 ]: 'OS=X32OS'
 penv[ 1 ]: 'solo=iu'
 penv[ 2 ]: 'group=i-dle'
 penv[ 3 ]: 'TZ=PacificDaylightTime+8'
+c_tests/e_x32
+271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319
+done
+c_tests/sieve_x32
+1899 primes
+c_tests/tttu_x32
+6493 moves
+c_tests/aaxlat32
+success
+c_tests/aaaaas
+success
+c_tests/pushpop32
+success
+c_tests/jmpcall32
+success
 f_tests/x32bin/e
  27 1 8 2 8 1 8 2 8 4 5 9 0 4 5 2 3 5 3 6 0 2 8 7 4 7 1 3 5 2 6 6 2 4 9 7 7 5 7 2 4 7 0 9 3 6 9 9 9 5 9 5 7 4 9 6 6 9 6 7 6 2 7 7 2 4 0 7 6 6 3 0 3 5 3 5 4 7 5 9 4 5 7 1 3 8 2 1 7 8 5 2 5 1 6 6 4 2 7 4 2 7 4 6 6 3 9 1 9 3 2 0 0 3 0 5 9 9 2 1 8 1 7 4 1 3 5 9 6 6 2 9 0 4 3 5 7 2 9 0 0 3 3 4 2 9 5 2 6 0 5 9 5 6 3 0 7 3 8 1 3 2 3 2 8 6 2 7 9 4 3 4 9 0 7 6 3 2 3 3 8 2 9 8 8 0 7 5 3 1 9  done
 f_tests/x32bin/sieve
@@ -62087,4 +62112,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Wed 03/11/2026 11:08:12.70 
+Sun 04/12/2026 12:04:55.04 
