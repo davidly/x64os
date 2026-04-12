@@ -7619,7 +7619,7 @@ _prefix_is_set:
             {
                 decode_rm();
                 if ( _rex.W )
-                    set_rm64( (int32_t) get_rip32() );
+                    set_rm64( (int32_t) get_rip32() ); // sign-extend in the 64-bit case
                 else if ( 0x66 == _prefix.size )
                     set_rm16( get_rip16() );
                 else

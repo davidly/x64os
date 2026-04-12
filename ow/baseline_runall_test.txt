@@ -1,4 +1,4 @@
-Sat 04/04/2026  8:26:04.78 
+Sat 04/11/2026 15:34:22.19 
 tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -1209,8 +1209,8 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 ttime
-before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 4, day 4, hour 7, min 26, sec 14
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 4, hour 10, min 26, sec 14
+before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 4, day 11, hour 14, min 34, sec 32
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 11, hour 17, min 34, sec 32
 tm
 tm has completed with great success
 glob
@@ -1341,6 +1341,8 @@ results are valid
 final: 243f6a8885a308d313198a2e03707344a4093822299f31d0082efa98ec4e6c89452821e638d01377be5466cf34e90c6cc0ac29b7c97c50dd3f84d5b5b5470917
 lenum
 linux file system enumeration completed with great success
+tdir
+tdir completed with great success
 trename
 trename completed with great success
 nqueens
@@ -1373,7 +1375,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 4, hour 7, min 26, sec 20
+tz: 'PST+8', year: 2026, month 4, day 11, hour 14, min 34, sec 38
 len in pfl: 0
 exiting fopentst with great success
 fact
@@ -1543,4 +1545,4 @@ MREMAP_MAYMOVE: 0x1
 PROT_READ: 0x1
 PROT_WRITE: 0x2
 mmap test completed with great success
-Sat 04/04/2026  8:26:22.09 
+Sat 04/11/2026 15:34:40.49 
