@@ -4,8 +4,7 @@ setlocal
 set outputfile=runall_test.txt
 echo %date% %time% >"%outputfile%"
 
-rem FAILED tests: mm, tao, ttypes, nantst, tatomic, tregex (watcom can't compile it)
-rem               an, ba fail in compilation, have missing code, or with bad code at execution time
+rem FAILED tests: mm, tao, ttypes, nantst, tatomic, tregex, an, ba (watcom can't compile them)
 
 set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2 ^
              tstr fileops ttime tm glob tap tsimplef tphi tf ttt td terrno ^

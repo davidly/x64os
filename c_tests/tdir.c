@@ -115,6 +115,20 @@ int main( int argc, char * argv[] )
         exit( 1 );
     }
 
+    memset( & st, 0, sizeof( struct stat ) );
+    result = lstat( filename, &st );
+    if ( 0 != result )
+    {
+        printf( "lstat on file '%s' failed, error %d\n", filename, errno );
+        exit( 1 );
+    }
+
+    if ( S_ISDIR( st.st_mode ) )
+    {
+        printf( "lstat claims file '%s' is a directory\n", filename );
+        exit( 1 );
+    }
+
     result = unlink( filename );
     if ( 0 != result )
     {
@@ -139,7 +153,22 @@ int main( int argc, char * argv[] )
 
     if ( !S_ISDIR( st.st_mode ) )
     {
-        printf( "stat claims directory '%s' isn't a directory\n", foldername );
+        printf( "stat claims directory '%s' isn't a directory. st_mode: %#x\n", foldername, st.st_mode );
+        exit( 1 );
+    }
+
+    memset( & st, 0, sizeof( struct stat ) );
+    result = lstat( foldername, &st );
+    if ( 0 != result )
+    {
+        printf( "lstat on folder '%s' failed, error %d\n", foldername, errno );
+        exit( 1 );
+    }
+
+    if ( !S_ISDIR( st.st_mode ) )
+    {
+        printf( "lstat claims directory '%s' isn't a directory. st_mode: %#x\n", foldername, st.st_mode );
+        printf( "S_IFDIR: %#x\n", S_IFDIR );
         exit( 1 );
     }
 
