@@ -26,7 +26,7 @@ for arg in tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2 \
            tmmap tstr tdir fileops ttime tm glob tap tsimplef tphi tf ttt td terrno \
            t_setjmp tex mm tao pis ttypes nantst sleeptm tatomic lenum \
            tregex trename nqueens fopentst fact triangle mm_old hidave tscas tpopcnt \
-           termiosf mandle an ba ff tgets targs
+           termiosf mandle an ba ff tgets targs taux
 do
     echo "$arg"
     for opt in 0 1 2 3 fast
@@ -77,7 +77,7 @@ do
     done
 done
 
-for arg in e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64 sse2_64 muldiv64
+for arg in e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64 sse2_64 muldiv64 tfildstp
 do
     echo "$arg"
     echo "c_tests/$arg" >>"$outputfile"

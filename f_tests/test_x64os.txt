@@ -1,4 +1,4 @@
-Sun 11/23/2025 20:30:17.72 
+Fri 04/24/2026  7:20:42.01 
 test primes
  Prime numbers up to         100 :
            2
@@ -37,4 +37,4 @@ test ttt
 test mm
     465880
 mm completed with great success
-Sun 11/23/2025 20:30:18.01 
+Fri 04/24/2026  7:20:42.27 

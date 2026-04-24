@@ -15,21 +15,27 @@ do
     cp ../c_tests/$arg.c .
     ./mn.sh $arg
 
+    echo x64os $arg
     echo x64os $arg >>$outputfile
     ../x64os -h:100 ../bin/x32os $arg.elf >>$outputfile
 
+    echo x32os $arg
     echo x32os $arg >>$outputfile
     ../x32os -h:100 ../x32bin/x32os $arg.elf >>$outputfile
 
+    echo rvos $arg
     echo rvos $arg >>$outputfile
     ../../rvos/rvos -h:100 ../../rvos/bin/x32os $arg.elf >>$outputfile
 
+    echo armos $arg
     echo armos $arg >>$outputfile
     ../../armos/armos -h:100 ../../armos/bin/x32os $arg.elf >>$outputfile
 
+    echo m68 $arg
     echo m68 $arg >>$outputfile
     ../../m68/m68 -h:100 ../../m68/bin/x32os $arg.elf >>$outputfile
 
+    echo sparcos $arg
     echo sparcos $arg >>$outputfile
     ../../sparcos/sparcos -h:100 ../../sparcos/bin/x32os $arg.elf >>$outputfile
     

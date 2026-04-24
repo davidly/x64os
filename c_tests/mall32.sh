@@ -4,7 +4,7 @@ apps=(tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2 tmmap 
       tdir fileops ttime tm glob tap tsimplef tphi tf ttt td terrno t_setjmp tex \
       tprintf pis mm tao ttypes nantst sleeptm tatomic lenum tregex trename \
       nqueens ff an ba fopentst fact triangle mm_old hidave targs tgets tscas tpopcnt
-      na termiosf mandle wumpus)
+      na termiosf mandle wumpus taux)
 
 for arg in ${apps[@]}
 do
@@ -42,7 +42,7 @@ do
     done
 done
 
-for arg in sieve_x32 e_x32 tttu_x32 aaxlat32 aaaaas pushpop32 jmpcall32
+for arg in sieve_x32 e_x32 tttu_x32 aaxlat32 aaaaas pushpop32 jmpcall32 x87tst32
 do
     echo $arg
     ma32.sh $arg

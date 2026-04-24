@@ -21,7 +21,7 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
              tmmap tstr tdir fileops ttime tm glob tap tsimplef tphi tf ttt td terrno ^
              t_setjmp tex mm tao pis ttypes nantst sleeptm tatomic lenum ^
              tregex trename nqueens fopentst fact triangle mm_old hidave tscas ^
-             tpopcnt termiosf mandle an ba ff tgets targs
+             tpopcnt termiosf mandle an ba ff tgets targs taux
 
 ( for %%a in (%_applist%) do (
     echo %%a
@@ -64,7 +64,7 @@ set _applist=tcmp t e printint sieve simple tmuldiv tpi ts tarray tbits trw trw2
     ) )
 ) )
 
-set _sapplist=e_x32 sieve_x32 tttu_x32 aaxlat32 aaaaas pushpop32 jmpcall32
+set _sapplist=e_x32 sieve_x32 tttu_x32 aaxlat32 aaaaas pushpop32 jmpcall32 x87tst32
 ( for %%a in (%_sapplist%) do (
     echo %%a
     echo c_tests/%%a>>"%outputfile%"
