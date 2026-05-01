@@ -2728,7 +2728,7 @@ double round_double_from_double( double d, uint8_t rm )
 
 template <typename T> T round_i_from_double( double d, uint8_t rm )
 {
-    #if !defined( __ARM_32BIT_STATE ) 
+    #if !defined( __ARM_32BIT_STATE )
     static_assert(std::is_integral<T>::value, "Type must be an integral type.");
     #endif
     static_assert(std::is_signed<T>::value, "Type must be a signed type.");
@@ -2957,7 +2957,7 @@ void x64::op_scas( uint8_t width )
 
 template <typename T> T x64::op_sub( T a, T b, bool borrow )
 {
-#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE ) 
+#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE )
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
 #endif
     T result = a - b - (T) borrow;
@@ -2976,7 +2976,7 @@ template <typename T> T x64::op_sub( T a, T b, bool borrow )
 
 template <typename T> T x64::op_add( T a, T b, bool carry )
 {
-#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE ) 
+#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE )
     static_assert( std::is_unsigned_v<T>, "Template parameter must be an unsigned type." );
 #endif
     T result = a + b + (T) carry;
@@ -3013,7 +3013,7 @@ template <typename T> T x64::op_or( T a, T b )
 
 template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 {
-#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE ) 
+#if !defined(__APPLE__) && !defined(__mc68000__) && !defined( __ARM_32BIT_STATE )
     static_assert(std::is_unsigned_v<T>, "Template parameter must be an unsigned type.");
 #endif
     assert( math <= 7 );
@@ -3032,7 +3032,7 @@ template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
 
 void x64::op_btX( uint8_t op )
 {
-    // bt, bts, btr, btc
+    // bt=0xa3, bts=0xab, btr=0xb3, btc=0xbb
     assert( ( 0xa3 == op ) || ( 0xab == op ) || ( 0xb3 == op ) || ( 0xbb == op ) );
 
     if ( 0 != _prefix.sse2_repeat )
@@ -3040,97 +3040,60 @@ void x64::op_btX( uint8_t op )
 
     decode_rm();
 
-    if ( _rex.W )
+    if ( _mod < 3 )
     {
-        if ( _mod < 3 )
-        {
-            uint64_t addr = effective_address() + ( (int64_t) regs[ _reg ].q >> 3 );
-            uint8_t val = getui8( addr );
-            uint8_t bitmask = 1u << ( regs[ _reg ].q & 7 );
-            setflag_c( val & bitmask );
-
-            if ( 0xab == op ) // bts
-                setui8( addr, val | bitmask );
-            else if ( 0xb3 == op ) // btr
-                setui8( addr, val & ~bitmask );
-            else if ( 0xbb == op ) // btc
-                setui8( addr, val ^ bitmask );
-        }
-        else
-        {
-            uint64_t bitmask = 1ull << ( regs[ _reg ].q & 0x3f );
-            uint64_t val = get_rm64();
-            setflag_c( val & bitmask );
-
-            if ( 0xab == op ) // bts
-                set_rm64( val | bitmask );
-            else if ( 0xb3 == op ) // btr
-                set_rm64( val & ~bitmask );
-            else if ( 0xbb == op ) // btc
-                set_rm64( val ^ bitmask );
-        }
+        // Memory: always byte-granular; byte offset sign-extends per operand size
+        int64_t bit_offset = _rex.W               ? (int64_t) regs[ _reg ].q >> 3
+                           : 0x66 == _prefix.size ? (int16_t) regs[ _reg ].w >> 3
+                                                  : (int32_t) regs[ _reg ].d >> 3;
+        uint64_t addr = effective_address() + bit_offset;
+        uint8_t bitmask = 1u << ( regs[ _reg ].q & 7 );
+        uint8_t val = getui8( addr );
+        setflag_c( val & bitmask );
+        if ( 0xab == op )
+            setui8( addr, val | bitmask );   // bts
+        else if ( 0xb3 == op )
+            setui8( addr, val & ~bitmask );  // btr
+        else if ( 0xbb == op )
+            setui8( addr, val ^ bitmask );   // btc
+    }
+    else if ( _rex.W )
+    {
+        uint64_t bitmask = 1ull << ( regs[ _reg ].q & 0x3f );
+        uint64_t val = get_rm64();
+        setflag_c( val & bitmask );
+        if ( 0xab == op )
+            set_rm64( val | bitmask );   // bts
+        else if ( 0xb3 == op )
+            set_rm64( val & ~bitmask );  // btr
+        else if ( 0xbb == op )
+            set_rm64( val ^ bitmask );   // btc
     }
     else if ( 0x66 == _prefix.size )
     {
-        if ( _mod < 3 )
-        {
-            uint64_t addr = effective_address() + ( (int16_t) regs[ _reg ].w >> 3 );
-            uint8_t val = getui8( addr );
-            uint8_t bitmask = 1u << ( regs[ _reg ].w & 7 );
-            setflag_c( val & bitmask );
-
-            if ( 0xab == op ) // bts
-                setui8( addr, val | bitmask );
-            else if ( 0xb3 == op ) // btr
-                setui8( addr, val & ~bitmask );
-            else if ( 0xbb == op ) // btc
-                setui8( addr, val ^ bitmask );
-        }
-        else
-        {
-            uint16_t bitmask = 1 << ( regs[ _reg ].w & 0xf );
-            uint16_t val = get_rm16();
-            setflag_c( val & bitmask );
-
-            if ( 0xab == op ) // bts
-                set_rm16( val | bitmask );
-            else if ( 0xb3 == op ) // btr
-                set_rm16( val & ~bitmask );
-            else if ( 0xbb == op ) // btc
-                set_rm16( val ^ bitmask );
-        }
+        uint16_t bitmask = 1u << ( regs[ _reg ].w & 0xf );
+        uint16_t val = get_rm16();
+        setflag_c( val & bitmask );
+        if ( 0xab == op )
+            set_rm16( val | bitmask );   // bts
+        else if ( 0xb3 == op )
+            set_rm16( val & ~bitmask );  // btr
+        else if ( 0xbb == op )
+            set_rm16( val ^ bitmask );   // btc
     }
     else
     {
-        if ( _mod < 3 )
-        {
-            uint64_t addr = effective_address() + ( (int32_t) regs[ _reg ].d >> 3 );
-            uint8_t val = getui8( addr );
-            uint8_t bitmask = 1u << ( regs[ _reg ].d & 7 );
-            setflag_c( val & bitmask );
-
-            if ( 0xab == op ) // bts
-                setui8( addr, val | bitmask );
-            else if ( 0xb3 == op ) // btr
-                setui8( addr, val & ~bitmask );
-            else if ( 0xbb == op ) // btc
-                setui8( addr, val ^ bitmask );
-        }
-        else
-        {
-            uint32_t bitmask = 1 << ( regs[ _reg ].d & 0x1f );
-            uint32_t val = get_rm32();
-            setflag_c( val & bitmask );
-
-            if ( 0xab == op ) // bts
-                set_rm32( val | bitmask );
-            else if ( 0xb3 == op ) // btr
-                set_rm32( val & ~bitmask );
-            else if ( 0xbb == op ) // btc
-                set_rm32( val ^ bitmask );
-        }
+        uint32_t bitmask = 1u << ( regs[ _reg ].d & 0x1f );
+        uint32_t val = get_rm32();
+        setflag_c( val & bitmask );
+        if ( 0xab == op )
+            set_rm32( val | bitmask );   // bts
+        else if ( 0xb3 == op )
+            set_rm32( val & ~bitmask );  // btr
+        else if ( 0xbb == op )
+            set_rm32( val ^ bitmask );   // btc
     }
-} //op_btX    
+} //op_btX
 
 template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 {
@@ -3139,7 +3102,7 @@ template <typename T> void x64::op_rol( T * pval, uint8_t shift )
     T result = ( original << shift ) | ( original >> remaining );
     setflag_c( ( original >> remaining ) & 1 );
     *pval = result;
-    
+
     if ( 1 == shift )
         setflag_o( highest_bit( result ) != highest_bit( original ) );
 } //op_rol
@@ -3151,7 +3114,7 @@ template <typename T> void x64::op_ror( T * pval, uint8_t shift )
     T result = ( val >> shift ) | ( val << remaining );
     setflag_c( ( val >> ( shift - 1 ) ) & 1 );
     *pval = result;
-    
+
     if ( 1 == shift )
         setflag_o( highest_bit( result ) ^ second_highest_bit( result ) );
 } //op_ror
@@ -3159,26 +3122,17 @@ template <typename T> void x64::op_ror( T * pval, uint8_t shift )
 template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 {
     const uint32_t bit_width = sizeof( T ) * 8;
-    const uint32_t total_width = bit_width + 1;
-    
     T original = *pval;
     bool old_cf = flag_c();
-    T result;
-    bool new_cf;
+
+    bool new_cf = ( original >> ( bit_width - shift ) ) & 1;
+    T result = ( original << shift );
+    result |= ( (T) old_cf << ( shift - 1 ) );
+    if ( shift > 1 )
+        result |= ( original >> ( bit_width + 1 - shift ) );
 
     if ( 1 == shift )
-    {
-        new_cf = ( original >> ( bit_width - 1 ) ) & 1;
-        result = ( original << 1 ) | ( (T)  old_cf );
         setflag_o( new_cf ^ ( ( result >> ( bit_width - 1 ) ) & 1 ) );
-    }
-    else
-    {
-        new_cf = ( original >> ( bit_width - shift ) ) & 1;
-        result = ( original << shift);
-        result |= ( (T) old_cf << ( shift - 1 ) );
-        result |= ( original >> ( total_width - shift ) );
-    }
 
     *pval = result;
     setflag_c( new_cf );
@@ -3187,31 +3141,17 @@ template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
 {
     const uint32_t bit_width = sizeof(T) * 8;
-    const uint32_t total_width = bit_width + 1; // bits + CF
-    
     T original = *pval;
     bool old_cf = flag_c();
-    T result;
-    bool new_cf;
+
+    bool new_cf = ( original >> ( shift - 1 ) ) & 1;
+    T result = ( original >> shift );
+    result |= ( (T) old_cf << ( bit_width - shift ) );
+    if ( shift > 1 )
+        result |= ( original << ( bit_width + 1 - shift ) );
 
     if ( 1 == shift )
-    {
-        new_cf = ( original & 1 );
-        result = ( original >> 1 );
-        if ( old_cf )
-            result |= ( (T) 1 << ( bit_width - 1 ) );
-        
-        bool original_msb = ( original >> ( bit_width - 1 ) ) & 1;
-        bool new_msb = old_cf; // The old CF moved into the MSB
-        setflag_o( original_msb ^ new_msb ); // only set if 1 == shift
-    }
-    else
-    {
-        new_cf = ( original >> ( shift - 1 ) ) & 1;
-        result = ( original >> shift );
-        result |= ( (T) ( old_cf ) << ( bit_width - shift ) );
-        result |= ( original << ( total_width - shift ) );
-    }
+        setflag_o( ( ( original >> ( bit_width - 1 ) ) & 1 ) ^ old_cf );
 
     *pval = result;
     setflag_c( new_cf );
@@ -3222,17 +3162,17 @@ template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
     T original = *pval;
     if ( 1 == shift )
         setflag_o( 3 == top2bits( original ) );
-        
+
     if ( shift > 0 ) // Set carry to the bit that will be shifted out
     {
         const size_t bitWidth = sizeof ( T ) * 8;
-        if ( shift < bitWidth ) 
+        if ( shift < bitWidth )
         {
             T mask = (T) 1 << ( bitWidth - shift );
             setflag_c( 0 != ( original & mask) );
         }
     }
-    
+
     T result = original << shift;
     *pval = result;
     set_PSZ( result );
@@ -6885,7 +6825,7 @@ _prefix_is_set:
                 {
                     uint8_t old_al = regs[ rax ].b;
                     uint8_t al_check = flag_a() ? 0x9F : 0x99;
-                
+
                     if ( ( ( old_al & 0xf ) > 9 ) || flag_a() )
                     {
                         regs[ rax ].b -= 6;
@@ -6893,7 +6833,7 @@ _prefix_is_set:
                     }
                     else
                         setflag_a( false );
-                
+
                     if ( ( old_al > al_check ) || flag_c() )
                     {
                         regs[ rax ].b -= 0x60;
