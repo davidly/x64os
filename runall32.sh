@@ -79,7 +79,7 @@ do
     done
 done
 
-for arg in e_x32 sieve_x32 tttu_x32 aaxlat32 aaaaas pushpop32 jmpcall32 x87tst32
+for arg in e_x32 sieve_x32 tttu_x32 aaxlat32 aaaaas pushpop32 jmpcall32 x87tst32 rotate32
 do
     echo "$arg"
     echo "c_tests/$arg" >>"$outputfile"
