@@ -427,6 +427,7 @@ private:
     void op_movs( uint8_t width );
     void op_cmps( uint8_t width );
     void op_scas( uint8_t width );
+    void op_btX( uint8_t op );
 
     inline uint8_t get_rip8() { return getui8( rip++ ); }
     inline uint16_t get_rip16() { uint16_t val = getui16( rip ); rip += 2; return val; }

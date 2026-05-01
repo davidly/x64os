@@ -3030,6 +3030,108 @@ template <typename T> void x64::do_math( uint8_t math, T * pdst, T src )
     }
 } //do_math
 
+void x64::op_btX( uint8_t op )
+{
+    // bt, bts, btr, btc
+    assert( ( 0xa3 == op ) || ( 0xab == op ) || ( 0xb3 == op ) || ( 0xbb == op ) );
+
+    if ( 0 != _prefix.sse2_repeat )
+        unhandled();
+
+    decode_rm();
+
+    if ( _rex.W )
+    {
+        if ( _mod < 3 )
+        {
+            uint64_t addr = effective_address() + ( (int64_t) regs[ _reg ].q >> 3 );
+            uint8_t val = getui8( addr );
+            uint8_t bitmask = 1u << ( regs[ _reg ].q & 7 );
+            setflag_c( val & bitmask );
+
+            if ( 0xab == op ) // bts
+                setui8( addr, val | bitmask );
+            else if ( 0xb3 == op ) // btr
+                setui8( addr, val & ~bitmask );
+            else if ( 0xbb == op ) // btc
+                setui8( addr, val ^ bitmask );
+        }
+        else
+        {
+            uint64_t bitmask = 1ull << ( regs[ _reg ].q & 0x3f );
+            uint64_t val = get_rm64();
+            setflag_c( val & bitmask );
+
+            if ( 0xab == op ) // bts
+                set_rm64( val | bitmask );
+            else if ( 0xb3 == op ) // btr
+                set_rm64( val & ~bitmask );
+            else if ( 0xbb == op ) // btc
+                set_rm64( val ^ bitmask );
+        }
+    }
+    else if ( 0x66 == _prefix.size )
+    {
+        if ( _mod < 3 )
+        {
+            uint64_t addr = effective_address() + ( (int16_t) regs[ _reg ].w >> 3 );
+            uint8_t val = getui8( addr );
+            uint8_t bitmask = 1u << ( regs[ _reg ].w & 7 );
+            setflag_c( val & bitmask );
+
+            if ( 0xab == op ) // bts
+                setui8( addr, val | bitmask );
+            else if ( 0xb3 == op ) // btr
+                setui8( addr, val & ~bitmask );
+            else if ( 0xbb == op ) // btc
+                setui8( addr, val ^ bitmask );
+        }
+        else
+        {
+            uint16_t bitmask = 1 << ( regs[ _reg ].w & 0xf );
+            uint16_t val = get_rm16();
+            setflag_c( val & bitmask );
+
+            if ( 0xab == op ) // bts
+                set_rm16( val | bitmask );
+            else if ( 0xb3 == op ) // btr
+                set_rm16( val & ~bitmask );
+            else if ( 0xbb == op ) // btc
+                set_rm16( val ^ bitmask );
+        }
+    }
+    else
+    {
+        if ( _mod < 3 )
+        {
+            uint64_t addr = effective_address() + ( (int32_t) regs[ _reg ].d >> 3 );
+            uint8_t val = getui8( addr );
+            uint8_t bitmask = 1u << ( regs[ _reg ].d & 7 );
+            setflag_c( val & bitmask );
+
+            if ( 0xab == op ) // bts
+                setui8( addr, val | bitmask );
+            else if ( 0xb3 == op ) // btr
+                setui8( addr, val & ~bitmask );
+            else if ( 0xbb == op ) // btc
+                setui8( addr, val ^ bitmask );
+        }
+        else
+        {
+            uint32_t bitmask = 1 << ( regs[ _reg ].d & 0x1f );
+            uint32_t val = get_rm32();
+            setflag_c( val & bitmask );
+
+            if ( 0xab == op ) // bts
+                set_rm32( val | bitmask );
+            else if ( 0xb3 == op ) // btr
+                set_rm32( val & ~bitmask );
+            else if ( 0xbb == op ) // btc
+                set_rm32( val ^ bitmask );
+        }
+    }
+} //op_btX    
+
 template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 {
     T original = *pval;
@@ -5671,46 +5773,7 @@ _prefix_is_set:
                     }
                     case 0xa3: // bt r/m, r 16/32/64
                     {
-                        decode_rm();
-                        if ( _rex.W )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int64_t) regs[ _reg ].q >> 3 );
-                                setflag_c( getui8( addr ) & ( 1u << ( regs[ _reg ].q & 7 ) ) );
-                            }
-                            else
-                            {
-                                uint64_t bit = 1ull << ( regs[ _reg ].q & 0x3f );
-                                setflag_c( regs[ _rm ].q & bit );
-                            }
-                        }
-                        else if ( 0x66 == _prefix.size )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int16_t) regs[ _reg ].w >> 3 );
-                                setflag_c( getui8( addr ) & ( 1u << ( regs[ _reg ].w & 7 ) ) );
-                            }
-                            else
-                            {
-                                uint16_t bit = 1 << ( regs[ _reg ].w & 0xf );
-                                setflag_c( regs[ _rm ].w & bit );
-                            }
-                        }
-                        else
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int32_t) regs[ _reg ].d >> 3 );
-                                setflag_c( getui8( addr ) & ( 1u << ( regs[ _reg ].d & 7 ) ) );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1u << ( regs[ _reg ].d & 0x1f );
-                                setflag_c( regs[ _rm ].d & bit );
-                            }
-                        }
+                        op_btX( op1 );
                         break;
                     }
                     case 0xa4: // shld r/m, r, imm
@@ -5760,61 +5823,7 @@ _prefix_is_set:
                     }
                     case 0xab: // bts r/m, r 16/32/64
                     {
-                        decode_rm();
-                        if ( _rex.W )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int64_t) regs[ _reg ].q >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].q & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val | bitmask );
-                            }
-                            else
-                            {
-                                uint64_t bit = 1ull << ( regs[ _reg ].q & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
-                                set_rm64( val | bit );
-                            }
-                        }
-                        else if ( 0x66 == _prefix.size )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int16_t) regs[ _reg ].w >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].w & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val | bitmask );
-                            }
-                            else
-                            {
-                                uint16_t bit = 1 << ( regs[ _reg ].w & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
-                                set_rm16( val | bit );
-                            }
-                        }
-                        else
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int32_t) regs[ _reg ].d >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].d & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val | bitmask );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( regs[ _reg ].d & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                                set_rm32( val | bit );
-                            }
-                        }
+                        op_btX( op1 );
                         break;
                     }
                     case 0xac: // shrd r/m, r, imm8   double precision right shift and fill with bits from the top of r
@@ -5972,63 +5981,7 @@ _prefix_is_set:
                     }
                     case 0xb3: // btr r/m, r  (16, 32, 64 bit test and reset)
                     {
-                        if ( 0 != _prefix.sse2_repeat )
-                            unhandled();
-                        decode_rm();
-                        if ( _rex.W )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int64_t) regs[ _reg ].q >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].q & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val & ~bitmask );
-                            }
-                            else
-                            {
-                                uint64_t bit = 1ull << ( regs[ _reg ].q & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
-                                set_rm64( val & ~bit );
-                            }
-                        }
-                        else if ( 0x66 == _prefix.size )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int16_t) regs[ _reg ].w >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].w & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val & ~bitmask );
-                            }
-                            else
-                            {
-                                uint16_t bit = 1 << ( regs[ _reg ].w & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
-                                set_rm16( val & ~bit );
-                            }
-                        }
-                        else
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int32_t) regs[ _reg ].d >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].d & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val & ~bitmask );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( regs[ _reg ].d & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                                set_rm32( val & ~bit );
-                            }
-                        }
+                        op_btX( op1 );
                         break;
                     }
                     case 0xb6: // movzbq reg, r/m8
@@ -6164,63 +6117,7 @@ _prefix_is_set:
                     }
                     case 0xbb: // btc r/m, r  (16, 32, 64 bit test and reset)
                     {
-                        if ( 0 != _prefix.sse2_repeat )
-                            unhandled();
-                        decode_rm();
-                        if ( _rex.W )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int64_t) regs[ _reg ].q >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].q & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val ^ bitmask );
-                            }
-                            else
-                            {
-                                uint64_t bit = 1ull << ( regs[ _reg ].q & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
-                                set_rm64( val ^ bit );
-                            }
-                        }
-                        else if ( 0x66 == _prefix.size )
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int16_t) regs[ _reg ].w >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].w & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val ^ bitmask );
-                            }
-                            else
-                            {
-                                uint16_t bit = 1 << ( regs[ _reg ].w & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
-                                set_rm16( val ^ bit );
-                            }
-                        }
-                        else
-                        {
-                            if ( _mod < 3 )
-                            {
-                                uint64_t addr = effective_address() + ( (int32_t) regs[ _reg ].d >> 3 );
-                                uint8_t val = getui8( addr );
-                                uint8_t bitmask = 1u << ( regs[ _reg ].d & 7 );
-                                setflag_c( val & bitmask );
-                                setui8( addr, val ^ bitmask );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( regs[ _reg ].d & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                                set_rm32( val ^ bit );
-                            }
-                        }
+                        op_btX( op1 );
                         break;
                     }
                     case 0xbc: // bsf r, r/m   16, 32, 64  bit scan forward
