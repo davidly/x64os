@@ -5953,106 +5953,50 @@ _prefix_is_set:
                             unhandled();
                         break;
                     }
-                    case 0xba:
+                    case 0xba: // btX r/m, imm8  (16, 32, 64 bit test)
                     {
                         decode_rm();
                         uint8_t imm = get_rip8();
 
-                        if ( 4 == _reg ) // bt r/m, imm8  (16, 32, 64 bit test)
+                        if ( _reg < 4 || _reg > 7 ) // 4 = bt, 5 = bts, 6 = btr, 7 = btc
+                            unhandled();
+
+                        if ( _rex.W )
                         {
-                            if ( _rex.W )
-                            {
-                                uint64_t bit = 1ull << ( imm & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
-                            }
-                            else if ( 0x66 == _prefix.size )
-                            {
-                                uint16_t bit = 1 << ( imm & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( imm & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                            }
-                        }
-                        else if ( 5 == _reg ) // bts r/m, imm8  (16, 32, 64 bit test and set)
-                        {
-                            if ( _rex.W )
-                            {
-                                uint64_t bit = 1ull << ( imm & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
+                            uint64_t bit = 1ull << ( imm & 0x3f );
+                            uint64_t val = get_rm64();
+                            setflag_c( val & bit );
+                            if ( 5 == _reg ) // bts r/m, imm8  (64 bit test and set)
                                 set_rm64( val | bit );
-                            }
-                            else if ( 0x66 == _prefix.size )
-                            {
-                                uint16_t bit = 1 << ( imm & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
-                                set_rm16( val | bit );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( imm & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                                set_rm32( val | bit );
-                            }
-                        }
-                        else if ( 6 == _reg ) // btr r/m, imm8  (16, 32, 64 bit test and set)
-                        {
-                            if ( _rex.W )
-                            {
-                                uint64_t bit = 1ull << ( imm & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
+                            else if ( 6 == _reg ) // btr r/m, imm8  (64 bit test and reset)
                                 set_rm64( val & ~bit );
-                            }
-                            else if ( 0x66 == _prefix.size )
-                            {
-                                uint16_t bit = 1 << ( imm & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
-                                set_rm16( val & ~bit );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( imm & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                                set_rm32( val & ~bit );
-                            }
-                        }
-                        else if ( 7 == _reg ) // btc r/m, imm8  (16, 32, 64 bit test and complement)
-                        {
-                            if ( _rex.W )
-                            {
-                                uint64_t bit = 1ull << ( imm & 0x3f );
-                                uint64_t val = get_rm64();
-                                setflag_c( val & bit );
+                            else if ( 7 == _reg )  // btc r/m, imm8  (64 bit test and complement)
                                 set_rm64( val ^ bit );
-                            }
-                            else if ( 0x66 == _prefix.size )
-                            {
-                                uint16_t bit = 1 << ( imm & 0xf );
-                                uint16_t val = get_rm16();
-                                setflag_c( val & bit );
+                        }
+                        else if ( 0x66 == _prefix.size )
+                        {
+                            uint16_t bit = 1 << ( imm & 0xf );
+                            uint16_t val = get_rm16();
+                            setflag_c( val & bit );
+                            if ( 5 == _reg ) // bts r/m, imm8  (16 bit test and set)
+                                set_rm16( val | bit );
+                            else if ( 6 == _reg ) // btr r/m, imm8  (16 bit test and reset)
+                                set_rm16( val & ~bit );
+                            else if ( 7 == _reg )  // btc r/m, imm8  (16 bit test and complement)
                                 set_rm16( val ^ bit );
-                            }
-                            else
-                            {
-                                uint32_t bit = 1 << ( imm & 0x1f );
-                                uint32_t val = get_rm32();
-                                setflag_c( val & bit );
-                                set_rm32( val ^ bit );
-                            }
                         }
                         else
-                            unhandled();
+                        {
+                            uint32_t bit = 1 << ( imm & 0x1f );
+                            uint32_t val = get_rm32();
+                            setflag_c( val & bit );
+                            if ( 5 == _reg ) // bts r/m, imm8  (32 bit test and set)
+                                set_rm32( val | bit );
+                            else if ( 6 == _reg ) // btr r/m, imm8  (32 bit test and reset)
+                                set_rm32( val & ~bit );
+                            else if ( 7 == _reg )  // btc r/m, imm8  (32 bit test and complement)
+                                set_rm32( val ^ bit );
+                        }
                         break;
                     }
                     case 0xbb: // btc r/m, r  (16, 32, 64 bit test and reset)
