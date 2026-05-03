@@ -2,6 +2,9 @@
    App to prove you can't win at Tic-Tac-Toe if the opponent is competent.
 *)
 
+{$R-}
+{$S-}
+{$Q-}
 
 program ttt;
 uses SysUtils;
@@ -32,6 +35,7 @@ function winner2( move: integer ) : integer;
 var
     x : integer;
 begin
+    x := pieceBlank;
     case move of
         0:  begin
             x := board[ 0 ];
@@ -239,7 +243,8 @@ begin
 
     for i := 0 to 8 do
         board[i] := pieceBlank;
-  
+
+    evaluated := 0;  
     for i := 1 to loops do
     begin
         runit( 0 );

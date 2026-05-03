@@ -819,6 +819,7 @@ private:
     } //update_x87_status_top
 
     uint8_t get_x87_rounding_mode() { return ( x87_fpu_control_word >> 10 ) & 3; }
+    uint8_t get_mxcsr_rounding_mode() { return ( ( mxcsr >> 13 ) & 0x3 ); }
 
     inline uint64_t lower32_address( uint64_t a )
     {

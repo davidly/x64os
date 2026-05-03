@@ -427,7 +427,7 @@ void x64::trace_state()
                         unhandled();
                     break;
                 }
-                case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer
+                case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer. truncate
                 {
                     decode_rm();
                     // packed forms are mmx/emms, not sse2
@@ -438,6 +438,16 @@ void x64::trace_state()
                     else
                         unhandled();
                     break;
+                }
+                case 0x2d: // cvtsd2si r, xmm1/m64.  convert scalar double fp from xmm1/m64 into signed integer. use current mxcsr rounding mode
+                {
+                    decode_rm();
+                    if ( 0xf2 == _prefix.sse2_repeat )
+                        tracer.Trace( "cvtsd2si %s, %s\n", register_name( _reg, _rex.W ? 8 : 4 ), rm_string( 8, true ) );
+                    else if ( 0xf3 == _prefix.sse2_repeat )
+                        tracer.Trace( "cvtss2si %s, %s\n", register_name( _reg, _rex.W ? 8 : 4 ), rm_string( 4, true ) );
+                    else
+                        unhandled();
                 }
                 case 0x2e: // ucomisd xmm1, xmm2/m64   compare low doubles and set eflags accordingly
                 {
@@ -4787,7 +4797,7 @@ _prefix_is_set:
                         trace_xreg( _reg );
                         break;
                     }
-                    case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer
+                    case 0x2c: // cvttsd2si r32/r64, xmm1/m64  convert scalar double to signed integer. truncate
                     {
                         decode_rm();
                         if ( 0xf2 == _prefix.sse2_repeat ) // cvttsd2si
@@ -4796,6 +4806,19 @@ _prefix_is_set:
                         else if ( 0xf3 == _prefix.sse2_repeat ) // cvttss2si
                             regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE ) :
                                                       round_i_from_double<int32_t>( get_rmxfloat( 0 ), ROUNDING_MODE_TRUNCATE );
+                        else
+                            unhandled();
+                        break;
+                    }
+                    case 0x2d: // cvtsd2si r32/r64, xmm1/m64  convert scalar double to signed integer. current mxcsr rounding mode
+                    {
+                        decode_rm();
+                        if ( 0xf2 == _prefix.sse2_repeat ) // cvtsd2si
+                            regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxdouble( 0 ), get_mxcsr_rounding_mode() ) :
+                                                      round_i_from_double<int32_t>( get_rmxdouble( 0 ), get_mxcsr_rounding_mode() );
+                        else if ( 0xf3 == _prefix.sse2_repeat ) // cvtss2si
+                            regs[ _reg ].q = _rex.W ? round_i_from_double<int64_t>( get_rmxfloat( 0 ), get_mxcsr_rounding_mode() ) :
+                                                      round_i_from_double<int32_t>( get_rmxfloat( 0 ), get_mxcsr_rounding_mode() );
                         else
                             unhandled();
                         break;
@@ -7317,48 +7340,42 @@ _prefix_is_set:
             {
                 uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
-                if ( _rex.W )
-                    regs[ rax ].b = getui8( get_rip64() );
-                else if ( 0x66 == _prefix.size )
-                    regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip32() ) );
-                else
-                    regs[ rax ].b = getui8( lower32_address( segment_offset + get_rip32() ) );
+                uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
+                regs[ rax ].b = getui8( addr );
                 break;
             }
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
                 uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
+                uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
                 if ( _rex.W )
-                    regs[ rax ].q = getui64( get_rip64() );
+                    regs[ rax ].q = getui64( addr );
                 else if ( 0x66 == _prefix.size )
-                    regs[ rax ].q = getui16( lower32_address( segment_offset + get_rip32() ) );
+                    regs[ rax ].w = getui16( addr );
                 else
-                    regs[ rax ].q = getui32( lower32_address( segment_offset + get_rip32() ) );
+                    regs[ rax ].q = getui32( addr );
                 break;
             }
             case 0xa2: // mov moffs8, al
             {
                 uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
-                if ( _rex.W )
-                    setui8( get_rip64(), regs[ rax ].b );
-                else if ( 0x66 == _prefix.size )
-                    setui8( lower32_address( segment_offset + get_rip32() ), regs[ rax ].b );
-                else
-                    setui8( lower32_address( segment_offset + get_rip32() ), regs[ rax ].b );
+                uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
+                setui8( addr, regs[ rax ].b );
                 break;
             }
             case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
             {
                 uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
+                uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
                 if ( _rex.W )
-                    setui64( get_rip64(), regs[ rax ].q );
+                    setui64( addr, regs[ rax ].q );
                 else if ( 0x66 == _prefix.size )
-                    setui16( lower32_address( segment_offset + get_rip32() ), regs[ rax ].w );
+                    setui16( addr, regs[ rax ].w );
                 else
-                    setui32( lower32_address( segment_offset + get_rip32() ), regs[ rax ].d );
+                    setui32( addr, regs[ rax ].d );
                 break;
             }
             case 0xa4: // movsb m, m  RSI to RDI
