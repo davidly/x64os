@@ -5,6 +5,7 @@
     There is also a 32-bit x86 compatibility mode controlled by member variable mode32. This can be used to run 32-bit binaries.
     Prefix code 0x67 to specify 32-bit addresses is not implemented (g++ and clang++ don't use this)
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
+    Runs Linux versions of the Open Watcom 32-bit compiler and FPC 32-bit and 64-bit Pascal compilers.
     Also tested running nested emulators and their regression tests: this one (x64os/x32os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
     Builds and runs on both little and big endian machines for 32 and 64 bit. set TARGET_BIG_ENDIAN for those machines.
 
@@ -3051,11 +3052,11 @@ void x64::op_btX( uint8_t op )
         uint8_t val = getui8( addr );
         setflag_c( val & bitmask );
         if ( 0xab == op )
-            setui8( addr, val | bitmask );   // bts
+            setui8( addr, val | bitmask );   // bts set
         else if ( 0xb3 == op )
-            setui8( addr, val & ~bitmask );  // btr
+            setui8( addr, val & ~bitmask );  // btr reset
         else if ( 0xbb == op )
-            setui8( addr, val ^ bitmask );   // btc
+            setui8( addr, val ^ bitmask );   // btc complement
     }
     else if ( _rex.W )
     {
@@ -3097,6 +3098,7 @@ void x64::op_btX( uint8_t op )
 
 template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 {
+    assert( 0 != shift );
     T original = *pval;
     const size_t remaining = ( sizeof( T ) * 8 ) - shift;
     T result = ( original << shift ) | ( original >> remaining );
@@ -3109,6 +3111,7 @@ template <typename T> void x64::op_rol( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_ror( T * pval, uint8_t shift )
 {
+    assert( 0 != shift );
     T val = *pval;
     const size_t remaining = ( sizeof( T ) * 8 ) - shift;
     T result = ( val >> shift ) | ( val << remaining );
@@ -3121,6 +3124,7 @@ template <typename T> void x64::op_ror( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 {
+    assert( 0 != shift );
     const uint32_t bit_width = sizeof( T ) * 8;
     T original = *pval;
     bool old_cf = flag_c();
@@ -3140,6 +3144,7 @@ template <typename T> void x64::op_rcl( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
 {
+    assert( 0 != shift );
     const uint32_t bit_width = sizeof(T) * 8;
     T original = *pval;
     bool old_cf = flag_c();
@@ -3159,18 +3164,16 @@ template <typename T> void x64::op_rcr( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
 {
+    assert( 0 != shift );
     T original = *pval;
     if ( 1 == shift )
         setflag_o( 3 == top2bits( original ) );
 
-    if ( shift > 0 ) // Set carry to the bit that will be shifted out
+    const size_t bitWidth = sizeof ( T ) * 8;
+    if ( shift < bitWidth )
     {
-        const size_t bitWidth = sizeof ( T ) * 8;
-        if ( shift < bitWidth )
-        {
-            T mask = (T) 1 << ( bitWidth - shift );
-            setflag_c( 0 != ( original & mask) );
-        }
+        T mask = (T) 1 << ( bitWidth - shift );
+        setflag_c( 0 != ( original & mask) );
     }
 
     T result = original << shift;
@@ -3180,6 +3183,7 @@ template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
 
 template <typename T> void x64::op_shr( T * pval, uint8_t shift )
 {
+    assert( 0 != shift );
     T original = *pval;
     if ( 1 == shift )
         setflag_o( highest_bit( original ) );
@@ -3192,6 +3196,7 @@ template <typename T> void x64::op_shr( T * pval, uint8_t shift )
 
 template <typename T> void x64::op_sar( T * pval, uint8_t shift )
 {
+    assert( 0 != shift );
     using ST = std::make_signed_t<T>;
     ST original = *pval;
     if ( 1 == shift )
@@ -5711,7 +5716,7 @@ _prefix_is_set:
                             unhandled();
                         break;
                     }
-                    case 0xa3: // bt r/m, r 16/32/64
+                    case 0xa3: // bt r/m, r 16/32/64  bit test
                     {
                         op_btX( op1 );
                         break;
@@ -5761,7 +5766,7 @@ _prefix_is_set:
                         }
                         break;
                     }
-                    case 0xab: // bts r/m, r 16/32/64
+                    case 0xab: // bts r/m, r 16/32/64 bit test and set
                     {
                         op_btX( op1 );
                         break;
@@ -5999,7 +6004,7 @@ _prefix_is_set:
                         }
                         break;
                     }
-                    case 0xbb: // btc r/m, r  (16, 32, 64 bit test and reset)
+                    case 0xbb: // btc r/m, r  (16, 32, 64 bit test and complement)
                     {
                         op_btX( op1 );
                         break;
