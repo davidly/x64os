@@ -25,6 +25,7 @@ const
 
 type
     boardType = array[ 0..8 ] of byte;
+    TWinFunc = function: integer;
 
 var
     evaluated: LongWord;
@@ -152,6 +153,131 @@ begin
     lookForWinner := x;
 end;
 
+function checkWin0: integer;
+var x: integer;
+begin
+    x := board[0];
+    if ((x = board[1]) and (x = board[2])) or
+       ((x = board[3]) and (x = board[6])) or
+       ((x = board[4]) and (x = board[8]))
+    then checkWin0 := x
+    else checkWin0 := pieceBlank;
+end;
+
+function checkWin1: integer;
+var x: integer;
+begin
+    x := board[1];
+    if ((x = board[0]) and (x = board[2])) or
+       ((x = board[4]) and (x = board[7]))
+    then checkWin1 := x
+    else checkWin1 := pieceBlank;
+end;
+
+function checkWin2: integer;
+var x: integer;
+begin
+    x := board[2];
+    if ((x = board[0]) and (x = board[1])) or
+       ((x = board[5]) and (x = board[8])) or
+       ((x = board[4]) and (x = board[6]))
+    then checkWin2 := x
+    else checkWin2 := pieceBlank;
+end;
+
+function checkWin3: integer;
+var x: integer;
+begin
+    x := board[3];
+    if ((x = board[4]) and (x = board[5])) or
+       ((x = board[0]) and (x = board[6]))
+    then checkWin3 := x
+    else checkWin3 := pieceBlank;
+end;
+
+function checkWin4: integer;
+var x: integer;
+begin
+    x := board[4];
+    if ((x = board[0]) and (x = board[8])) or
+       ((x = board[2]) and (x = board[6])) or
+       ((x = board[1]) and (x = board[7])) or
+       ((x = board[3]) and (x = board[5]))
+    then checkWin4 := x
+    else checkWin4 := pieceBlank;
+end;
+
+function checkWin5: integer;
+var x: integer;
+begin
+    x := board[5];
+    if ((x = board[3]) and (x = board[4])) or
+       ((x = board[2]) and (x = board[8]))
+    then checkWin5 := x
+    else checkWin5 := pieceBlank;
+end;
+
+function checkWin6: integer;
+var x: integer;
+begin
+    x := board[6];
+    if ((x = board[7]) and (x = board[8])) or
+       ((x = board[0]) and (x = board[3])) or
+       ((x = board[4]) and (x = board[2]))
+    then checkWin6 := x
+    else checkWin6 := pieceBlank;
+end;
+
+function checkWin7: integer;
+var x: integer;
+begin
+    x := board[7];
+    if ((x = board[6]) and (x = board[8])) or
+       ((x = board[1]) and (x = board[4]))
+    then checkWin7 := x
+    else checkWin7 := pieceBlank;
+end;
+
+function checkWin8: integer;
+var x: integer;
+begin
+    x := board[8];
+    if ((x = board[6]) and (x = board[7])) or
+       ((x = board[2]) and (x = board[5])) or
+       ((x = board[0]) and (x = board[4]))
+    then checkWin8 := x
+    else checkWin8 := pieceBlank;
+end;
+
+const
+    winFuncs: array[0..8] of TWinFunc = (
+        @checkWin0, @checkWin1, @checkWin2,
+        @checkWin3, @checkWin4, @checkWin5,
+        @checkWin6, @checkWin7, @checkWin8
+    );
+
+function winner3( move: integer ) : integer;
+begin
+    winner3 := winFuncs[move]();
+end;
+
+function lookForWinner2 : byte;
+var
+    i : integer;
+    x : byte;
+begin
+    x := pieceBlank;
+    for i := 0 to 8 do
+    begin
+        if board[i] <> pieceBlank then
+        begin
+            x := winFuncs[i]();
+            if x <> pieceBlank then break;
+        end;
+    end;
+    lookForWinner2 := x;
+end;
+
 { enable local variables for recursion }
 {$S+ }
 
@@ -164,7 +290,7 @@ begin
     if depth >= 4 then
     begin
         { p := lookForWinner;  }
-        p := winner2( move );
+        p := winFuncs[move]();
         if p <> pieceBlank then
         begin
             if p = pieceX then

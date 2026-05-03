@@ -5,25 +5,14 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-# 1. Define the backend compiler path (adjust if necessary)
-PPC_BIN=$(which ppcx64)
 
-# 2. Compile using internal tools to avoid forking
-# -Aelf: Use internal ELF writer (assembler)
-# -Xi:   Use internal linker
-# -g:    Generate debug info
-# -O2:   Level 2 optimization
-# -o:    Specify output destination
+for OPT in 1 2 3; do
+    DIR="bin${OPT}"
+    mkdir $DIR > /dev/null 2>&1
+    rm $DIR/$1 > /dev/null 2>&1
+    rm $DIR/$1.o > /dev/null 2>&1
+    ../x64os /usr/bin/ppcx64 -Aelf -g -O${OPT} -o${DIR}/$2 $1.pas
+    objdump -d $DIR/$1 > $DIR/$1.txt
+    rm $DIR/$1.o > /dev/null 2>&1
+done
 
-# /usr/bin/ppcx64
-# /etc/fpc.cfg
-
-mkdir bin > /dev/null 2>&1
-rm bin/$1 > /dev/null 2>&1
-rm bin/$1.o > /dev/null 2>&1
-../x64os /usr/bin/ppcx64 -Aelf -g -O2 -obin/$1 $1.pas
-rm bin/$1.o > /dev/null 2>&1
-
-#../x64os -t $PPC_BIN -vt -n \
-#                        -Fu/usr/lib/fpc/3.2.2/units/x86_64-linux/rtl \
-#                        Tlinux -Px86_64 --Aelf -Xi -g -O2 -obin/"$1" "$1"

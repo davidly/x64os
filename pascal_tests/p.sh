@@ -1,6 +1,7 @@
-mkdir -p /mnt/c/users/david/onedrive/x64os/pascal_tests/bin
-mkdir -p /mnt/c/users/david/onedrive/x64os/pascal_tests/x32bin
+DEST=/mnt/c/users/david/onedrive/x64os/pascal_tests
 
-cp bin/* /mnt/c/users/david/onedrive/x64os/pascal_tests/bin
-cp x32bin/* /mnt/c/users/david/onedrive/x64os/pascal_tests/x32bin
+for DIR in bin1 bin2 bin3 x32bin1 x32bin2 x32bin3; do
+    mkdir -p $DEST/$DIR
+    cp $DIR/* $DEST/$DIR
+done
 

@@ -10,8 +10,10 @@ for arg in ${apps[@]}
 do
     echo $arg
     echo $arg>>$outputfile
-    ../x32os x32bin/$arg >>$outputfile 2>&1
-    ../x64os bin/$arg >>$outputfile 2>&1
+    for OPT in 1 2 3; do
+        ../x32os x32bin${OPT}/$arg >>$outputfile 2>&1
+        ../x64os bin${OPT}/$arg >>$outputfile 2>&1
+    done
 done
 
 date_time=$(date)

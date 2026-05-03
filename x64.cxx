@@ -7337,19 +7337,14 @@ _prefix_is_set:
                 break;
             }
             case 0xa0: // mov al, moffs8
-            {
-                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
-                decode_rex();
-                uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
-                regs[ rax ].b = getui8( addr );
-                break;
-            }
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
                 uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
                 uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
-                if ( _rex.W )
+                if ( 0xa0 == op )
+                    regs[ rax ].b = getui8( addr );
+                else if ( _rex.W )
                     regs[ rax ].q = getui64( addr );
                 else if ( 0x66 == _prefix.size )
                     regs[ rax ].w = getui16( addr );
@@ -7358,19 +7353,14 @@ _prefix_is_set:
                 break;
             }
             case 0xa2: // mov moffs8, al
-            {
-                uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
-                decode_rex();
-                uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
-                setui8( addr, regs[ rax ].b );
-                break;
-            }
             case 0xa3: // mov moffs16, ax (also 32 and 64 bit)
             {
                 uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
                 decode_rex();
                 uint64_t addr = mode32 ? lower32_address( segment_offset + get_rip32() ) : segment_offset + get_rip64();
-                if ( _rex.W )
+                if ( 0xa2 == op )
+                    setui8( addr, regs[ rax ].b );
+                else if ( _rex.W )
                     setui64( addr, regs[ rax ].q );
                 else if ( 0x66 == _prefix.size )
                     setui16( addr, regs[ rax ].w );

@@ -9,8 +9,10 @@ set _applist=sieve e ttt mm chk
 ( for %%a in (%_applist%) do (
     echo %%a
     echo %%a>>%outputfile%
-    ..\x32os x32bin\%%a >>%outputfile% 2>&1
-    ..\x64os bin\%%a >>%outputfile% 2>&1
+    for %%o in (1 2 3) do (
+        ..\x32os x32bin%%o\%%a >>%outputfile% 2>&1
+        ..\x64os bin%%o\%%a >>%outputfile% 2>&1
+    )
 ) )
 
 echo %date% %time% >>%outputfile%
