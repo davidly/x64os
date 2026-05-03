@@ -20,6 +20,7 @@ PPC_BIN=$(which ppcx64)
 
 #../x64os "-e:PPC_CONFIG_PATH=./no_config" -t $PPC_BIN -Tlinux -va -Fu/usr/lib/fpc/3.2.2/units/x86_64-linux/rtl "$1" 
 
+mkdir x32bin > /dev/null 2>&1
 rm x32bin/$1 > /dev/null 2>&1
 rm x32bin/$1.o > /dev/null 2>&1
 ../x32os /usr/bin/ppc386 -Aelf -g -O2 -ox32bin/$1 $1.pas

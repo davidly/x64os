@@ -18,6 +18,7 @@ PPC_BIN=$(which ppcx64)
 # /usr/bin/ppcx64
 # /etc/fpc.cfg
 
+mkdir bin > /dev/null 2>&1
 rm bin/$1 > /dev/null 2>&1
 rm bin/$1.o > /dev/null 2>&1
 ../x64os /usr/bin/ppcx64 -Aelf -g -O2 -obin/$1 $1.pas
