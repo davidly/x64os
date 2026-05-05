@@ -1,4 +1,4 @@
-Sun 05/03/2026 16:11:01.18 
+Tue 05/05/2026 10:17:32.58 
 sieve
 count of primes: 1899
 count of primes: 1899
@@ -84,4 +84,320 @@ TRUE
 Runtime error 201 at $00000000004010E2
   $00000000004010E2
 
-Sun 05/03/2026 16:11:02.36 
+tap
+tap starting, should tend towards 1.2020569031595942854...
+first implementation...
+  at 10 iterations:  1.1975319856741931E+000
+  at 100 iterations:  1.2020074006596781E+000
+  at 1000 iterations:  1.2020564036593433E+000
+  at 10000 iterations:  1.2020568981600981E+000
+second implementation...
+  at 10 iterations:  1.2500000000000000E+000
+  at 100 iterations:  1.2658227848101267E+000
+  at 1000 iterations:  1.2019230769230769E+000
+  at 10000 iterations:  1.1944577161968466E+000
+tap completed with great success
+tap starting, should tend towards 1.2020569031595942854...
+first implementation...
+  at 10 iterations:  1.1975319856741931E+000
+  at 100 iterations:  1.2020074006596781E+000
+  at 1000 iterations:  1.2020564036593433E+000
+  at 10000 iterations:  1.2020568981600981E+000
+second implementation...
+  at 10 iterations:  1.2500000000000000E+000
+  at 100 iterations:  1.2658227848101267E+000
+  at 1000 iterations:  1.2019230769230769E+000
+  at 10000 iterations:  1.1944577161968466E+000
+tap completed with great success
+tap starting, should tend towards 1.2020569031595942854...
+first implementation...
+  at 10 iterations:  1.1975319856741931E+000
+  at 100 iterations:  1.2020074006596781E+000
+  at 1000 iterations:  1.2020564036593433E+000
+  at 10000 iterations:  1.2020568981600981E+000
+second implementation...
+  at 10 iterations:  1.2500000000000000E+000
+  at 100 iterations:  1.2658227848101267E+000
+  at 1000 iterations:  1.2019230769230769E+000
+  at 10000 iterations:  1.1944577161968466E+000
+tap completed with great success
+tap starting, should tend towards 1.2020569031595942854...
+first implementation...
+  at 10 iterations:  1.1975319856741931E+000
+  at 100 iterations:  1.2020074006596781E+000
+  at 1000 iterations:  1.2020564036593433E+000
+  at 10000 iterations:  1.2020568981600981E+000
+second implementation...
+  at 10 iterations:  1.2500000000000000E+000
+  at 100 iterations:  1.2658227848101267E+000
+  at 1000 iterations:  1.2019230769230769E+000
+  at 10000 iterations:  1.1944577161968466E+000
+tap completed with great success
+tap starting, should tend towards 1.2020569031595942854...
+first implementation...
+  at 10 iterations:  1.1975319856741931E+000
+  at 100 iterations:  1.2020074006596781E+000
+  at 1000 iterations:  1.2020564036593433E+000
+  at 10000 iterations:  1.2020568981600981E+000
+second implementation...
+  at 10 iterations:  1.2500000000000000E+000
+  at 100 iterations:  1.2658227848101267E+000
+  at 1000 iterations:  1.2019230769230769E+000
+  at 10000 iterations:  1.1944577161968466E+000
+tap completed with great success
+tap starting, should tend towards 1.2020569031595942854...
+first implementation...
+  at 10 iterations:  1.1975319856741931E+000
+  at 100 iterations:  1.2020074006596781E+000
+  at 1000 iterations:  1.2020564036593433E+000
+  at 10000 iterations:  1.2020568981600981E+000
+second implementation...
+  at 10 iterations:  1.2500000000000000E+000
+  at 100 iterations:  1.2658227848101267E+000
+  at 1000 iterations:  1.2019230769230769E+000
+  at 10000 iterations:  1.1944577161968466E+000
+tap completed with great success
+tphi
+should tend towards 1.618033988749...
+  at 1 iterations:  2.0000000000000000E+000
+  at 2 iterations:  1.5000000000000000E+000
+  at 3 iterations:  1.6666666666666667E+000
+  at 4 iterations:  1.6000000000000001E+000
+  at 5 iterations:  1.6250000000000000E+000
+  at 6 iterations:  1.6153846153846154E+000
+  at 7 iterations:  1.6190476190476191E+000
+  at 8 iterations:  1.6176470588235294E+000
+  at 9 iterations:  1.6181818181818182E+000
+  at 10 iterations:  1.6179775280898876E+000
+  at 11 iterations:  1.6180555555555556E+000
+  at 12 iterations:  1.6180257510729614E+000
+  at 13 iterations:  1.6180371352785146E+000
+  at 14 iterations:  1.6180327868852460E+000
+  at 15 iterations:  1.6180344478216819E+000
+  at 16 iterations:  1.6180338134001253E+000
+  at 17 iterations:  1.6180340557275541E+000
+  at 18 iterations:  1.6180339631667064E+000
+  at 19 iterations:  1.6180339985218033E+000
+  at 20 iterations:  1.6180339850173580E+000
+  at 21 iterations:  1.6180339901755971E+000
+should tend towards 1.618033988749...
+  at 1 iterations:  2.0000000000000000E+000
+  at 2 iterations:  1.5000000000000000E+000
+  at 3 iterations:  1.6666666666666667E+000
+  at 4 iterations:  1.6000000000000001E+000
+  at 5 iterations:  1.6250000000000000E+000
+  at 6 iterations:  1.6153846153846154E+000
+  at 7 iterations:  1.6190476190476191E+000
+  at 8 iterations:  1.6176470588235294E+000
+  at 9 iterations:  1.6181818181818182E+000
+  at 10 iterations:  1.6179775280898876E+000
+  at 11 iterations:  1.6180555555555556E+000
+  at 12 iterations:  1.6180257510729614E+000
+  at 13 iterations:  1.6180371352785146E+000
+  at 14 iterations:  1.6180327868852460E+000
+  at 15 iterations:  1.6180344478216819E+000
+  at 16 iterations:  1.6180338134001253E+000
+  at 17 iterations:  1.6180340557275541E+000
+  at 18 iterations:  1.6180339631667064E+000
+  at 19 iterations:  1.6180339985218033E+000
+  at 20 iterations:  1.6180339850173580E+000
+  at 21 iterations:  1.6180339901755971E+000
+should tend towards 1.618033988749...
+  at 1 iterations:  2.0000000000000000E+000
+  at 2 iterations:  1.5000000000000000E+000
+  at 3 iterations:  1.6666666666666667E+000
+  at 4 iterations:  1.6000000000000001E+000
+  at 5 iterations:  1.6250000000000000E+000
+  at 6 iterations:  1.6153846153846154E+000
+  at 7 iterations:  1.6190476190476191E+000
+  at 8 iterations:  1.6176470588235294E+000
+  at 9 iterations:  1.6181818181818182E+000
+  at 10 iterations:  1.6179775280898876E+000
+  at 11 iterations:  1.6180555555555556E+000
+  at 12 iterations:  1.6180257510729614E+000
+  at 13 iterations:  1.6180371352785146E+000
+  at 14 iterations:  1.6180327868852460E+000
+  at 15 iterations:  1.6180344478216819E+000
+  at 16 iterations:  1.6180338134001253E+000
+  at 17 iterations:  1.6180340557275541E+000
+  at 18 iterations:  1.6180339631667064E+000
+  at 19 iterations:  1.6180339985218033E+000
+  at 20 iterations:  1.6180339850173580E+000
+  at 21 iterations:  1.6180339901755971E+000
+should tend towards 1.618033988749...
+  at 1 iterations:  2.0000000000000000E+000
+  at 2 iterations:  1.5000000000000000E+000
+  at 3 iterations:  1.6666666666666667E+000
+  at 4 iterations:  1.6000000000000001E+000
+  at 5 iterations:  1.6250000000000000E+000
+  at 6 iterations:  1.6153846153846154E+000
+  at 7 iterations:  1.6190476190476191E+000
+  at 8 iterations:  1.6176470588235294E+000
+  at 9 iterations:  1.6181818181818182E+000
+  at 10 iterations:  1.6179775280898876E+000
+  at 11 iterations:  1.6180555555555556E+000
+  at 12 iterations:  1.6180257510729614E+000
+  at 13 iterations:  1.6180371352785146E+000
+  at 14 iterations:  1.6180327868852460E+000
+  at 15 iterations:  1.6180344478216819E+000
+  at 16 iterations:  1.6180338134001253E+000
+  at 17 iterations:  1.6180340557275541E+000
+  at 18 iterations:  1.6180339631667064E+000
+  at 19 iterations:  1.6180339985218033E+000
+  at 20 iterations:  1.6180339850173580E+000
+  at 21 iterations:  1.6180339901755971E+000
+should tend towards 1.618033988749...
+  at 1 iterations:  2.0000000000000000E+000
+  at 2 iterations:  1.5000000000000000E+000
+  at 3 iterations:  1.6666666666666667E+000
+  at 4 iterations:  1.6000000000000001E+000
+  at 5 iterations:  1.6250000000000000E+000
+  at 6 iterations:  1.6153846153846154E+000
+  at 7 iterations:  1.6190476190476191E+000
+  at 8 iterations:  1.6176470588235294E+000
+  at 9 iterations:  1.6181818181818182E+000
+  at 10 iterations:  1.6179775280898876E+000
+  at 11 iterations:  1.6180555555555556E+000
+  at 12 iterations:  1.6180257510729614E+000
+  at 13 iterations:  1.6180371352785146E+000
+  at 14 iterations:  1.6180327868852460E+000
+  at 15 iterations:  1.6180344478216819E+000
+  at 16 iterations:  1.6180338134001253E+000
+  at 17 iterations:  1.6180340557275541E+000
+  at 18 iterations:  1.6180339631667064E+000
+  at 19 iterations:  1.6180339985218033E+000
+  at 20 iterations:  1.6180339850173580E+000
+  at 21 iterations:  1.6180339901755971E+000
+should tend towards 1.618033988749...
+  at 1 iterations:  2.0000000000000000E+000
+  at 2 iterations:  1.5000000000000000E+000
+  at 3 iterations:  1.6666666666666667E+000
+  at 4 iterations:  1.6000000000000001E+000
+  at 5 iterations:  1.6250000000000000E+000
+  at 6 iterations:  1.6153846153846154E+000
+  at 7 iterations:  1.6190476190476191E+000
+  at 8 iterations:  1.6176470588235294E+000
+  at 9 iterations:  1.6181818181818182E+000
+  at 10 iterations:  1.6179775280898876E+000
+  at 11 iterations:  1.6180555555555556E+000
+  at 12 iterations:  1.6180257510729614E+000
+  at 13 iterations:  1.6180371352785146E+000
+  at 14 iterations:  1.6180327868852460E+000
+  at 15 iterations:  1.6180344478216819E+000
+  at 16 iterations:  1.6180338134001253E+000
+  at 17 iterations:  1.6180340557275541E+000
+  at 18 iterations:  1.6180339631667064E+000
+  at 19 iterations:  1.6180339985218033E+000
+  at 20 iterations:  1.6180339850173580E+000
+  at 21 iterations:  1.6180339901755971E+000
+nqueens
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+nq1d
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+size    solutions
+   1            1
+   2            0
+   3            0
+   4            2
+   5           10
+   6            4
+   7           40
+   8           92
+Tue 05/05/2026 10:17:34.79 

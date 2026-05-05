@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apps=(sieve e ttt mm chk)
+apps=(sieve e ttt mm chk tap tphi nqueens nq1d)
 
 for arg in ${apps[@]}
 do

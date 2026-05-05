@@ -4,7 +4,7 @@ setlocal
 set outputfile=runall_test.txt
 echo %date% %time% >%outputfile%
 
-set _applist=sieve e ttt mm chk
+set _applist=sieve e ttt mm chk tap tphi nqueens nq1d
 
 ( for %%a in (%_applist%) do (
     echo %%a
