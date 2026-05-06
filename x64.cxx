@@ -2280,6 +2280,8 @@ void x64::trace_state()
                 tracer.Trace( "fcomi st(0), st(%u)\n", op1 & 7 );
             else if ( op1 >= 0xe8 && op1 <= 0xef ) // fucomi st, st(i)
                 tracer.Trace( "fucomi st(0), st(%u)\n", op1 & 7 );
+            else if ( 0xe2 == op1 ) // fnclex
+                tracer.Trace( "fnclex\n" );
             else if ( 0xe3 == op1 ) // finit
                 tracer.Trace( "finit\n" );
             else
@@ -2348,7 +2350,9 @@ void x64::trace_state()
         case 0xdd:
         {
             uint8_t op1 = get_rip8();
-            if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fst st(i)
+            if ( op1 >= 0xc0 && op1 <= 0xc7 ) // ffree st(i)
+                tracer.Trace( "ffree st(%u)\n", op1 & 7 );
+            else if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fst st(i)
                 tracer.Trace( "fst st(%u), st(0)\n", op1 & 7 );
             else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
                 tracer.Trace( "fstp st(%u), st(0)\n", op1 & 7 );
@@ -2368,6 +2372,10 @@ void x64::trace_state()
                     tracer.Trace( "fst %s\n", rm_string( 8 ) );
                 else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
                     tracer.Trace( "fstp %s\n", rm_string( 8 ) );
+                else if ( 4 == _reg ) // frstor m108byte  restore fpu state
+                    tracer.Trace( "frstor %s\n", rm_string( 8 ) );
+                else if ( 6 == _reg ) // fsave m108byte  save fpu state then reinitialize
+                    tracer.Trace( "fsave %s\n", rm_string( 8 ) );
                 else if ( 7 == _reg ) // fstsw m2byte
                     tracer.Trace( "fstsw %s\n", rm_string( 8 ) );
                 else
@@ -8038,6 +8046,8 @@ _prefix_is_set:
                     set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
                 else if ( op1 >= 0xf0 && op1 <= 0xf7 ) // fcomi st, st(i)  compare st(0) with st(i) and set status flags
                     set_eflags_from_fcc( compare_f80_floating( peek_fp( 0 ), peek_fp( offset ) ) );
+                else if ( 0xe2 == op1 ) // fnclex  clear fpu exception flags
+                    x87_fpu_status_word &= ~0x80ff; // clear exception flags and busy bit
                 else if ( 0xe3 == op1 ) // finit
                 {
                     x87_fpu_control_word = 0x37f;
@@ -8073,7 +8083,7 @@ _prefix_is_set:
                         memcpy( getmem( effective_address() ), f80.get_bytes(), 10 );
                     }
                     else
-                        unhandled();
+                        unhandled(); // note that _reg 6 is invalid/reserved for this opcode
                 }
                 break;
             }
@@ -8122,7 +8132,9 @@ _prefix_is_set:
             {
                 uint8_t op1 = get_rip8();
                 uint8_t offset = op1 & 7;
-                if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fst st(i)
+                if ( op1 >= 0xc0 && op1 <= 0xc7 ) // ffree st(i)  mark register as empty (tag word not tracked; no-op)
+                    ;
+                else if ( op1 >= 0xd0 && op1 <= 0xd7 ) // fst st(i)
                     poke_fp( offset, peek_fp( 0 ) );
                 else if ( op1 >= 0xd8 && op1 <= 0xdf ) // fstp st(i)
                 {
@@ -8148,10 +8160,37 @@ _prefix_is_set:
                         ieee80_to_int64( pop_fp().get_bytes(), & i64, (i80_round_mode) ROUNDING_MODE_TRUNCATE );
                         set_rm64( i64 );
                     }
-                    else if ( 2 == _reg ) // fstp m64fp  copy st(0) to m64fp
+                    else if ( 2 == _reg ) // fst m64fp  copy st(0) to m64fp
                         set_rmdouble( peek_fp( 0 ).getd() );
                     else if ( 3 == _reg ) // fstp m64fp  copy st(0) to m64fp and pop register stack
                         set_rmdouble( pop_fp().getd() );
+                    else if ( 4 == _reg ) // frstor m108byte  restore fpu state
+                    {
+                        uint64_t ea = effective_address();
+                        x87_fpu_control_word = (uint16_t) getui32( ea + 0 );
+                        uint32_t sw = getui32( ea + 4 );
+                        x87_fpu_status_word = (uint16_t) sw;
+                        fp_sp = ( sw >> 11 ) & 7;
+                        set_x87_control_word( x87_fpu_control_word );
+                        for ( int i = 0; i < 8; i++ )
+                            memcpy( fregs[ i ].get_bytes(), getmem( ea + 28 + i * 10 ), 10 );
+                    }
+                    else if ( 6 == _reg ) // fsave m108byte  save fpu state then reinitialize
+                    {
+                        uint64_t ea = effective_address();
+                        setui32( ea + 0,  x87_fpu_control_word );
+                        setui32( ea + 4,  ( x87_fpu_status_word & ~0x3800u ) | ( (uint32_t)( fp_sp & 7 ) << 11 ) );
+                        setui32( ea + 8,  0 ); // tag word not tracked; assume all valid
+                        setui32( ea + 12, 0 ); // FPU instruction pointer
+                        setui32( ea + 16, 0 ); // FPU CS selector / last opcode
+                        setui32( ea + 20, 0 ); // FPU data pointer
+                        setui32( ea + 24, 0 ); // FPU data segment
+                        for ( int i = 0; i < 8; i++ )
+                            memcpy( getmem( ea + 28 + i * 10 ), fregs[ i ].get_bytes(), 10 );
+                        x87_fpu_control_word = 0x37f;
+                        x87_fpu_status_word = 0;
+                        fp_sp = 0;
+                    }
                     else if ( 7 == _reg ) // fstsw m2byte
                         set_rm16( x87_fpu_status_word );
                     else
