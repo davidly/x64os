@@ -2436,8 +2436,12 @@ void x64::trace_state()
                     tracer.Trace( "fist %s  # m16int\n", rm_string( 2 ) );
                 else if ( 3 == _reg ) // fistp m16int   store st(0) in m16int and pop register stack
                     tracer.Trace( "fistp %s  # m16int\n", rm_string( 2 ) );
+                else if ( 4 == _reg ) // fbld m80bcd  load a packed bcd integer from memory to the fpu stack
+                    tracer.Trace( "fbld %s #m80bcd\n", rm_string( op_width() ) );
                 else if ( 5 == _reg ) // fild m64int   loads signed 64 bit integer converted to a float and pushed to fp stack
                     tracer.Trace( "fild %s  # m64int\n", rm_string( 8 ) );
+                else if ( 6 == _reg ) // fbstp m80bcd  store the stack top as a packed bcd integer in memory and pops stack
+                    tracer.Trace( "fbstp %s #m80bcd\n", rm_string( op_width() ) );
                 else if ( 7 == _reg ) // fistp m64int store st(0) as an m64int and pop fp stack
                     tracer.Trace( "fistp %s\n", rm_string( 8 ) );
                 else
@@ -8247,11 +8251,45 @@ _prefix_is_set:
                         set_rm16( round_i_from_double<int16_t>( peek_fp( 0 ).getd(), get_x87_rounding_mode() ) );
                     else if ( 3 == _reg ) // fistp m16int   store st(0) in m16int and pop register stack
                         set_rm16( round_i_from_double<int16_t>( pop_fp().getd(), get_x87_rounding_mode() ) );
+                    else if ( 4 == _reg ) // fbld m80bcd  load a packed bcd integer from memory to the fpu stack
+                    {
+                        uint8_t * p = (uint8_t *) getmem( effective_address() );
+                        bool negative = ( p[9] & 0x80 ) != 0;
+                        int64_t val = 0;
+                        for ( int b = 8; b >= 0; b-- )
+                        {
+                            val = val * 10 + ( ( p[b] >> 4 ) & 0x0f );
+                            val = val * 10 + ( p[b] & 0x0f );
+                        }
+                        if ( negative )
+                            val = -val;
+                        float80_t f;
+                        int64_to_ieee80( val, f.get_bytes() );
+                        push_fp( f );
+                    }
                     else if ( 5 == _reg ) // fild m64int   loads signed 64 bit integer converted to a float and pushed to fp stack
                     {
                         float80_t f;
                         int64_to_ieee80( (int64_t) get_rm64(), f.get_bytes() );
                         push_fp( f );
+                    }
+                    else if ( 6 == _reg ) // fbstp m80bcd  store the stack top as a packed bcd integer in memory and pops stack
+                    {
+                        float80_t f = pop_fp();
+                        int64_t val = 0;
+                        ieee80_to_int64( f.get_bytes(), &val, (i80_round_mode) get_x87_rounding_mode() );
+                        uint8_t * p = (uint8_t *) getmem( effective_address() );
+                        memset( p, 0, 10 );
+                        if ( val < 0 )
+                        {
+                            p[9] = 0x80;
+                            val = -val;
+                        }
+                        for ( int b = 0; b <= 8; b++ )
+                        {
+                            p[b] = (uint8_t) ( ( val % 10 ) | ( ( ( val / 10 ) % 10 ) << 4 ) );
+                            val /= 100;
+                        }
                     }
                     else if ( 7 == _reg ) // fistp m64int store st(0) as an m64int and pop fp stack
                     {

@@ -78,7 +78,7 @@ do
 done
 
 for arg in e_x64 sieve_x64 tttu_x64 xlat64 incdec64 pushpop64 string64 jmpcall64 sse2_64 \
-                muldiv64 tfildstp bt_bts64 rotate64
+                muldiv64 tfildstp bt_bts64 rotate64 bcd64
 do
     echo "$arg"
     echo "c_tests/$arg" >>"$outputfile"
