@@ -1,4 +1,4 @@
-Thu 04/30/2026 15:51:37.23 
+Thu 05/07/2026  7:07:09.40 
 c_tests/x32bin0/tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -12638,7 +12638,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12667,7 +12667,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12696,7 +12696,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12725,7 +12725,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12754,7 +12754,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12783,7 +12783,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12812,7 +12812,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12841,7 +12841,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12870,7 +12870,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -12899,7 +12899,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -59116,7 +59116,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 39
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin0/fopentst
@@ -59136,7 +59136,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 39
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin1/fopentst
@@ -59156,7 +59156,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 39
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin1/fopentst
@@ -59176,7 +59176,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 39
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin2/fopentst
@@ -59196,7 +59196,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 40
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin2/fopentst
@@ -59216,7 +59216,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 40
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin3/fopentst
@@ -59236,7 +59236,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 40
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbin3/fopentst
@@ -59256,7 +59256,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 40
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32binfast/fopentst
@@ -59276,7 +59276,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 40
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32clangbinfast/fopentst
@@ -59296,7 +59296,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 30, hour 14, min 52, sec 40
+tz: 'PST+8', year: 2026, month 5, day 7, hour 6, min 8, sec 13
 len in pfl: 0
 exiting fopentst with great success
 c_tests/x32bin0/fact
@@ -61531,12 +61531,12 @@ lade vied
 lead vied
 c_tests/x32bin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-635 ms for 1 iterations
+596 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 c_tests/x32clangbin0/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-650 ms for 1 iterations
+614 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61585,12 +61585,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-181 ms for 1 iterations
+169 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 c_tests/x32clangbin1/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-181 ms for 1 iterations
+167 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61639,12 +61639,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-177 ms for 1 iterations
+170 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 c_tests/x32clangbin2/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-169 ms for 1 iterations
+161 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61693,12 +61693,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32bin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-187 ms for 1 iterations
+177 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 c_tests/x32clangbin3/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-168 ms for 1 iterations
+160 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -61747,12 +61747,12 @@ parsing input file c_tests/tp.bas
 created assembler file: c_tests/tp.asm, use registers: yes, expression optimization: yes
 c_tests/x32binfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-188 ms for 1 iterations
+181 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 c_tests/x32clangbinfast/ba c_tests/tp.bas
 parsing input file c_tests/tp.bas
-170 ms for 1 iterations
+163 ms for 1 iterations
 final move count 6493
 exiting the basic interpreter
 parsing input file c_tests/tp.bas
@@ -62090,7 +62090,7 @@ ID  NAME               DATATYPE         VALUE
 c_tests/x32bin1/taux
 ID  NAME               DATATYPE         VALUE
 --  ----               --------         -----
-25  AT_RANDOM          16-byte address  0xe50f1f0  08070605040302010807060504030201
+25  AT_RANDOM          16-byte address  0xe50f1d0  08070605040302010807060504030201
 6   AT_PAGESZ          integer          0x1000  (4096)
 16  AT_HWCAP           bitmask          0xa01
 26  AT_HWCAP2          bitmask          0x0
@@ -62098,8 +62098,8 @@ ID  NAME               DATATYPE         VALUE
 12  AT_EUID            uid_t            0x696a6559  (1768580441)
 13  AT_GID             gid_t            0x65616863  (1700882531)
 14  AT_EGID            gid_t            0x6e696873  (1852401779)
-31  AT_EXECFN          string address   0xe50f238  "/Users/david/OneDrive/x64os/c_tests/x32bin1/taux"
-15  AT_PLATFORM        string address   0xe50f269  "i686"
+31  AT_EXECFN          string address   0xe50f218  "/Users/david/OneDrive/x64os/c_tests/x32bin1/taux"
+15  AT_PLATFORM        string address   0xe50f249  "i686"
 0   AT_NULL            terminator       0x0
 c_tests/x32clangbin1/taux
 ID  NAME               DATATYPE         VALUE
@@ -62118,7 +62118,7 @@ ID  NAME               DATATYPE         VALUE
 c_tests/x32bin2/taux
 ID  NAME               DATATYPE         VALUE
 --  ----               --------         -----
-25  AT_RANDOM          16-byte address  0xe50f1f0  08070605040302010807060504030201
+25  AT_RANDOM          16-byte address  0xe50f1d0  08070605040302010807060504030201
 6   AT_PAGESZ          integer          0x1000  (4096)
 16  AT_HWCAP           bitmask          0xa01
 26  AT_HWCAP2          bitmask          0x0
@@ -62126,8 +62126,8 @@ ID  NAME               DATATYPE         VALUE
 12  AT_EUID            uid_t            0x696a6559  (1768580441)
 13  AT_GID             gid_t            0x65616863  (1700882531)
 14  AT_EGID            gid_t            0x6e696873  (1852401779)
-31  AT_EXECFN          string address   0xe50f238  "/Users/david/OneDrive/x64os/c_tests/x32bin2/taux"
-15  AT_PLATFORM        string address   0xe50f269  "i686"
+31  AT_EXECFN          string address   0xe50f218  "/Users/david/OneDrive/x64os/c_tests/x32bin2/taux"
+15  AT_PLATFORM        string address   0xe50f249  "i686"
 0   AT_NULL            terminator       0x0
 c_tests/x32clangbin2/taux
 ID  NAME               DATATYPE         VALUE
@@ -62146,7 +62146,7 @@ ID  NAME               DATATYPE         VALUE
 c_tests/x32bin3/taux
 ID  NAME               DATATYPE         VALUE
 --  ----               --------         -----
-25  AT_RANDOM          16-byte address  0xe50f1f0  08070605040302010807060504030201
+25  AT_RANDOM          16-byte address  0xe50f1d0  08070605040302010807060504030201
 6   AT_PAGESZ          integer          0x1000  (4096)
 16  AT_HWCAP           bitmask          0xa01
 26  AT_HWCAP2          bitmask          0x0
@@ -62154,8 +62154,8 @@ ID  NAME               DATATYPE         VALUE
 12  AT_EUID            uid_t            0x696a6559  (1768580441)
 13  AT_GID             gid_t            0x65616863  (1700882531)
 14  AT_EGID            gid_t            0x6e696873  (1852401779)
-31  AT_EXECFN          string address   0xe50f238  "/Users/david/OneDrive/x64os/c_tests/x32bin3/taux"
-15  AT_PLATFORM        string address   0xe50f269  "i686"
+31  AT_EXECFN          string address   0xe50f218  "/Users/david/OneDrive/x64os/c_tests/x32bin3/taux"
+15  AT_PLATFORM        string address   0xe50f249  "i686"
 0   AT_NULL            terminator       0x0
 c_tests/x32clangbin3/taux
 ID  NAME               DATATYPE         VALUE
@@ -62174,7 +62174,7 @@ ID  NAME               DATATYPE         VALUE
 c_tests/x32binfast/taux
 ID  NAME               DATATYPE         VALUE
 --  ----               --------         -----
-25  AT_RANDOM          16-byte address  0xe50f1f0  08070605040302010807060504030201
+25  AT_RANDOM          16-byte address  0xe50f1d0  08070605040302010807060504030201
 6   AT_PAGESZ          integer          0x1000  (4096)
 16  AT_HWCAP           bitmask          0xa01
 26  AT_HWCAP2          bitmask          0x0
@@ -62182,8 +62182,8 @@ ID  NAME               DATATYPE         VALUE
 12  AT_EUID            uid_t            0x696a6559  (1768580441)
 13  AT_GID             gid_t            0x65616863  (1700882531)
 14  AT_EGID            gid_t            0x6e696873  (1852401779)
-31  AT_EXECFN          string address   0xe50f23b  "/Users/david/OneDrive/x64os/c_tests/x32binfast/taux"
-15  AT_PLATFORM        string address   0xe50f26f  "i686"
+31  AT_EXECFN          string address   0xe50f21b  "/Users/david/OneDrive/x64os/c_tests/x32binfast/taux"
+15  AT_PLATFORM        string address   0xe50f24f  "i686"
 0   AT_NULL            terminator       0x0
 c_tests/x32clangbinfast/taux
 ID  NAME               DATATYPE         VALUE
@@ -62256,4 +62256,4 @@ f_tests/x32bin/primes
 f_tests/x32bin/mm
     465880
 mm completed with great success
-Thu 04/30/2026 15:53:02.71 
+Thu 05/07/2026  7:08:37.42 

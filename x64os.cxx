@@ -1951,6 +1951,7 @@ static const SysCall syscalls[] =
     { "emulator_sys_fstat64", emulator_sys_fstat64 }, // exists for x86 and used by the Free Pascal Compiler
     { "emulator_sys_chmod", emulator_sys_chmod }, // exists for x86 and used by the Free Pascal Compiler
     { "emulator_sys_waitpid", emulator_sys_waitpid }, // exists for x86 and used by the Free Pascal Compiler
+    { "emulator_sys_lstat64", emulator_sys_lstat64 }, // exists for x86 and used by the Free Pascal Compiler
 };
 
 // Use custom versions of bsearch and qsort to get consistent behavior across platforms.
@@ -2230,6 +2231,7 @@ static const SyscalltoRV X32ToRiscV[] = // per https://gpages.juszkiewicz.com.pl
     { 191, emulator_sys_ugetrlimit },
     { 192, emulator_sys_mmap2 },
     { 195, emulator_sys_stat64 },
+    { 196, emulator_sys_lstat64 },
     { 197, emulator_sys_fstat64 },
     { 199, SYS_getuid }, // actually getuid32
     { 200, SYS_getgid }, // actually getgid32
@@ -4644,6 +4646,7 @@ void emulator_invoke_svc( CPUClass & cpu )
             break;
         }
 #ifdef X64OS
+        case SYS_lstat: // only called by amd64 apps built by Free Pascal
         case SYS_stat: // only called by amd64 apps built by Free Pascal on Windows and by Free Pascal itself on Linux.
         {
             const char * pathname = (const char *) cpu.getmem( ACCESS_REG( REG_ARG0 ) );
@@ -4712,7 +4715,10 @@ void emulator_invoke_svc( CPUClass & cpu )
 #else // _WIN32
             tracer.Trace( "  sizeof struct stat: %d\n", (int) sizeof( struct stat ) );
             struct stat local_stat = {0};
-            result = stat( pathname, & local_stat );
+            if ( SYS_lstat == syscall_id )
+                result = lstat( pathname, & local_stat );
+            else
+                result = stat( pathname, & local_stat );
             if ( 0 == result )
             {
                 // the syscall version of stat has similar fields but a different layout, so copy fields one by one
@@ -4858,6 +4864,7 @@ void emulator_invoke_svc( CPUClass & cpu )
             update_result_errno( cpu, result );
             break;
         }
+        case emulator_sys_lstat64: // only called by x86 32-bit linux apps. only used by fpc
         case emulator_sys_stat64: // only called by x86 32-bit linux apps. only used by the Open Watcom 2.0 C runtime for Linux when built on Windows
         {
             const char * pathname = (const char *) cpu.getmem( ACCESS_REG( REG_ARG0 ) );
@@ -4898,7 +4905,10 @@ void emulator_invoke_svc( CPUClass & cpu )
             }
 #else //_WIN32
             struct stat local_stat = {0};
-            result = stat( pathname, &local_stat );
+            if ( emulator_sys_lstat64 == syscall_id )
+                result = lstat( pathname, &local_stat );
+            else
+                result = stat( pathname, &local_stat );
             if ( 0 == result )
             {
                 pout->st_blksize = (uint32_t) local_stat.st_blksize;

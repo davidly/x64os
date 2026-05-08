@@ -278,16 +278,26 @@ struct x64
     inline uint8_t getui8( uint64_t o ) { return * (uint8_t *) getmem( o ); }
     inline void setui8( uint64_t o, uint8_t val ) { * (uint8_t *) getmem( o ) = val; }
 
+    // group small / frequent items together for fewer cache lines
+
     reg8_t regs[ 16 ];              // rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8..r15
+    uint64_t rip;                   // instruction pointer. always referenced as a .q, so don't use a reg8_t
+    uint64_t rflags;                // C, n/a, P, n/a, A, n/a, Z, S,   :   T, I, D, O, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
+    PrefixInfo _prefix;
+    uint64_t _instruction_start;    // rip where decoding of the current instruction started
+    int64_t _displacement;
+    REXInfo _rex;
+    uint8_t _rm, _reg, _mod;
+    uint8_t _sibScale, _sibIndex, _sibBase;
+    bool mode32;                    // true for 32-bit CPU vs 64-bit
+
     vec16_t xregs[ 16 ];            // xmm0 through 15
     float80_t fregs[ 8 ];           // 80-bit numbers are stored in this fp stack, while math is done on a physical x87 with gnu or via emulation
-    uint64_t rip;                   // instruction pointer. always referenced as a .q, so don't use a reg8_t
-    reg8_t sregs[ 6 ];              // segment registers es/cs/ss/ds/fs/gs. fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment refers to.
     uint32_t mxcsr;
     uint16_t x87_fpu_control_word;  // for fldcw, fstcw/fnstcw. applies to sse as well as x87
     uint16_t x87_fpu_status_word;   // for fstsw/fnstsw.
     uint8_t fp_sp;                  // current stack pointer for fregs[]
-    bool mode32;                    // true for 32-bit CPU vs 64-bit
+    reg8_t sregs[ 6 ];              // segment registers es/cs/ss/ds/fs/gs. fs is used by glibc for thread state on x64 and on x32 it's gs. as a simplification, store and use the address the segment
 
     void Mode32( bool m32 ) { mode32 = m32; } // flip from 64-bit long mode to 32-bit compatibility mode for running 32-bit apps. or back.
 
@@ -306,9 +316,6 @@ struct x64
     } //TraceDecoding
 
 private:
-                      // 0                                   8                                16
-    uint64_t rflags;  // C, n/a, P, n/a, A, n/a, Z, S,   :   T, I, D, O, IOPL+IOPL, n/a   :   RF, VM, AC, VIF, VIP, ID, 22.31 n/a
-
     void setflag_c( bool f ) { rflags &= ~( 1 << 0 );  rflags |= ( ( 0 != f ) << 0 );  } // carry
     void setflag_p( bool f ) { rflags &= ~( 1 << 2 );  rflags |= ( ( 0 != f ) << 2 );  } // parity even
     void setflag_a( bool f ) { rflags &= ~( 1 << 4 );  rflags |= ( ( 0 != f ) << 4 );  } // auxiliary carry
@@ -351,16 +358,6 @@ private:
         buf[ 7 ] = 0;
         return buf;
     } //render_flags
-
-    PrefixInfo _prefix;
-
-    // decoding state and functions
-
-    uint64_t _instruction_start;        // rip where decoding of the current instruction started
-    int64_t _displacement;
-    REXInfo _rex;
-    uint8_t _rm, _reg, _mod;
-    uint8_t _sibScale, _sibIndex, _sibBase;
 
     void decode_sib();
     void decode_rex();

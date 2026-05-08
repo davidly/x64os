@@ -4,14 +4,24 @@ setlocal
 set outputfile=runall_test.txt
 echo %date% %time% >%outputfile%
 
-set _applist=sieve e ttt mm chk tap tphi nqueens nq1d
+set _applist=sieve e ttt mm chk tap tphi nqueens nq1d trw mandle tf tdir tcmp ^
+             tstr trename sleeptm tmuldiv lenum tpi pis tshift ff
 
 ( for %%a in (%_applist%) do (
     echo %%a
     echo %%a>>%outputfile%
     for %%o in (1 2 3) do (
-        ..\x32os x32bin%%o\%%a >>%outputfile% 2>&1
-        ..\x64os bin%%o\%%a >>%outputfile% 2>&1
+        if "%%a"=="ff" (
+            echo test x32bin%%o/%%a -i . %%a.pas>>"%outputfile%"
+            ..\x32os x32bin%%o\%%a -i . %%a.pas >>"%outputfile%"
+            echo test bin%%o/%%a -i . %%a.pas>>"%outputfile%"
+            ..\x64os bin%%o\%%a -i . %%a.pas >>"%outputfile%"
+        ) else (
+            echo test x32bin%%o/%%a>>%outputfile% 2>&1
+            ..\x32os x32bin%%o\%%a >>%outputfile% 2>&1
+            echo test bin%%o/%%a>>%outputfile% 2>&1
+            ..\x64os bin%%o\%%a >>%outputfile% 2>&1
+        )
     )
 ) )
 
