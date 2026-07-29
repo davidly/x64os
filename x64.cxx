@@ -6203,7 +6203,7 @@ _prefix_is_set:
                             else
                             {
                                 setflag_z( false );
-                                regs[ rax ].q = val;
+                                regs[ rax ].w = val;
                             }
                         }
                         else
@@ -6227,15 +6227,20 @@ _prefix_is_set:
                         op_btX( op1 );
                         break;
                     }
-                    case 0xb6: // movzbq reg, r/m8
+                    case 0xb6: // movzx reg, r/m8
                     {
                         decode_rm();
-                        regs[ _reg ].q = get_rm8();
+                        if ( 0x66 == _prefix.size )
+                            regs[ _reg ].w = get_rm8();
+                        else
+                            regs[ _reg ].q = get_rm8();
                         break;
                     }
-                    case 0xb7: // movzbq reg, r/m16
+                    case 0xb7: // movzx reg, r/m16
                     {
                         decode_rm();
+                        if ( 0x66 == _prefix.size )
+                            unhandled();
                         regs[ _reg ].q = get_rm16();
                         break;
                     }
@@ -6375,7 +6380,14 @@ _prefix_is_set:
                         else
                         {
                             setflag_z( 0 == val );
-                            regs[ _reg ].q = bitscan_reverse( val );
+                            if ( 0 != val )
+                            {
+                                uint64_t result = bitscan_reverse( val );
+                                if ( 2 == op_width() )
+                                    regs[ _reg ].w = (uint16_t) result;
+                                else
+                                    regs[ _reg ].q = result;
+                            }
                         }
                         break;
                     }
@@ -6386,7 +6398,7 @@ _prefix_is_set:
                         if ( _rex.W )
                             regs[ _reg ].q = (uint64_t) val;
                         else if ( 0x66 == _prefix.size )
-                            regs[ _reg ].q = (uint64_t) (uint16_t) val;
+                            regs[ _reg ].w = (uint16_t) (int16_t) val;
                         else
                             regs[ _reg ].q = (uint32_t) val;
                         break;
@@ -6423,7 +6435,7 @@ _prefix_is_set:
                         else if ( 0x66 == _prefix.size )
                         {
                             uint16_t val = regs[ _reg ].w;
-                            regs[ _reg ].q = get_rm16();
+                            regs[ _reg ].w = get_rm16();
                             set_rm16( get_rm16() + val );
                         }
                         else
@@ -7530,7 +7542,7 @@ _prefix_is_set:
                 else if ( 0x66 == _prefix.size )
                 {
                     uint16_t tmp = regs[ _reg ].w;
-                    regs[ _reg ].q = get_rm16();
+                    regs[ _reg ].w = get_rm16();
                     set_rm16( tmp );
                 }
                 else
@@ -7647,8 +7659,8 @@ _prefix_is_set:
                 else if ( 0x66 == _prefix.size )
                 {
                     uint16_t tmp = regs[ rax ].w;
-                    regs[ rax ].q = regs[ _rm ].w;
-                    regs[ _rm ].q = tmp;
+                    regs[ rax ].w = regs[ _rm ].w;
+                    regs[ _rm ].w = tmp;
                 }
                 else
                 {
@@ -7664,7 +7676,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ rax ].q = (int32_t) regs[ rax ].d;
                 else if ( 0x66 == _prefix.size )
-                    regs[ rax ].q = (uint16_t) (int8_t) regs[ rax ].b;
+                    regs[ rax ].w = (uint16_t) (int16_t) (int8_t) regs[ rax ].b;
                 else
                     regs[ rax ].q = (uint32_t) (int16_t) regs[ rax ].w;
                 break;
@@ -7675,7 +7687,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ rdx ].q = ( highest_bit( regs[ rax ].q ) ) ? ~0 : 0;
                 else if ( 0x66 == _prefix.size )
-                    regs[ rdx ].q = ( highest_bit( regs[ rax ].w ) ) ? 0xffff : 0;
+                    regs[ rdx ].w = ( highest_bit( regs[ rax ].w ) ) ? 0xffff : 0;
                 else
                     regs[ rdx ].q = ( highest_bit( regs[ rax ].d ) ) ? 0xffffffff : 0;
                 break;
