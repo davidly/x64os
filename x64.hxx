@@ -103,8 +103,8 @@ typedef struct PrefixInfo
 {
     union // use a union because some compilers don't otherwise optimize setting all to 0 at once for each instruction in 32-bit mode
     {
-        struct { uint8_t rex, size, sse2_repeat, segment; };
-        uint32_t All;
+        struct { uint8_t rex, size, sse2_repeat, segment, address_size, reserved1, reserved2, reserved3; };
+        uint64_t All;
     };
 } PrefixInfo_t;
 #pragma pack(pop)

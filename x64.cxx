@@ -3,7 +3,7 @@
     Integer, x87, and SSE2 are partially implemented. No other vector instructions are implemented at all (MMX/AVX/etc.).
     That's a tiny fraction of the CPU but enough to run the regression test static Linux binaries.
     There is also a 32-bit x86 compatibility mode controlled by member variable mode32. This can be used to run 32-bit binaries.
-    Prefix code 0x67 to specify 32-bit addresses is not implemented (g++ and clang++ don't use this)
+    Prefix code 0x67 selects the alternate address size: 32-bit addresses in 64-bit mode and 16-bit addresses in 32-bit mode.
     Tested with C/ASM regression tests in the c_tests folder, Fortran tests in f_tests, and Rust tests in rust_tests.
     Runs Linux versions of the Open Watcom 32-bit compiler and FPC 32-bit and 64-bit Pascal compilers.
     Also tested running nested emulators and their regression tests: this one (x64os/x32os), sparcos, m68, rvos, armos, ntvao, ntvcm, ntvdm
@@ -118,13 +118,16 @@ void x64::trace_state()
     uint64_t rip_save = rip;
     PrefixInfo prefix_save = _prefix;
     uint8_t op = getui8( rip );
-    if ( ( 0x66 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) || ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
+    if ( ( 0x66 == op ) || ( 0x67 == op ) || ( !mode32 && ( op >= 0x40 ) && ( op <= 0x4f ) ) ||
+         ( 0xf3 == op ) || ( 0xf2 == op ) ) // skip prefix opcodes and show them with their target instruction
         return;
 
     // tracer.TraceBinaryData( getmem( 0x82df881 ), 4, 2 ); // source of above .//
 
     uint64_t ip = ( 0 == _prefix.rex ) ? rip : ( rip - 1 );
     if ( 0 != _prefix.size )
+        ip--;
+    if ( 0 != _prefix.address_size )
         ip--;
     if ( 0 != _prefix.sse2_repeat )
         ip--;
@@ -1196,10 +1199,11 @@ void x64::trace_state()
                     tracer.Trace( "btc %s, %s\n", rm_string( op_width() ), register_name( _reg, op_width() ) );
                     break;
                 }
-                case 0xbc: // bsf r, r/m   16, 32, 64  bit scan forward
+                case 0xbc: // bsf/tzcnt r, r/m   16, 32, 64
                 {
                     decode_rm();
-                    tracer.Trace( "bsf %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
+                    tracer.Trace( ( 0xf3 == _prefix.sse2_repeat ) ? "tzcnt %s, %s\n" : "bsf %s, %s\n",
+                                  register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
                 case 0xbd: // bsr/lzcnt r, r/m   16, 32, 64
@@ -1691,14 +1695,18 @@ void x64::trace_state()
             tracer.Trace( "pop %s\n", mode32 ? register_names32[ _rm ] : register_names[ _rm ] );
             break;
         }
-        case 0x60: // pusha/pushad
+        case 0x60: // pusha/pushad (invalid in 64-bit mode)
         {
-            tracer.Trace( "pusha\n" );
+            if ( !mode32 )
+                unhandled();
+            tracer.Trace( "%s\n", ( 0x66 == _prefix.size ) ? "pusha" : "pushad" );
             break;
         }
-        case 0x61: // popa/popad
+        case 0x61: // popa/popad (invalid in 64-bit mode)
         {
-            tracer.Trace( "popa\n" );
+            if ( !mode32 )
+                unhandled();
+            tracer.Trace( "%s\n", ( 0x66 == _prefix.size ) ? "popa" : "popad" );
             break;
         }
         case 0x63: // movsxd reg, r/m. aka gcc movslq
@@ -1722,9 +1730,9 @@ void x64::trace_state()
             tracer.Trace( "prefix66 # 16-bit or xmm op\n" );
             break;
         }
-        case 0x67: // prefix x67 promote 32-bit relative pointer to 64-bit
+        case 0x67: // address-size override
         {
-            tracer.Trace( "prefix67 # promote 32-bit address to 64-bit\n" );
+            tracer.Trace( "prefix67 # address-size override\n" );
             break;
         }
         case 0x68: // push imm16 / imm32
@@ -2950,109 +2958,180 @@ template <typename T> T top2bits( T x )
 
 void x64::op_stos( uint8_t width )
 {
+    uint64_t address = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rdi ].w : regs[ rdi ].d )
+                              : ( 0x67 == _prefix.address_size ? regs[ rdi ].d : regs[ rdi ].q );
+
     if ( 1 == width )
-        setui8( regs[ rdi ].q, regs[ rax ].b );
+        setui8( address, regs[ rax ].b );
     else if ( 2 == width )
-        setui16( regs[ rdi ].q, regs[ rax ].w );
+        setui16( address, regs[ rax ].w );
     else if ( 4 == width )
-        setui32( regs[ rdi ].q, regs[ rax ].d );
+        setui32( address, regs[ rax ].d );
     else if ( 8 == width )
-        setui64( regs[ rdi ].q, regs[ rax ].q );
+        setui64( address, regs[ rax ].q );
     else
         unhandled();
 
-    if ( flag_d() )
-        regs[ rdi ].q -= width;
+    int64_t adjustment = flag_d() ? -(int64_t) width : width;
+    if ( mode32 )
+    {
+        if ( 0x67 == _prefix.address_size )
+            regs[ rdi ].w = (uint16_t) ( regs[ rdi ].w + adjustment );
+        else
+            regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
+    }
+    else if ( 0x67 == _prefix.address_size )
+        regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
     else
-        regs[ rdi ].q += width;
+        regs[ rdi ].q += adjustment;
 } //op_stos
 
 void x64::op_lods( uint8_t width )
 {
+    uint64_t address = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rsi ].w : regs[ rsi ].d )
+                              : ( 0x67 == _prefix.address_size ? regs[ rsi ].d : regs[ rsi ].q );
+
     if ( 1 == width )
-        regs[ rax ].b = getui8( regs[ rsi ].q );
+        regs[ rax ].b = getui8( address );
     else if ( 2 == width )
-        regs[ rax ].w = getui16( regs[ rsi ].q );
+        regs[ rax ].w = getui16( address );
     else if ( 4 == width )
-        regs[ rax ].d = getui32( regs[ rsi ].q );
+        regs[ rax ].d = getui32( address );
     else if ( 8 == width )
-        regs[ rax ].q = getui64( regs[ rsi ].q );
+        regs[ rax ].q = getui64( address );
     else
         unhandled();
 
-    if ( flag_d() )
-        regs[ rsi ].q -= width;
+    int64_t adjustment = flag_d() ? -(int64_t) width : width;
+    if ( mode32 )
+    {
+        if ( 0x67 == _prefix.address_size )
+            regs[ rsi ].w = (uint16_t) ( regs[ rsi ].w + adjustment );
+        else
+            regs[ rsi ].d = (uint32_t) ( regs[ rsi ].d + adjustment );
+    }
+    else if ( 0x67 == _prefix.address_size )
+        regs[ rsi ].d = (uint32_t) ( regs[ rsi ].d + adjustment );
     else
-        regs[ rsi ].q += width;
+        regs[ rsi ].q += adjustment;
 } //op_lods
 
 void x64::op_movs( uint8_t width )
 {
+    uint64_t source = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rsi ].w : regs[ rsi ].d )
+                             : ( 0x67 == _prefix.address_size ? regs[ rsi ].d : regs[ rsi ].q );
+    uint64_t destination = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rdi ].w : regs[ rdi ].d )
+                                  : ( 0x67 == _prefix.address_size ? regs[ rdi ].d : regs[ rdi ].q );
+
     if ( 1 == width )
-        setui8( regs[ rdi ].q, getui8( regs[ rsi ].q ) );
+        setui8( destination, getui8( source ) );
     else if ( 2 == width )
-        setui16( regs[ rdi ].q, getui16( regs[ rsi ].q ) );
+        setui16( destination, getui16( source ) );
     else if ( 4 == width )
-        setui32( regs[ rdi ].q, getui32( regs[ rsi ].q ) );
+        setui32( destination, getui32( source ) );
     else if ( 8 == width )
-        setui64( regs[ rdi ].q, getui64( regs[ rsi ].q ) );
+        setui64( destination, getui64( source ) );
     else
         unhandled();
 
-    if ( flag_d() )
+    int64_t adjustment = flag_d() ? -(int64_t) width : width;
+    if ( mode32 )
     {
-        regs[ rdi ].q -= width;
-        regs[ rsi ].q -= width;
+        if ( 0x67 == _prefix.address_size )
+        {
+            regs[ rsi ].w = (uint16_t) ( regs[ rsi ].w + adjustment );
+            regs[ rdi ].w = (uint16_t) ( regs[ rdi ].w + adjustment );
+        }
+        else
+        {
+            regs[ rsi ].d = (uint32_t) ( regs[ rsi ].d + adjustment );
+            regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
+        }
+    }
+    else if ( 0x67 == _prefix.address_size )
+    {
+        regs[ rsi ].d = (uint32_t) ( regs[ rsi ].d + adjustment );
+        regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
     }
     else
     {
-        regs[ rdi ].q += width;
-        regs[ rsi ].q += width;
+        regs[ rsi ].q += adjustment;
+        regs[ rdi ].q += adjustment;
     }
 } //op_movs
 
 void x64::op_cmps( uint8_t width )
 {
+    uint64_t source = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rsi ].w : regs[ rsi ].d )
+                             : ( 0x67 == _prefix.address_size ? regs[ rsi ].d : regs[ rsi ].q );
+    uint64_t destination = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rdi ].w : regs[ rdi ].d )
+                                  : ( 0x67 == _prefix.address_size ? regs[ rdi ].d : regs[ rdi ].q );
+
     if ( 1 == width )
-        op_sub( getui8( regs[ rsi ].q ), getui8( regs[ rdi ].q ) );
+        op_sub( getui8( source ), getui8( destination ) );
     else if ( 2 == width )
-        op_sub( getui16( regs[ rsi ].q ), getui16( regs[ rdi ].q ) );
+        op_sub( getui16( source ), getui16( destination ) );
     else if ( 4 == width )
-        op_sub( getui32( regs[ rsi ].q ), getui32( regs[ rdi ].q ) );
+        op_sub( getui32( source ), getui32( destination ) );
     else if ( 8 == width )
-        op_sub( getui64( regs[ rsi ].q ), getui64( regs[ rdi ].q ) );
+        op_sub( getui64( source ), getui64( destination ) );
     else
         unhandled();
 
-    if ( flag_d() )
+    int64_t adjustment = flag_d() ? -(int64_t) width : width;
+    if ( mode32 )
     {
-        regs[ rdi ].q -= width;
-        regs[ rsi ].q -= width;
+        if ( 0x67 == _prefix.address_size )
+        {
+            regs[ rsi ].w = (uint16_t) ( regs[ rsi ].w + adjustment );
+            regs[ rdi ].w = (uint16_t) ( regs[ rdi ].w + adjustment );
+        }
+        else
+        {
+            regs[ rsi ].d = (uint32_t) ( regs[ rsi ].d + adjustment );
+            regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
+        }
+    }
+    else if ( 0x67 == _prefix.address_size )
+    {
+        regs[ rsi ].d = (uint32_t) ( regs[ rsi ].d + adjustment );
+        regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
     }
     else
     {
-        regs[ rdi ].q += width;
-        regs[ rsi ].q += width;
+        regs[ rsi ].q += adjustment;
+        regs[ rdi ].q += adjustment;
     }
 } //op_cmps
 
 void x64::op_scas( uint8_t width )
 {
+    uint64_t address = mode32 ? ( 0x67 == _prefix.address_size ? regs[ rdi ].w : regs[ rdi ].d )
+                              : ( 0x67 == _prefix.address_size ? regs[ rdi ].d : regs[ rdi ].q );
+
     if ( 1 == width )
-        op_sub( regs[ rax ].b, getui8( regs[ rdi ].q ) );
+        op_sub( regs[ rax ].b, getui8( address ) );
     else if ( 2 == width )
-        op_sub( regs[ rax ].w, getui16( regs[ rdi ].q ) );
+        op_sub( regs[ rax ].w, getui16( address ) );
     else if ( 4 == width )
-        op_sub( regs[ rax ].d, getui32( regs[ rdi ].q ) );
+        op_sub( regs[ rax ].d, getui32( address ) );
     else if ( 8 == width )
-        op_sub( regs[ rax ].q, getui64( regs[ rdi ].q ) );
+        op_sub( regs[ rax ].q, getui64( address ) );
     else
         unhandled();
 
-    if ( flag_d() )
-        regs[ rdi ].q -= width;
+    int64_t adjustment = flag_d() ? -(int64_t) width : width;
+    if ( mode32 )
+    {
+        if ( 0x67 == _prefix.address_size )
+            regs[ rdi ].w = (uint16_t) ( regs[ rdi ].w + adjustment );
+        else
+            regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
+    }
+    else if ( 0x67 == _prefix.address_size )
+        regs[ rdi ].d = (uint32_t) ( regs[ rdi ].d + adjustment );
     else
-        regs[ rdi ].q += width;
+        regs[ rdi ].q += adjustment;
 } //op_scas
 
 template <typename T> T x64::op_sub( T a, T b, bool borrow )
@@ -5881,9 +5960,14 @@ _prefix_is_set:
 
                             if ( 0 == subleaf )
                             {
+                                const uint32_t bitERMS = 1u << 9;       // enhanced REP MOVSB/STOSB
                                 const uint32_t bitMOVDIRI = 1u << 27;
                                 const uint32_t bitMOVDIR64B = 1u << 28;
+                                const uint32_t bitFSRM = 1u << 4;       // fast short REP MOVSB
+
+                                regs[ rbx ].q = bitERMS;
                                 regs[ rcx ].q = bitMOVDIRI | bitMOVDIR64B;
+                                regs[ rdx ].q = bitFSRM;
                             }
                             else if ( 1 == subleaf )
                             {
@@ -5907,12 +5991,20 @@ _prefix_is_set:
                             regs[ rcx ].q = bitABM;
                             regs[ rdx ].q = 0;
                         }
+                        else if ( 2 == regs[ rax ].d )
+                        {
+                            // Legacy cache/TLB descriptor leaf. AL is the number of times
+                            // software must execute CPUID leaf 2 to obtain all descriptors.
+                            // Advertise one iteration but no descriptor bytes.
+                            regs[ rax ].q = 1;
+                            regs[ rbx ].q = 0;
+                            regs[ rcx ].q = 0;
+                            regs[ rdx ].q = 0;
+                        }
                         else if ( regs[ rax ].d <= 7 )
                         {
-                            // Leaf 0 advertises basic leaves through 7.  Return an empty
-                            // result for the advertised leaves we do not model rather than
-                            // treating a normal CPUID probe (for example leaf 2) as an
-                            // unsupported opcode.
+                            // Leaf 0 advertises basic leaves through 7. Return an empty
+                            // result for the advertised leaves we do not otherwise model.
                             regs[ rax ].q = 0;
                             regs[ rbx ].q = 0;
                             regs[ rcx ].q = 0;
@@ -6215,12 +6307,43 @@ _prefix_is_set:
                         op_btX( op1 );
                         break;
                     }
-                    case 0xbc: // bsf r, r/m   16, 32, 64  bit scan forward
+                    case 0xbc: // bsf/tzcnt r, r/m   16, 32, 64
                     {
                         decode_rm();
                         uint64_t val = get_rm();
-                        setflag_z( 0 == val );
-                        regs[ _reg ].q = bitscan( val );
+
+                        if ( 0xf3 == _prefix.sse2_repeat ) // tzcnt
+                        {
+                            uint8_t width = op_width();
+                            uint8_t count = 0;
+                            uint8_t bit_count = (uint8_t) ( width * 8 );
+
+                            while ( count < bit_count && 0 == ( val & 1 ) )
+                            {
+                                count++;
+                                val >>= 1;
+                            }
+
+                            if ( 2 == width )
+                                regs[ _reg ].w = count; // don't zero-extend 16-bit results
+                            else
+                                regs[ _reg ].q = count; // zero-extend 32-bit results
+
+                            setflag_c( count == bit_count );
+                            setflag_z( 0 == count );
+                        }
+                        else
+                        {
+                            setflag_z( 0 == val );
+                            if ( 0 != val )
+                            {
+                                uint64_t result = bitscan( val );
+                                if ( 2 == op_width() )
+                                    regs[ _reg ].w = (uint16_t) result;
+                                else
+                                    regs[ _reg ].q = result;
+                            }
+                        }
                         break;
                     }
                     case 0xbd: // bsr/lzcnt r, r/m   16, 32, 64
@@ -7136,29 +7259,64 @@ _prefix_is_set:
                     regs[ _rm ].q = pop();
                 break;
             }
-            case 0x60: // pusha/pushad
+            case 0x60: // pusha/pushad (invalid in 64-bit mode)
             {
-                uint64_t original_sp = regs[ rsp ].q;
-                push( regs[ rax ].q );
-                push( regs[ rcx ].q );
-                push( regs[ rdx ].q );
-                push( regs[ rbx ].q );
-                push( original_sp );
-                push( regs[ rbp ].q );
-                push( regs[ rsi ].q );
-                push( regs[ rdi ].q );
+                if ( !mode32 )
+                    unhandled();
+
+                if ( 0x66 == _prefix.size )
+                {
+                    uint16_t original_sp = regs[ rsp ].w;
+                    push( regs[ rax ].w );
+                    push( regs[ rcx ].w );
+                    push( regs[ rdx ].w );
+                    push( regs[ rbx ].w );
+                    push( original_sp );
+                    push( regs[ rbp ].w );
+                    push( regs[ rsi ].w );
+                    push( regs[ rdi ].w );
+                }
+                else
+                {
+                    uint32_t original_sp = regs[ rsp ].d;
+                    push( regs[ rax ].d );
+                    push( regs[ rcx ].d );
+                    push( regs[ rdx ].d );
+                    push( regs[ rbx ].d );
+                    push( original_sp );
+                    push( regs[ rbp ].d );
+                    push( regs[ rsi ].d );
+                    push( regs[ rdi ].d );
+                }
                 break;
             }
-            case 0x61: // popa/popad
+            case 0x61: // popa/popad (invalid in 64-bit mode)
             {
-                regs[ rdi ].q = pop();
-                regs[ rsi ].q = pop();
-                regs[ rbp ].q = pop();
-                pop(); // ignore rsp
-                regs[ rbx ].q = pop();
-                regs[ rdx ].q = pop();
-                regs[ rcx ].q = pop();
-                regs[ rax ].q = pop();
+                if ( !mode32 )
+                    unhandled();
+
+                if ( 0x66 == _prefix.size )
+                {
+                    regs[ rdi ].w = (uint16_t) pop();
+                    regs[ rsi ].w = (uint16_t) pop();
+                    regs[ rbp ].w = (uint16_t) pop();
+                    pop(); // ignore sp
+                    regs[ rbx ].w = (uint16_t) pop();
+                    regs[ rdx ].w = (uint16_t) pop();
+                    regs[ rcx ].w = (uint16_t) pop();
+                    regs[ rax ].w = (uint16_t) pop();
+                }
+                else
+                {
+                    regs[ rdi ].d = (uint32_t) pop();
+                    regs[ rsi ].d = (uint32_t) pop();
+                    regs[ rbp ].d = (uint32_t) pop();
+                    pop(); // ignore esp
+                    regs[ rbx ].d = (uint32_t) pop();
+                    regs[ rdx ].d = (uint32_t) pop();
+                    regs[ rcx ].d = (uint32_t) pop();
+                    regs[ rax ].d = (uint32_t) pop();
+                }
                 break;
             }
             case 0x63: // movsxd reg, r/m. also movsxq
@@ -7177,9 +7335,14 @@ _prefix_is_set:
                 _prefix.segment = op;
                 goto _prefix_is_set;
             }
-            case 0x66: case 0x67: // width prefixes
+            case 0x66: // operand-size override
             {
                 _prefix.size = op;
+                goto _prefix_is_set;
+            }
+            case 0x67: // address-size override
+            {
+                _prefix.address_size = op;
                 goto _prefix_is_set;
             }
             case 0x68: // push imm16 / imm32
@@ -7585,12 +7748,10 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat ) // f3 is legal. alllow f2
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    while ( 0 != ( mode32 ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_movs( width );
-                        if ( width <= 2 )
-                            regs[ rcx ].w--;
-                        else if ( 4 == width )
+                        if ( mode32 )
                             regs[ rcx ].d--;
                         else
                             regs[ rcx ].q--;
@@ -7608,12 +7769,10 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat )
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    while ( 0 != ( mode32 ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_cmps( width );
-                        if ( width <= 2 )
-                            regs[ rcx ].w--;
-                        else if ( 4 == width )
+                        if ( mode32 )
                             regs[ rcx ].d--;
                         else
                             regs[ rcx ].q--;
@@ -7651,12 +7810,10 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat ) // f3 is legal. alllow f2
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    while ( 0 != ( mode32 ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_stos( width );
-                        if ( width <= 2 )
-                            regs[ rcx ].w--;
-                        else if ( 4 == width )
+                        if ( mode32 )
                             regs[ rcx ].d--;
                         else
                             regs[ rcx ].q--;
@@ -7675,12 +7832,10 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat )
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    while ( 0 != ( mode32 ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_lods( width );
-                        if ( width <= 2 )
-                            regs[ rcx ].w--;
-                        else if ( 4 == width )
+                        if ( mode32 )
                             regs[ rcx ].d--;
                         else
                             regs[ rcx ].q--;
@@ -7698,13 +7853,11 @@ _prefix_is_set:
                 if ( 0 != _prefix.sse2_repeat )
                 {
                     assert( ( 0xf2 == _prefix.sse2_repeat ) || ( 0xf3 == _prefix.sse2_repeat ) );
-                    while ( 0 != ( ( width <= 2 ) ? regs[ rcx ].w : ( 4 == width ) ? regs[ rcx ].d : regs[ rcx ].q ) )
+                    while ( 0 != ( mode32 ? regs[ rcx ].d : regs[ rcx ].q ) )
                     {
                         op_scas( width );
 
-                        if ( width <= 2 )
-                            regs[ rcx ].w--;
-                        else if ( 4 == width )
+                        if ( mode32 )
                             regs[ rcx ].d--;
                         else
                             regs[ rcx ].q--;
@@ -8606,14 +8759,21 @@ _prefix_is_set:
                 int8_t rel = get_rip8();
                 bool count_zero;
 
-                // LOOP instructions assume 64-bit operands in 64-bit mode; no _rex.W is required.
-
-                if ( 0x66 == _prefix.size )
+                // LOOP counter width is selected by address size, not operand size.
+                if ( mode32 )
                 {
-                    regs[ rcx ].w--;
-                    count_zero = ( 0 == regs[ rcx ].w );
+                    if ( 0x67 == _prefix.address_size )
+                    {
+                        regs[ rcx ].w--;
+                        count_zero = ( 0 == regs[ rcx ].w );
+                    }
+                    else
+                    {
+                        regs[ rcx ].d--;
+                        count_zero = ( 0 == regs[ rcx ].d );
+                    }
                 }
-                else if ( mode32 )
+                else if ( 0x67 == _prefix.address_size )
                 {
                     regs[ rcx ].d--;
                     count_zero = ( 0 == regs[ rcx ].d );
@@ -8632,13 +8792,12 @@ _prefix_is_set:
             {
                 int64_t rel = (int8_t) get_rip8();
                 bool jump;
-                decode_rex();
-                if ( _rex.W )
-                    jump = ( 0 == regs[ rcx ].q );
-                else if ( 0x66 == _prefix.size )
-                    jump = ( 0 == regs[ rcx ].w );
+
+                // E3 counter width is selected by address size; REX.W and 0x66 are ignored.
+                if ( mode32 )
+                    jump = ( 0x67 == _prefix.address_size ) ? ( 0 == regs[ rcx ].w ) : ( 0 == regs[ rcx ].d );
                 else
-                    jump = ( 0 == regs[ rcx ].d );
+                    jump = ( 0x67 == _prefix.address_size ) ? ( 0 == regs[ rcx ].d ) : ( 0 == regs[ rcx ].q );
 
                 if ( jump )
                     rip += rel;
