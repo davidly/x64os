@@ -255,7 +255,23 @@ void x64::trace_state()
                     uint8_t op2 = get_rip8();
                     decode_rm();
 
-                    if ( 0x8a == op2 ) // movrs r8, m8
+                    if ( 0xf0 == op2 || 0xf1 == op2 ) // movbe
+                    {
+                        if ( 3 == _mod || 0 != _prefix.sse2_repeat )
+                            unhandled();
+                        uint8_t width = op_width();
+                        if ( 0xf0 == op2 )
+                            tracer.Trace( "movbe %s, %s\n", register_name( _reg, width ), rm_string( width ) );
+                        else
+                            tracer.Trace( "movbe %s, %s\n", rm_string( width ), register_name( _reg, width ) );
+                    }
+                    else if ( 0xf6 == op2 && ( 0x66 == _prefix.size || 0xf3 == _prefix.sse2_repeat ) )
+                    {
+                        uint8_t width = _rex.W ? 8 : 4;
+                        tracer.Trace( "%s %s, %s\n", ( 0xf3 == _prefix.sse2_repeat ) ? "adox" : "adcx",
+                                      register_name( _reg, width ), rm_string( width ) );
+                    }
+                    else if ( 0x8a == op2 ) // movrs r8, m8
                     {
                         if ( mode32 || 3 == _mod || 0 != _prefix.size || 0 != _prefix.sse2_repeat )
                             unhandled();
@@ -1294,6 +1310,13 @@ void x64::trace_state()
                         else
                             tracer.Trace( "cmpxchg8b %s  # m64\n", rm_string( 8 ) );
                     }
+                    else if ( 6 == _reg || 7 == _reg )
+                    {
+                        if ( 3 != _mod || 0 != _prefix.sse2_repeat )
+                            unhandled();
+                        tracer.Trace( "%s %s\n", ( 6 == _reg ) ? "rdrand" : "rdseed",
+                                      register_name( _rm, _rex.W ? 8 : ( 0x66 == _prefix.size ) ? 2 : 4 ) );
+                    }
                     else
                         unhandled();
                     break;
@@ -1946,6 +1969,11 @@ void x64::trace_state()
             tracer.Trace( "sahf\n" );
             break;
         }
+        case 0x9f: // lahf
+        {
+            tracer.Trace( "lahf\n" );
+            break;
+        }
         case 0xa0: // mov al, moffs8
         {
             uint64_t segment_offset = ( 0x64 == _prefix.segment ) ? sregs[ rfs ].q : ( 0x65 == _prefix.segment ) ? sregs[ rgs ].q : 0;
@@ -2106,43 +2134,60 @@ void x64::trace_state()
             tracer.Trace( "ret\n" );
             break;
         }
-        case 0xc4: // three-byte VEX; currently CMPccXADD only
+        case 0xc4: // three-byte VEX scalar integer instructions
         {
             if ( mode32 || 0 != _prefix.size || 0 != _prefix.sse2_repeat || 0 != _prefix.rex )
                 unhandled();
-
             uint8_t vex2 = get_rip8();
             uint8_t vex3 = get_rip8();
             uint8_t map = vex2 & 0x1f;
             uint8_t vreg = (uint8_t) ( ( ~vex3 >> 3 ) & 0xf );
             bool wide = ( 0 != ( vex3 & 0x80 ) );
-            uint8_t pp = vex3 & 3;
-            uint8_t length = ( vex3 >> 2 ) & 1;
-
-            if ( 2 != map || 1 != pp || 0 != length )
+            if ( mode32 && wide )
                 unhandled();
-
+            uint8_t pp = vex3 & 3;
+            if ( 0 != ( ( vex3 >> 2 ) & 1 ) )
+                unhandled();
             _prefix.rex = 0x40;
             if ( 0 == ( vex2 & 0x80 ) )
-                _prefix.rex |= 4; // inverted VEX.R
+                _prefix.rex |= 4;
             if ( 0 == ( vex2 & 0x40 ) )
-                _prefix.rex |= 2; // inverted VEX.X
+                _prefix.rex |= 2;
             if ( 0 == ( vex2 & 0x20 ) )
-                _prefix.rex |= 1; // inverted VEX.B
+                _prefix.rex |= 1;
             if ( wide )
                 _prefix.rex |= 8;
-
             uint8_t opcode = get_rip8();
-            if ( opcode < 0xe0 || opcode > 0xef )
-                unhandled();
-
             decode_rm();
-            if ( 3 == _mod )
-                unhandled();
-
             uint8_t width = wide ? 8 : 4;
-            tracer.Trace( "cmp%sxadd %s, %s, %s\n", condition_names[ opcode & 0xf ], rm_string( width ),
-                          register_name( _reg, width ), register_name( vreg, width ) );
+            if ( 2 == map && 1 == pp && opcode >= 0xe0 && opcode <= 0xef )
+                tracer.Trace( "cmp%sxadd %s, %s, %s\n", condition_names[ opcode & 0xf ], rm_string( width ),
+                              register_name( _reg, width ), register_name( vreg, width ) );
+            else if ( 2 == map && 0 == pp && 0xf2 == opcode )
+                tracer.Trace( "andn %s, %s, %s\n", register_name( _reg, width ), register_name( vreg, width ), rm_string( width ) );
+            else if ( 2 == map && 0 == pp && 0xf7 == opcode )
+                tracer.Trace( "bextr %s, %s, %s\n", register_name( _reg, width ), rm_string( width ), register_name( vreg, width ) );
+            else if ( 2 == map && 0 == pp && 0xf3 == opcode && _reg >= 1 && _reg <= 3 )
+            {
+                const char * names[] = { "", "blsr", "blsmsk", "blsi" };
+                tracer.Trace( "%s %s, %s\n", names[ _reg ], register_name( vreg, width ), rm_string( width ) );
+            }
+            else if ( 2 == map && 0 == pp && 0xf5 == opcode )
+                tracer.Trace( "bzhi %s, %s, %s\n", register_name( _reg, width ), rm_string( width ), register_name( vreg, width ) );
+            else if ( 2 == map && ( 2 == pp || 3 == pp ) && 0xf5 == opcode )
+                tracer.Trace( "%s %s, %s, %s\n", ( 3 == pp ) ? "pdep" : "pext", register_name( _reg, width ),
+                              register_name( vreg, width ), rm_string( width ) );
+            else if ( 2 == map && 3 == pp && 0xf6 == opcode )
+                tracer.Trace( "mulx %s, %s, %s\n", register_name( _reg, width ), register_name( vreg, width ), rm_string( width ) );
+            else if ( 2 == map && 0xf7 == opcode && ( 1 == pp || 2 == pp || 3 == pp ) )
+            {
+                const char * name = ( 1 == pp ) ? "shlx" : ( 3 == pp ) ? "shrx" : "sarx";
+                tracer.Trace( "%s %s, %s, %s\n", name, register_name( _reg, width ), rm_string( width ), register_name( vreg, width ) );
+            }
+            else if ( 3 == map && 3 == pp && 0xf0 == opcode )
+                tracer.Trace( "rorx %s, %s, %u\n", register_name( _reg, width ), rm_string( width ), get_rip8() );
+            else
+                unhandled();
             break;
         }
         case 0xc6: // mov r/m8, imm8
@@ -4711,7 +4756,68 @@ _prefix_is_set:
                         uint8_t op2 = get_rip8();
                         decode_rm();
 
-                        if ( 0x8a == op2 ) // movrs r8, m8
+                        if ( 0xf0 == op2 || 0xf1 == op2 ) // movbe load/store
+                        {
+                            if ( 3 == _mod || 0 != _prefix.sse2_repeat )
+                                unhandled();
+
+                            if ( 0xf0 == op2 ) // register <- byte-swapped memory
+                            {
+                                if ( _rex.W )
+                                    regs[ _reg ].q = flip_endian64( get_rm64() );
+                                else if ( 0x66 == _prefix.size )
+                                    regs[ _reg ].w = flip_endian16( get_rm16() );
+                                else
+                                    regs[ _reg ].q = flip_endian32( get_rm32() );
+                            }
+                            else // byte-swapped register -> memory
+                            {
+                                if ( _rex.W )
+                                    set_rm64( flip_endian64( regs[ _reg ].q ) );
+                                else if ( 0x66 == _prefix.size )
+                                    set_rm16( flip_endian16( regs[ _reg ].w ) );
+                                else
+                                    set_rm32z( flip_endian32( regs[ _reg ].d ) );
+                            }
+                        }
+                        else if ( 0xf6 == op2 && ( 0x66 == _prefix.size || 0xf3 == _prefix.sse2_repeat ) ) // adcx/adox
+                        {
+                            bool use_of = ( 0xf3 == _prefix.sse2_repeat );
+                            if ( use_of && 0 != _prefix.size )
+                                unhandled();
+                            if ( !use_of && 0 != _prefix.sse2_repeat )
+                                unhandled();
+
+                            if ( _rex.W )
+                            {
+                                uint64_t a = regs[ _reg ].q;
+                                uint64_t b = get_rm64();
+                                uint64_t cin = use_of ? ( flag_o() ? 1 : 0 ) : ( flag_c() ? 1 : 0 );
+                                uint64_t partial = a + b;
+                                uint64_t result = partial + cin;
+                                bool carry = ( partial < a ) || ( result < partial );
+                                regs[ _reg ].q = result;
+                                if ( use_of )
+                                    setflag_o( carry );
+                                else
+                                    setflag_c( carry );
+                            }
+                            else
+                            {
+                                uint32_t a = regs[ _reg ].d;
+                                uint32_t b = get_rm32();
+                                uint32_t cin = use_of ? ( flag_o() ? 1 : 0 ) : ( flag_c() ? 1 : 0 );
+                                uint32_t partial = a + b;
+                                uint32_t result = partial + cin;
+                                bool carry = ( partial < a ) || ( result < partial );
+                                regs[ _reg ].q = result;
+                                if ( use_of )
+                                    setflag_o( carry );
+                                else
+                                    setflag_c( carry );
+                            }
+                        }
+                        else if ( 0x8a == op2 ) // movrs r8, m8
                         {
                             if ( mode32 || 3 == _mod || 0 != _prefix.size || 0 != _prefix.sse2_repeat )
                                 unhandled();
@@ -5940,8 +6046,10 @@ _prefix_is_set:
                         {
                             regs[ rbx ].q = 0;
 
-                            const uint32_t bitPOPCNT = 1 << 23;     // popcnt
-                            regs[ rcx ].q = bitPOPCNT;
+                            const uint32_t bitMOVBE = 1u << 22;
+                            const uint32_t bitPOPCNT = 1u << 23;
+                            const uint32_t bitRDRAND = 1u << 30;
+                            regs[ rcx ].q = bitMOVBE | bitPOPCNT | bitRDRAND;
 
                             const uint32_t bitFPU = 1 << 0;         // x87
                             const uint32_t bitTSC = 1 << 4;         // rdtsc
@@ -5960,12 +6068,16 @@ _prefix_is_set:
 
                             if ( 0 == subleaf )
                             {
+                                const uint32_t bitBMI1 = 1u << 3;
+                                const uint32_t bitBMI2 = 1u << 8;
                                 const uint32_t bitERMS = 1u << 9;       // enhanced REP MOVSB/STOSB
+                                const uint32_t bitRDSEED = 1u << 18;
+                                const uint32_t bitADX = 1u << 19;
                                 const uint32_t bitMOVDIRI = 1u << 27;
                                 const uint32_t bitMOVDIR64B = 1u << 28;
                                 const uint32_t bitFSRM = 1u << 4;       // fast short REP MOVSB
 
-                                regs[ rbx ].q = bitERMS;
+                                regs[ rbx ].q = bitBMI1 | bitBMI2 | bitERMS | bitRDSEED | bitADX;
                                 regs[ rcx ].q = bitMOVDIRI | bitMOVDIR64B;
                                 regs[ rdx ].q = bitFSRM;
                             }
@@ -5985,10 +6097,11 @@ _prefix_is_set:
                         }
                         else if ( 0x80000001 == regs[ rax ].d )
                         {
-                            const uint32_t bitABM = 1 << 5; // lzcnt (Advanced Bit Manipulation)
+                            const uint32_t bitLAHF = 1u << 0;
+                            const uint32_t bitABM = 1u << 5; // lzcnt (Advanced Bit Manipulation)
                             regs[ rax ].q = 0;
                             regs[ rbx ].q = 0;
-                            regs[ rcx ].q = bitABM;
+                            regs[ rcx ].q = bitLAHF | bitABM;
                             regs[ rdx ].q = 0;
                         }
                         else if ( 2 == regs[ rax ].d )
@@ -6564,6 +6677,24 @@ _prefix_is_set:
                                     regs[ rdx ].d = hi;
                                 }
                             }
+                        }
+                        else if ( 6 == _reg || 7 == _reg ) // rdrand / rdseed
+                        {
+                            if ( 3 != _mod || 0 != _prefix.sse2_repeat )
+                                unhandled();
+                            static uint64_t random_state = 0x9e3779b97f4a7c15ULL;
+                            random_state ^= random_state >> 12;
+                            random_state ^= random_state << 25;
+                            random_state ^= random_state >> 27;
+                            uint64_t value = random_state * 0x2545f4914f6cdd1dULL;
+                            if ( _rex.W )
+                                regs[ _rm ].q = value;
+                            else if ( 0x66 == _prefix.size )
+                                regs[ _rm ].w = (uint16_t) value;
+                            else
+                                regs[ _rm ].q = (uint32_t) value;
+                            reset_CPAZSO();
+                            setflag_c( true );
                         }
                         else
                             unhandled();
@@ -7719,6 +7850,16 @@ _prefix_is_set:
                 setflag_s( 0 != ( h & ( 1 << 7 ) ) );
                 break;
             }
+            case 0x9f: // lahf
+            {
+                regs[ rax ].h = (uint8_t) ( ( flag_s() ? 0x80 : 0 ) |
+                                            ( flag_z() ? 0x40 : 0 ) |
+                                            ( flag_a() ? 0x10 : 0 ) |
+                                            ( flag_p() ? 0x04 : 0 ) |
+                                            0x02 |
+                                            ( flag_c() ? 0x01 : 0 ) );
+                break;
+            }
             case 0xa0: // mov al, moffs8
             case 0xa1: // mov ax, moffs16 (also 32 and 64 bit)
             {
@@ -7950,9 +8091,9 @@ _prefix_is_set:
                 rip = pop();
                 break;
             }
-            case 0xc4: // three-byte VEX; currently CMPccXADD only
+            case 0xc4: // three-byte VEX scalar integer instructions
             {
-                if ( mode32 || 0 != _prefix.size || 0 != _prefix.sse2_repeat || 0 != _prefix.rex )
+                if ( 0 != _prefix.size || 0 != _prefix.sse2_repeat || 0 != _prefix.rex )
                     unhandled();
 
                 uint8_t vex2 = get_rip8();
@@ -7960,53 +8101,220 @@ _prefix_is_set:
                 uint8_t map = vex2 & 0x1f;
                 uint8_t vreg = (uint8_t) ( ( ~vex3 >> 3 ) & 0xf );
                 bool wide = ( 0 != ( vex3 & 0x80 ) );
+                if ( mode32 && wide ) unhandled();
                 uint8_t pp = vex3 & 3;
                 uint8_t length = ( vex3 >> 2 ) & 1;
-
-                if ( 2 != map || 1 != pp || 0 != length )
+                if ( 0 != length )
                     unhandled();
 
                 _prefix.rex = 0x40;
                 if ( 0 == ( vex2 & 0x80 ) )
-                    _prefix.rex |= 4; // inverted VEX.R
+                    _prefix.rex |= 4;
                 if ( 0 == ( vex2 & 0x40 ) )
-                    _prefix.rex |= 2; // inverted VEX.X
+                    _prefix.rex |= 2;
                 if ( 0 == ( vex2 & 0x20 ) )
-                    _prefix.rex |= 1; // inverted VEX.B
+                    _prefix.rex |= 1;
                 if ( wide )
                     _prefix.rex |= 8;
 
                 uint8_t opcode = get_rip8();
-                if ( opcode < 0xe0 || opcode > 0xef )
-                    unhandled();
-
                 decode_rm();
-                if ( 3 == _mod )
-                    unhandled();
 
-                uint8_t condition = opcode & 0xf;
-                if ( wide )
+                if ( 2 == map && 1 == pp && opcode >= 0xe0 && opcode <= 0xef ) // CMPccXADD
                 {
-                    uint64_t original = get_rm64();
-                    uint64_t compare = original;
-                    uint64_t addend = regs[ vreg ].q;
-                    do_math( 7, &compare, regs[ _reg ].q ); // flags from CMP memory, srcdest2
-                    bool add = check_condition( condition );
-                    if ( add )
-                        set_rm64( original + addend );
-                    regs[ _reg ].q = original;
+                    if ( mode32 || 3 == _mod )
+                        unhandled();
+                    uint8_t condition = opcode & 0xf;
+                    if ( wide )
+                    {
+                        uint64_t original = get_rm64();
+                        uint64_t compare = original;
+                        do_math( 7, &compare, regs[ _reg ].q );
+                        if ( check_condition( condition ) ) set_rm64( original + regs[ vreg ].q );
+                        regs[ _reg ].q = original;
+                    }
+                    else
+                    {
+                        uint32_t original = get_rm32();
+                        uint32_t compare = original;
+                        do_math( 7, &compare, regs[ _reg ].d );
+                        if ( check_condition( condition ) ) set_rm32z( original + regs[ vreg ].d );
+                        regs[ _reg ].q = original;
+                    }
+                }
+                else if ( 2 == map && 0 == pp && 0xf2 == opcode ) // ANDN
+                {
+                    if ( wide )
+                    {
+                        uint64_t result = ~regs[ vreg ].q & get_rm64();
+                        regs[ _reg ].q = result;
+                        setflag_s( 0 != ( result >> 63 ) ); setflag_z( 0 == result );
+                    }
+                    else
+                    {
+                        uint32_t result = ~regs[ vreg ].d & get_rm32();
+                        regs[ _reg ].q = result;
+                        setflag_s( 0 != ( result >> 31 ) ); setflag_z( 0 == result );
+                    }
+                    setflag_c( false ); setflag_o( false );
+                }
+                else if ( 2 == map && 0 == pp && 0xf7 == opcode ) // BEXTR
+                {
+                    uint64_t control = wide ? regs[ vreg ].q : regs[ vreg ].d;
+                    uint32_t start_bit = (uint8_t) control;
+                    uint32_t length_bits = (uint8_t) ( control >> 8 );
+                    uint32_t bits = wide ? 64 : 32;
+                    uint64_t source = wide ? get_rm64() : get_rm32();
+                    uint64_t result = 0;
+                    if ( start_bit < bits && length_bits != 0 )
+                    {
+                        uint32_t available = bits - start_bit;
+                        if ( length_bits > available )
+                            length_bits = available;
+                        result = source >> start_bit;
+                        if ( length_bits < 64 )
+                            result &= ( ( 1ULL << length_bits ) - 1 );
+                    }
+                    if ( wide )
+                        regs[ _reg ].q = result;
+                    else
+                        regs[ _reg ].q = (uint32_t) result;
+                    setflag_z( 0 == result ); setflag_c( false ); setflag_o( false );
+                }
+                else if ( 2 == map && 0 == pp && 0xf3 == opcode && _reg >= 1 && _reg <= 3 ) // BLSR/BLSMSK/BLSI
+                {
+                    uint64_t source = wide ? get_rm64() : get_rm32();
+                    uint64_t mask = wide ? ~0ULL : 0xffffffffULL;
+                    uint64_t result;
+                    if ( 1 == _reg )
+                        result = source & ( source - 1 );
+                    else if ( 2 == _reg )
+                        result = source ^ ( source - 1 );
+                    else
+                        result = source & ( 0 - source );
+                    result &= mask;
+                    if ( wide )
+                        regs[ vreg ].q = result;
+                    else
+                        regs[ vreg ].q = (uint32_t) result;
+                    if ( 1 == _reg )
+                        setflag_c( 0 == source );
+                    else if ( 2 == _reg )
+                        setflag_c( 0 == source );
+                    else
+                        setflag_c( 0 != source );
+                    setflag_z( 0 == result );
+                    setflag_s( wide ? ( 0 != ( result >> 63 ) ) : ( 0 != ( result & 0x80000000ULL ) ) );
+                    setflag_o( false );
+                }
+                else if ( 2 == map && 0 == pp && 0xf5 == opcode ) // BZHI
+                {
+                    uint32_t index = regs[ vreg ].b;
+                    uint32_t bits = wide ? 64 : 32;
+                    uint64_t source = wide ? get_rm64() : get_rm32();
+                    uint64_t result = source;
+                    bool out_of_range = index >= bits;
+                    if ( !out_of_range )
+                        result &= index ? ( ( 1ULL << index ) - 1 ) : 0;
+                    if ( wide )
+                        regs[ _reg ].q = result;
+                    else
+                        regs[ _reg ].q = (uint32_t) result;
+                    setflag_c( out_of_range ); setflag_z( 0 == result );
+                    setflag_s( wide ? ( 0 != ( result >> 63 ) ) : ( 0 != ( result & 0x80000000ULL ) ) );
+                    setflag_o( false );
+                }
+                else if ( 2 == map && ( 2 == pp || 3 == pp ) && 0xf5 == opcode ) // PDEP/PEXT
+                {
+                    uint64_t source = wide ? regs[ vreg ].q : regs[ vreg ].d;
+                    uint64_t mask = wide ? get_rm64() : get_rm32();
+                    uint64_t result = 0;
+                    if ( 2 == pp ) // PEXT
+                    {
+                        uint64_t output_bit = 1;
+                        for ( uint64_t bit = 1; bit && bit <= mask; bit <<= 1 )
+                        {
+                            if ( mask & bit )
+                            {
+                                if ( source & bit )
+                                    result |= output_bit;
+                                output_bit <<= 1;
+                            }
+                        }
+                    }
+                    else // PDEP
+                    {
+                        uint64_t input_bit = 1;
+                        for ( uint64_t bit = 1; bit && bit <= mask; bit <<= 1 )
+                        {
+                            if ( mask & bit )
+                            {
+                                if ( source & input_bit )
+                                    result |= bit;
+                                input_bit <<= 1;
+                            }
+                        }
+                    }
+                    if ( wide )
+                        regs[ _reg ].q = result;
+                    else
+                        regs[ _reg ].q = (uint32_t) result;
+                }
+                else if ( 2 == map && 3 == pp && 0xf6 == opcode ) // MULX
+                {
+                    uint64_t source = wide ? get_rm64() : get_rm32();
+                    if ( wide )
+                    {
+                        uint64_t high, low;
+                        CMultiply128::mul_u64_u64( &high, &low, regs[ rdx ].q, source );
+                        regs[ _reg ].q = high;
+                        regs[ vreg ].q = low;
+                    }
+                    else
+                    {
+                        uint64_t product = (uint64_t) regs[ rdx ].d * (uint32_t) source;
+                        regs[ _reg ].q = (uint32_t) ( product >> 32 );
+                        regs[ vreg ].q = (uint32_t) product;
+                    }
+                }
+                else if ( 2 == map && 0xf7 == opcode && ( 1 == pp || 2 == pp || 3 == pp ) ) // SHLX/SHRX/SARX
+                {
+                    uint32_t count = regs[ vreg ].b & ( wide ? 63 : 31 );
+                    if ( wide )
+                    {
+                        uint64_t source = get_rm64();
+                        if ( 1 == pp )
+                            regs[ _reg ].q = source << count;
+                        else if ( 3 == pp )
+                            regs[ _reg ].q = source >> count;
+                        else
+                            regs[ _reg ].q = (uint64_t) ( (int64_t) source >> count );
+                    }
+                    else
+                    {
+                        uint32_t source = get_rm32();
+                        uint32_t result = ( 1 == pp ) ? ( source << count ) :
+                                          ( 3 == pp ) ? ( source >> count ) :
+                                                        (uint32_t) ( (int32_t) source >> count );
+                        regs[ _reg ].q = result;
+                    }
+                }
+                else if ( 3 == map && 3 == pp && 0xf0 == opcode ) // RORX imm8
+                {
+                    uint32_t count = get_rip8() & ( wide ? 63 : 31 );
+                    if ( wide )
+                    {
+                        uint64_t source = get_rm64();
+                        regs[ _reg ].q = count ? ( ( source >> count ) | ( source << ( 64 - count ) ) ) : source;
+                    }
+                    else
+                    {
+                        uint32_t source = get_rm32();
+                        regs[ _reg ].q = count ? ( ( source >> count ) | ( source << ( 32 - count ) ) ) : source;
+                    }
                 }
                 else
-                {
-                    uint32_t original = get_rm32();
-                    uint32_t compare = original;
-                    uint32_t addend = regs[ vreg ].d;
-                    do_math( 7, &compare, regs[ _reg ].d ); // flags from CMP memory, srcdest2
-                    bool add = check_condition( condition );
-                    if ( add )
-                        set_rm32z( original + addend );
-                    regs[ _reg ].q = original;
-                }
+                    unhandled();
                 break;
             }
             case 0xc6:
