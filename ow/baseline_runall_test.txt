@@ -1,4 +1,4 @@
-Sun 04/12/2026  9:20:28.86 
+Wed 07/29/2026 14:10:37.31 
 tcmp
 uint8_t:
   lt 1 le 1 eq 0 ge 0 gt 0
@@ -1209,8 +1209,8 @@ result of read at offset 512: 512
 result of read at offset 0: 512
 fileops has completed with great success
 ttime
-before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 4, day 12, hour 8, min 20, sec 38
-east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 4, day 12, hour 11, min 20, sec 38
+before TZ is set: tz: 'PacificDaylightTime+8', year: 2026, month 7, day 29, hour 13, min 10, sec 47
+east coast time: set tz 'TZ=EST+5' tz: 'EST+5', year: 2026, month 7, day 29, hour 16, min 10, sec 47
 tm
 tm has completed with great success
 glob
@@ -1271,7 +1271,7 @@ atanf of 1.000000 is 0.785398
 atan2f of 0.3, 0.2 is 0.982794
 acosf of 0.3 is 1.266104
 asinf of 0.3 is 0.304693
-tanhf of 2.2 is 0.304693
+tanhf of 2.2 is 0.975743
 logf of 0.3: -1.203973
 log10f of 300: 2.477121
 pi has mantissa: 0.785398, exponent 2
@@ -1375,7 +1375,7 @@ len in pfl: 70
 length of file before initial close: 70
 length from stat: 70
 length from fstat: 70
-tz: 'PST+8', year: 2026, month 4, day 12, hour 8, min 20, sec 44
+tz: 'PST+8', year: 2026, month 7, day 29, hour 13, min 10, sec 53
 len in pfl: 0
 exiting fopentst with great success
 fact
@@ -1571,4 +1571,4 @@ read: 'a' == 97 == 0x61
 read: '
 ' == 10 == 0xa
 tgets completed with great success
-Sun 04/12/2026  9:20:48.27 
+Wed 07/29/2026 14:10:57.03 
