@@ -1,12 +1,12 @@
-Wed 02/18/2026  6:12:05.55 
+Tue 07/28/2026 16:08:59.59 
 ====== ntvao test
 !function pointers195D$
-elapsed milliseconds:            1,116
+elapsed milliseconds:            1,434
 6502 cycles:                16,340,505
 clock rate:                  unbounded
 ms at 1.022727 Mhz:             15,977 == 0 days, 0 hours, 0 minutes, 15 seconds, 977 milliseconds
 !function pointers195D$
-elapsed milliseconds:            1,148
+elapsed milliseconds:            1,314
 6502 cycles:                16,340,505
 clock rate:                  unbounded
 ms at 1.022727 Mhz:             15,977 == 0 days, 0 hours, 0 minutes, 15 seconds, 977 milliseconds
@@ -14,32 +14,32 @@ ms at 1.022727 Mhz:             15,977 == 0 days, 0 hours, 0 minutes, 15 seconds
 moves: 6493
 iterations: 10
 
-elapsed milliseconds:            1,329
-Z80  cycles:                52,149,739
+elapsed milliseconds:            1,577
+Z80  cycles:                54,425,335
 clock rate:                  unbounded
-approx ms at 4Mhz:              13,037
+approx ms at 4Mhz:              13,606
 moves: 6493
 iterations: 10
 
-elapsed milliseconds:            1,354
+elapsed milliseconds:            1,557
 Z80  cycles:                52,149,739
 clock rate:                  unbounded
 approx ms at 4Mhz:              13,037
 ====== ntvdm test
-1.81 seconds
+2.30 seconds
 moves: 6493
 iterations: 10
 
-elapsed milliseconds:            1,834
+elapsed milliseconds:            2,343
 8086 cycles:                43,547,076
 clock rate:                  unbounded
 approx ms at 4.77Mhz:            9,129  == 0 days, 0 hours, 0 minutes, 9 seconds, 129 milliseconds
 app exit code:                       0
-2.36 seconds
+2.52 seconds
 moves: 6493
 iterations: 10
 
-elapsed milliseconds:            2,405
+elapsed milliseconds:            2,574
 8086 cycles:                43,547,076
 clock rate:                  unbounded
 approx ms at 4.77Mhz:            9,129  == 0 days, 0 hours, 0 minutes, 9 seconds, 129 milliseconds
@@ -47,83 +47,83 @@ app exit code:                       0
 ====== rvos test
 starting...
 64930 moves
-946 milliseconds
+1190 milliseconds
 10 iterations
-elapsed milliseconds:              950
-instructions:                2,993,542
-effective clock rate:            3,151
+elapsed milliseconds:            1,196
+instructions:                2,994,000
+effective clock rate:            2,503
 app exit code:                       0
 starting...
 64930 moves
-1354 milliseconds
+1477 milliseconds
 10 iterations
-elapsed milliseconds:            1,360
-instructions:                2,993,555
-effective clock rate:            2,201
+elapsed milliseconds:            1,485
+instructions:                2,994,000
+effective clock rate:            2,016
 app exit code:                       0
 ====== armos test
 starting
-1054417 microseconds (-6)
+1256019 microseconds (-6)
 10 iterations
 64930 moves
-elapsed milliseconds:            1,058
-instructions:                3,483,025
-effective clock rate:            3,292
+elapsed milliseconds:            1,264
+instructions:                3,487,889
+effective clock rate:            2,759
 app exit code:                       0
 starting
-1849492 microseconds (-6)
+1902591 microseconds (-6)
 10 iterations
 64930 moves
-elapsed milliseconds:            1,855
-instructions:                3,483,025
-effective clock rate:            1,877
+elapsed milliseconds:            1,913
+instructions:                3,487,889
+effective clock rate:            1,823
 app exit code:                       0
 ====== m68 test
 moves: 64930
-elapsed milliseconds:            1,637
-instructions:                2,581,230
-effective clock rate:            1,576
+elapsed milliseconds:            2,049
+instructions:                2,581,240
+effective clock rate:            1,259
 app exit code:                       0
 moves: 64930
-elapsed milliseconds:            1,546
-instructions:                2,581,230
-effective clock rate:            1,669
+elapsed milliseconds:            1,639
+instructions:                2,581,240
+effective clock rate:            1,574
 app exit code:                       0
 ====== sparcos test
 moves: 64930
 iterations: 10
-elapsed milliseconds:            1,287
-instructions:                3,626,239
-effective clock rate:            2,817
+elapsed milliseconds:            1,699
+instructions:                3,626,263
+effective clock rate:            2,134
 app exit code:                       0
 moves: 64930
 iterations: 10
-elapsed milliseconds:            1,417
-instructions:                3,626,239
-effective clock rate:            2,559
+elapsed milliseconds:            1,623
+instructions:                3,626,263
+effective clock rate:            2,234
 app exit code:                       0
 ====== x64os test
 64930 moves
-elapsed milliseconds:            1,944
+elapsed milliseconds:            2,205
 instructions:                3,280,934
-effective clock rate:            1,687
+effective clock rate:            1,487
 app exit code:                       0
 64930 moves
-elapsed milliseconds:            2,915
+elapsed milliseconds:            2,932
 instructions:                3,280,934
-effective clock rate:            1,125
+effective clock rate:            1,119
 app exit code:                       0
 ====== x32os test
 64930 moves
 10 iterations
-elapsed milliseconds:            2,073
-instructions:                4,316,662
-effective clock rate:            2,082
+elapsed milliseconds:            2,253
+instructions:                4,322,513
+effective clock rate:            1,918
 app exit code:                       0
 64930 moves
 10 iterations
-elapsed milliseconds:            2,964
-instructions:                4,316,662
-effective clock rate:            1,456
+elapsed milliseconds:            2,934
+instructions:                4,322,513
+effective clock rate:            1,473
 app exit code:                       0
-Wed 02/18/2026  6:12:37.95 
+Tue 07/28/2026 16:09:34.35 

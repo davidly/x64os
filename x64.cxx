@@ -30,10 +30,10 @@
         * 686 (pentium II):   mmx
         * 686 (pentium III):  sse, psn
         * Pentium IV:         sse2, sse3, pause, lfence/mfence/sfence, cflush, monitor/mwait, cmpxchg16b, (late models): ssse3, x86-64
-        * nehalem:            sse4.1, sse4.2
+        * nehalem:            sse4.1, sse4.2, popcnt
         * westmere:           aes, pclmulqdq
         * sandy bridge:       avx
-        * haswell:            fma, avx2
+        * haswell:            fma, avx2, lzcnt
         * goldmont:           sha
         * sapphire rapids:    amx
 */
@@ -1166,10 +1166,11 @@ void x64::trace_state()
                     tracer.Trace( "bsf %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
-                case 0xbd: // bsr r, r/m   16, 32, 64  bit scan reverse
+                case 0xbd: // bsr/lzcnt r, r/m   16, 32, 64
                 {
                     decode_rm();
-                    tracer.Trace( "bsr %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
+                    tracer.Trace( ( 0xf3 == _prefix.sse2_repeat ) ? "lzcnt %s, %s\n" : "bsr %s, %s\n",
+                                  register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
                 case 0xbe: // movsx r, r/m. 16/32/64 from 8
@@ -5746,7 +5747,20 @@ _prefix_is_set:
                             regs[ rdx ].q = bitFPU | bitTSC | bitCX8 | bitCMOV | bitSSE2;
                         }
                         else if ( 0x80000000 == regs[ rax ].d )
+                        {
+                            regs[ rax ].q = 0x80000001;
+                            regs[ rbx ].q = 0;
+                            regs[ rcx ].q = 0;
+                            regs[ rdx ].q = 0;
+                        }
+                        else if ( 0x80000001 == regs[ rax ].d )
+                        {
+                            const uint32_t bitABM = 1 << 5; // lzcnt (Advanced Bit Manipulation)
                             regs[ rax ].q = 0;
+                            regs[ rbx ].q = 0;
+                            regs[ rcx ].q = bitABM;
+                            regs[ rdx ].q = 0;
+                        }
                         else
                             unhandled();
                         break;
@@ -6052,12 +6066,37 @@ _prefix_is_set:
                         regs[ _reg ].q = bitscan( val );
                         break;
                     }
-                    case 0xbd: // bsr r, r/m   16, 32, 64  bit scan reverse
+                    case 0xbd: // bsr/lzcnt r, r/m   16, 32, 64
                     {
                         decode_rm();
                         uint64_t val = get_rm();
-                        setflag_z( 0 == val );
-                        regs[ _reg ].q = bitscan_reverse( val );
+
+                        if ( 0xf3 == _prefix.sse2_repeat ) // lzcnt
+                        {
+                            uint8_t width = op_width();
+                            uint64_t bit = ( 8 == width ) ? 0x8000000000000000ull :
+                                           ( 4 == width ) ? 0x80000000ull : 0x8000ull;
+                            uint8_t count = 0;
+
+                            while ( 0 != bit && 0 == ( val & bit ) )
+                            {
+                                count++;
+                                bit >>= 1;
+                            }
+
+                            if ( 2 == width )
+                                regs[ _reg ].w = count; // don't zero-extend 16-bit results
+                            else
+                                regs[ _reg ].q = count; // zero-extend 32-bit results
+
+                            setflag_c( 0 == val );
+                            setflag_z( 0 == count );
+                        }
+                        else
+                        {
+                            setflag_z( 0 == val );
+                            regs[ _reg ].q = bitscan_reverse( val );
+                        }
                         break;
                     }
                     case 0xbe: // movsx r, r/m. 16/32/64 from 8
