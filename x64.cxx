@@ -3393,13 +3393,13 @@ template <typename T> void x64::op_sal( T * pval, uint8_t shift ) // aka shl
         setflag_o( 3 == top2bits( original ) );
 
     const size_t bitWidth = sizeof ( T ) * 8;
-    if ( shift < bitWidth )
+    if ( shift <= bitWidth )
     {
         T mask = (T) 1 << ( bitWidth - shift );
         setflag_c( 0 != ( original & mask) );
     }
 
-    T result = original << shift;
+    T result = ( shift < bitWidth ) ? (T) ( original << shift ) : 0;
     *pval = result;
     set_PSZ( result );
 } //op_sal
@@ -3410,9 +3410,16 @@ template <typename T> void x64::op_shr( T * pval, uint8_t shift )
     T original = *pval;
     if ( 1 == shift )
         setflag_o( highest_bit( original ) );
-    T result = original >> ( shift - 1 );
-    setflag_c( 0 != ( result & 1 ) );
-    result >>= 1;
+    const size_t bitWidth = sizeof ( T ) * 8;
+    T result;
+    if ( shift <= bitWidth )
+    {
+        result = original >> ( shift - 1 );
+        setflag_c( 0 != ( result & 1 ) );
+        result >>= 1;
+    }
+    else
+        result = 0;
     *pval = result;
     set_PSZ( result );
 } //op_shr
@@ -3424,15 +3431,31 @@ template <typename T> void x64::op_sar( T * pval, uint8_t shift )
     ST original = *pval;
     if ( 1 == shift )
         setflag_o( false );
-    ST result = original >> ( shift - 1 );
-    setflag_c( 0 != ( result & 1 ) );
-    result >>= 1;
+    const size_t bitWidth = sizeof ( T ) * 8;
+    ST result;
+    if ( shift <= bitWidth )
+    {
+        result = original >> ( shift - 1 );
+        setflag_c( 0 != ( result & 1 ) );
+        result >>= 1;
+    }
+    else
+    {
+        setflag_c( original < 0 );
+        result = ( original < 0 ) ? (ST) -1 : 0;
+    }
     *pval = result;
     set_PSZ( result );
 } //op_sar
 
 template <typename T> void x64::op_shift( T * pval, uint8_t operation, uint8_t shift )
 {
+    const uint8_t bitWidth = sizeof ( T ) * 8;
+    if ( operation <= 1 )
+        shift %= bitWidth;       // rol/ror counts are modulo the operand width
+    else if ( operation <= 3 )
+        shift %= bitWidth + 1;   // rcl/rcr rotate through CF as an extra bit
+
     if ( 0 == shift )
         return;
 
@@ -4717,7 +4740,7 @@ _prefix_is_set:
                     uint16_t regval = regs[ rax ].w;
                     do_math( math, &regval, imm );
                     if ( 7 != math )
-                        regs[ rax ].q = regval;
+                        regs[ rax ].w = regval;
                 }
                 else
                 {
@@ -8039,7 +8062,7 @@ _prefix_is_set:
                 if ( _rex.W )
                     regs[ _rm ].q = get_rip64();
                 else if ( 0x66 == _prefix.size )
-                    regs[ _rm ].q = get_rip16();
+                    regs[ _rm ].w = get_rip16();
                 else
                     regs[ _rm ].q = get_rip32();
                 break;
@@ -8047,7 +8070,7 @@ _prefix_is_set:
             case 0xc0: // shift r8/m8, imm8
             {
                 decode_rm();
-                uint8_t shift = get_rip8() & 7;
+                uint8_t shift = get_rip8() & 0x1f;
                 op_shift( get_rm_ptr8(), _reg, shift );
                 break;
             }
@@ -8065,7 +8088,7 @@ _prefix_is_set:
                 }
                 else if ( 0x66 == _prefix.size )
                 {
-                    shift &= 0xf;
+                    shift &= 0x1f;
                     uint16_t val = get_rm16();
                     op_shift( &val, _reg, shift );
                     set_rm16( val );
@@ -8421,7 +8444,7 @@ _prefix_is_set:
                 uint8_t shift = regs[ rcx ].b;
                 if ( 0 == shift )
                     break;
-                shift &= 0x7;
+                shift &= 0x1f;
                 uint8_t val = get_rm8();
                 op_shift( &val, _reg, shift );
                 set_rm8( val );
@@ -8442,7 +8465,7 @@ _prefix_is_set:
                 }
                 else if ( 0x66 == _prefix.size )
                 {
-                    shift &= 0xf;
+                    shift &= 0x1f;
                     uint16_t val = get_rm16();
                     op_shift( &val, _reg, shift );
                     set_rm16( val );
@@ -9463,7 +9486,8 @@ _prefix_is_set:
                         }
                         else
                         {
-                            int32_t dividend = ( (int32_t) (int16_t) regs[ rdx ].w << 16 ) | (uint16_t) regs[ rax ].w;
+                            uint32_t dividend_bits = ( (uint32_t) regs[ rdx ].w << 16 ) | (uint16_t) regs[ rax ].w;
+                            int32_t dividend = (int32_t) dividend_bits;
                             int32_t quotient = dividend / divisor;
                             int32_t remainder = dividend % divisor;
 
@@ -9487,7 +9511,8 @@ _prefix_is_set:
                         }
                         else
                         {
-                            int64_t dividend = ( (int64_t) (int32_t) regs[ rdx ].d << 32 ) | (uint32_t) regs[ rax ].d;
+                            uint64_t dividend_bits = ( (uint64_t) regs[ rdx ].d << 32 ) | (uint32_t) regs[ rax ].d;
+                            int64_t dividend = (int64_t) dividend_bits;
                             int64_t quotient = dividend / divisor;
                             int64_t remainder = dividend % divisor;
 
