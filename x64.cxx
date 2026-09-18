@@ -4616,6 +4616,11 @@ uint64_t x64::run()
 {
     uint64_t instruction_count = 0;
 
+    // the constructor only sets the emulator's tracked x87_fpu_control_word; force the real
+    // host FPU into that same state now, since library/runtime init (e.g. glibc's long double
+    // handling) may have left the actual hardware control word out of sync with it.
+    set_x87_control_word( x87_fpu_control_word );
+
     for ( ;; )
     {
         #ifndef NDEBUG
@@ -8691,9 +8696,15 @@ _prefix_is_set:
                         set_rmfloat( pop_fp().getf() );
                     else if ( 4 == _reg ) // fnldenv m14/28byte  loads fpu status info from memory
                     {
-                        uint16_t * pstatus = (uint16_t *) getmem( effective_address() );
-                        x87_fpu_status_word = pstatus[ 0 ];
-                        x87_fpu_control_word = pstatus[ 1 ];
+                        // 32-bit protected-mode format packs each 16-bit field into its own 4-byte
+                        // slot: control word at +0, status word at +4, tag word at +8 (upper 16 bits
+                        // of each slot are reserved). Must match the layout used by fnstenv below and
+                        // by fsave/frstor, since real code (e.g. glibc's fegetenv/fesetenv) reads and
+                        // writes these offsets directly rather than round-tripping only through this
+                        // emulator's own fnstenv/fldenv pair.
+                        uint64_t ea = effective_address();
+                        x87_fpu_control_word = (uint16_t) getui32( ea + 0 );
+                        x87_fpu_status_word = (uint16_t) getui32( ea + 4 );
                         set_x87_control_word( x87_fpu_control_word );
                     }
                     else if ( 5 == _reg ) // fldcw  load fpu control word from m2byte
@@ -8703,9 +8714,9 @@ _prefix_is_set:
                     }
                     else if ( 6 == _reg ) // fnstenv m14/28byte  stores fpu status info in memory
                     {
-                        uint16_t * pstatus = (uint16_t *) getmem( effective_address() );
-                        pstatus[ 0 ] = x87_fpu_status_word;
-                        pstatus[ 1 ] = x87_fpu_control_word;
+                        uint64_t ea = effective_address();
+                        setui32( ea + 0, x87_fpu_control_word );
+                        setui32( ea + 4, x87_fpu_status_word );
                     }
                     else if ( 7 == _reg ) // fnstcw m2byte. store fpu control word to m2byte
                         set_rm16( x87_fpu_control_word );
@@ -8802,6 +8813,7 @@ _prefix_is_set:
                 else if ( 0xe3 == op1 ) // finit
                 {
                     x87_fpu_control_word = 0x37f;
+                    set_x87_control_word( x87_fpu_control_word );
                     x87_fpu_status_word = 0;
                     fp_sp = 0;
                 }
@@ -8820,6 +8832,7 @@ _prefix_is_set:
                     else if ( 4 == _reg ) // nop, clear exceptions, init fp unit
                     {
                         x87_fpu_control_word = 0x37f;
+                        set_x87_control_word( x87_fpu_control_word );
                         x87_fpu_status_word = 0;
                     }
                     else if ( 5 == _reg ) // fld m80fp  push m80fp onto the fpu register stack
@@ -8939,6 +8952,7 @@ _prefix_is_set:
                         for ( int i = 0; i < 8; i++ )
                             memcpy( getmem( ea + 28 + i * 10 ), fregs[ i ].get_bytes(), 10 );
                         x87_fpu_control_word = 0x37f;
+                        set_x87_control_word( x87_fpu_control_word );
                         x87_fpu_status_word = 0;
                         fp_sp = 0;
                     }
