@@ -113,6 +113,23 @@ template <typename T> inline void do_swap( T & a, T & b ) { T tmp = a; a = b; b 
 #pragma GCC diagnostic ignored "-Wformat="
 #endif
 
+static const char trace_hex_digits[] = "0123456789abcdef";
+
+static char * trace_hex( char * dst, uint64_t value )
+{
+    char digits[ 16 ];
+    char * end = digits + sizeof( digits );
+    char * start = end;
+    do
+    {
+        *--start = trace_hex_digits[ value & 15 ];
+        value >>= 4;
+    } while ( value );
+    while ( start != end )
+        *dst++ = *start++;
+    return dst;
+}
+
 void x64::trace_state()
 {
     uint64_t rip_save = rip;
@@ -124,13 +141,7 @@ void x64::trace_state()
 
     // tracer.TraceBinaryData( getmem( 0x82df881 ), 4, 2 ); // source of above .//
 
-    uint64_t ip = ( 0 == _prefix.rex ) ? rip : ( rip - 1 );
-    if ( 0 != _prefix.size )
-        ip--;
-    if ( 0 != _prefix.address_size )
-        ip--;
-    if ( 0 != _prefix.sse2_repeat )
-        ip--;
+    uint64_t ip = _instruction_start;
 
     rip++;
 
@@ -153,25 +164,44 @@ void x64::trace_state()
         strcat( symbol_offset, "\n             " );
     }
 
-    static char reg_string[ 34 * 32 ];
-    reg_string[ 0 ] = 0;
-    int len = 0;
+    char reg_string[ 16 * ( 3 + 1 + 16 + 1 ) + 1 ]; // name, colon, value, space, terminator
+    char * next_reg = reg_string;
+    const char * const * names = mode32 ? register_names32 : register_names;
     int reg_count = mode32 ? 8 : 16;
     for ( uint8_t r = 0; r < reg_count; r++ )
         if ( 0 != regs[ r ].q )
-            len += snprintf( & reg_string[ len ], 32, "%s:%llx ", register_name( r ), regs[ r ].q );
+        {
+            const char * name = names[ r ];
+            while ( *name )
+                *next_reg++ = *name++;
+            *next_reg++ = ':';
+            next_reg = trace_hex( next_reg, regs[ r ].q );
+            *next_reg++ = ' ';
+        }
+    *next_reg = 0;
 
-#if 0 // too verbose and almost never used except for glibc using fs for global state
-    if ( 0 != sregs[ rfs ].q )
-        len += snprintf( & reg_string[ len ], 32, "fs:%llx ", sregs[ rfs ].q );
+    char instruction_bytes[ 16 ] = "               ";
+    uint64_t memory_offset = ip - base;
+    if ( ip >= base && memory_offset < mem_size )
+    {
+        uint64_t available = mem_size - memory_offset;
+        unsigned count = ( available < 5 ) ? (unsigned) available : 5;
+        const uint8_t * bytes = mem + memory_offset;
+        for ( unsigned i = 0; i < count; i++ )
+        {
+            uint8_t byte = bytes[ i ];
+            instruction_bytes[ 3 * i ] = trace_hex_digits[ byte >> 4 ];
+            instruction_bytes[ 3 * i + 1 ] = trace_hex_digits[ byte & 15 ];
+        }
+    }
 
-    if ( 0 != sregs[ rgs ].q )
-        len += snprintf( & reg_string[ len ], 32, "gs:%llx ", sregs[ rgs ].q );
-#endif
-
-    // for a __mc68000__ limitation this must be slit into two traces
+    #ifdef __mc68000__
+    // for a __mc68000__ limitation this must be split into two traces
     tracer.Trace( "rip %8llx %s%s ", ip, symbol_name, symbol_offset );
-    tracer.Trace( "%02x %02x %02x %02x %02x %s%s => ", getui8( ip ), getui8( ip + 1 ), getui8( ip + 2 ), getui8( ip + 3 ), getui8( ip + 4 ), reg_string, render_flags() );
+    tracer.Trace( "%s%s%s => ", instruction_bytes, reg_string, render_flags() );
+    #else
+    tracer.Trace( "rip %8llx %s%s %s%s%s => ", ip, symbol_name, symbol_offset, instruction_bytes, reg_string, render_flags() );
+    #endif
 
     switch( op )
     {
@@ -361,7 +391,7 @@ void x64::trace_state()
                     if ( 0x66 == _prefix.size ) // movlpd xmm1, m64. moves double from m64 to low qword of xmm1 and doesn't touch high qword
                         tracer.Trace( "movlpd %s, %s\n", xmm_names[ _reg ], rm_string( 8 ) );
                     else if ( 3 == _mod ) // movhlps xmm1, xmm2   move two packed floats from high qw of xmm2 to low qw of xmm1
-                        tracer.Trace( "movhlps %s, %s\n", xmm_names[ _reg ], rm_string( 4 ) );
+                        tracer.Trace( "movhlps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     else // movlps xmm1, m64   move two floats from m64 to low qw of xmm1
                         tracer.Trace( "movlps %s, %s\n", xmm_names[ _reg ], rm_string( 4 ) );
                     break;
@@ -385,7 +415,7 @@ void x64::trace_state()
                     if ( 0x66 == _prefix.size ) // unpcklpd xmm1, xmm2/m128 unpack doubles from low of xmm1 and xmm2/m128
                         tracer.Trace( "unpcklpd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else // unpcklps xmm1, xmm2/m128 unpack singles from low of xmm1 and xmm2/m128
-                        tracer.Trace( "unpcklps %s, %s\n", xmm_names[ _reg ], rm_string( 5, true ) );
+                        tracer.Trace( "unpcklps %s, %s\n", xmm_names[ _reg ], rm_string( 4, true ) );
                     break;
                 }
                 case 0x15: // unpckh packed. no scalar forms
@@ -402,8 +432,10 @@ void x64::trace_state()
                     decode_rm();
                     if ( 0x66 == _prefix.size ) // movhpd xmm1, m64. moves double from m64 to high qword of xmm1 and doesn't touch low qword
                         tracer.Trace( "movhpd %s, %s\n", xmm_names[ _reg ], rm_string( 8 ) );
-                    else   // movlhps xmm1, m64  or movlhps xmm1, xmm2
+                    else if ( 3 == _mod )
                         tracer.Trace( "movlhps %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
+                    else
+                        tracer.Trace( "movhps %s, %s\n", xmm_names[ _reg ], rm_string( 8 ) );
                     break;
                 }
                 case 0x17:
@@ -538,7 +570,7 @@ void x64::trace_state()
                 case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f:
                 {
                     decode_rm();
-                    tracer.Trace( "cmov%s %s, %s\n", condition_names[ op1 & 0xf ], register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 8 ) );
+                    tracer.Trace( "cmov%s %s, %s\n", condition_names[ op1 & 0xf ], register_name( _reg, op_width() ), rm_string( op_width() ) );
                     break;
                 }
                 case 0x50:
@@ -547,9 +579,9 @@ void x64::trace_state()
                     if ( 0 != _prefix.sse2_repeat )
                         unhandled();
                     if ( 0x66 == _prefix.size ) // movmskpd reg, xmm. extract 2-bit sign mask from xmm and store in reg. the upper bits are filled with zeroes
-                        tracer.Trace( "movmskpd %s, %s\n", register_names[ _reg ], rm_string( 8, true ) );
+                        tracer.Trace( "movmskpd %s, %s\n", register_name( _reg, 4 ), rm_string( 8, true ) );
                     else // movmkps reg, xmm    extract 4 bit sign mask from xmm and store in reg
-                        tracer.Trace( "movmkps %s, %s\n", register_names[ _reg ], rm_string( 8, true ) );
+                        tracer.Trace( "movmskps %s, %s\n", register_name( _reg, 4 ), rm_string( 8, true ) );
                     break;
                 }
                 case 0x51:
@@ -932,7 +964,7 @@ void x64::trace_state()
                     if ( 0x66 == _prefix.size )
                         tracer.Trace( "movdqa %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else if ( 0xf3 == _prefix.sse2_repeat )
-                        tracer.Trace( "movqdu %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
+                        tracer.Trace( "movdqu %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                     {
                         tracer.Trace( "_prefix.sse2_repeat %#x, _prefix.size %#x\n", _prefix.sse2_repeat, _prefix.size );
@@ -1033,7 +1065,7 @@ void x64::trace_state()
                 {
                     decode_rm();
                     if ( 0x66 == _prefix.size ) // pcmpeqd xmm/m128, xmm   compare packed doublewords in xmm/m128 and xmm1 for equality
-                        tracer.Trace( "pcmpeqd %s, %s\n", rm_string( 8, true ), xmm_names[ _reg ] );
+                        tracer.Trace( "pcmpeqd %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
                     break;
@@ -1048,7 +1080,7 @@ void x64::trace_state()
                     else if ( 0x66 == _prefix.size ) // mov r/m, xmm
                     {
                         decode_rm();
-                        tracer.Trace( "movq %s, %s\n", rm_string( 8 ), xmm_names[ _reg ] );
+                        tracer.Trace( "mov%c %s, %s\n", _rex.W ? 'q' : 'd', rm_string( _rex.W ? 8 : 4 ), xmm_names[ _reg ] );
                     }
                     else
                         unhandled();
@@ -1171,13 +1203,13 @@ void x64::trace_state()
                 case 0xb6: // movzbq reg, r/m8
                 {
                     decode_rm();
-                    tracer.Trace( "movzxb %s, %s\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 1 ) );
+                    tracer.Trace( "movzxb %s, %s\n", register_name( _reg, op_width() ), rm_string( 1 ) );
                     break;
                 }
                 case 0xb7: // movzbq reg, r/m16
                 {
                     decode_rm();
-                    tracer.Trace( "movzxw %s, %s\n", register_name( _reg, ( _rex.W ? 8 : 4 ) ), rm_string( 2 ) );
+                    tracer.Trace( "movzxw %s, %s\n", register_name( _reg, op_width() ), rm_string( 2 ) );
                     break;
                 }
                 case 0xb8:
@@ -1570,11 +1602,6 @@ void x64::trace_state()
                         unhandled();
                     break;
                 }
-                case 0xf5: // cmc complement carry flag
-                {
-                    tracer.Trace( "cmc\n" );
-                    break;
-                }
                 case 0xf6: // psadbw xmm1, xmm2/m128  compute absolute differences on bytes and store results in low words of each part of result
                 {
                     decode_rm();
@@ -1626,7 +1653,7 @@ void x64::trace_state()
                 {
                     decode_rm();
                     if ( 0x66 == _prefix.size )
-                        tracer.Trace( "padddb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
+                        tracer.Trace( "paddb %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
                     break;
@@ -1635,7 +1662,7 @@ void x64::trace_state()
                 {
                     decode_rm();
                     if ( 0x66 == _prefix.size )
-                        tracer.Trace( "padddw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
+                        tracer.Trace( "paddw %s, %s\n", xmm_names[ _reg ], rm_string( 8, true ) );
                     else
                         unhandled();
                     break;
@@ -1708,14 +1735,14 @@ void x64::trace_state()
         {
             _rm = op & 7;
             decode_rex();
-            tracer.Trace( "push %s\n", mode32 ? register_names32[ _rm ] : register_names[ _rm ] );
+            tracer.Trace( "push %s\n", register_name( _rm, op_width_def64() ) );
             break;
         }
         case 0x58: case 0x59: case 0x5a: case 0x5b: case 0x5c: case 0x5d: case 0x5e: case 0x5f: // pop
         {
             _rm = op & 7;
             decode_rex();
-            tracer.Trace( "pop %s\n", mode32 ? register_names32[ _rm ] : register_names[ _rm ] );
+            tracer.Trace( "pop %s\n", register_name( _rm, op_width_def64() ) );
             break;
         }
         case 0x60: // pusha/pushad (invalid in 64-bit mode)
@@ -1735,12 +1762,7 @@ void x64::trace_state()
         case 0x63: // movsxd reg, r/m. aka gcc movslq
         {
             decode_rm();
-            if ( 0x66 == _prefix.size )
-                tracer.Trace( "movsxw %s, %s\n", register_names[ _reg ], rm_string( 2 ) );
-            else if ( _rex.W )
-                tracer.Trace( "movsxq %s, %s\n", register_names[ _reg ], rm_string( 8 ) );
-            else
-                tracer.Trace( "movsxd %s, %s\n", register_names[ _reg ], rm_string( 4 ) );
+            tracer.Trace( "movsxd %s, %s\n", register_name( _reg, op_width() ), rm_string( _rex.W ? 4 : op_width() ) );
             break;
         }
         case 0x64: case 0x65: // prefix for fs: and gs:
@@ -1821,7 +1843,7 @@ void x64::trace_state()
             decode_rm();
             if ( 0x66 == _prefix.size )
             {
-                uint16_t imm = (int16_t) (int16_t) get_rip8();
+                uint16_t imm = (int16_t) (int8_t) get_rip8();
                 uint8_t math = _reg;
                 tracer.Trace( "%sw %s, %#x\n", math_names[ math ], rm_string( 2 ), imm );
             }
@@ -1878,7 +1900,7 @@ void x64::trace_state()
         case 0x8a: // mov r8, r/m8
         {
             decode_rm();
-            tracer.Trace( "mov %s, %s\n", register_name( _reg, 1 ), rm_string( _rex.W ? 8 : 4 ) );
+            tracer.Trace( "mov %s, %s\n", register_name( _reg, 1 ), rm_string( 1 ) );
             break;
         }
         case 0x8b: // mov reg, r/m
@@ -1896,7 +1918,7 @@ void x64::trace_state()
         case 0x8d: // lea
         {
             decode_rm();
-            tracer.Trace( "lea %s, %s\n", register_name( _reg ), rm_string( 8 ) );
+            tracer.Trace( "lea %s, %s\n", register_name( _reg, op_width() ), rm_string( op_width() ) );
             break;
         }
         case 0x8e: // mov Sreg, r/m 16 or 64 (but only moves 16 bits)
@@ -2022,6 +2044,7 @@ void x64::trace_state()
         case 0xa6: // cmpsb
         case 0xa7: // cmpsw/cmpsd/cmpsq
         {
+            decode_rex();
             if ( 0xf3 == _prefix.sse2_repeat )
                 tracer.Trace( "repe " );
             else if ( 0xf2 == _prefix.sse2_repeat )
@@ -2207,7 +2230,7 @@ void x64::trace_state()
             else if ( _rex.W )
                 tracer.Trace( "movq %s, %#llx\n", rm_string( 8 ), (int64_t) (int32_t) get_rip32() );
             else
-                tracer.Trace( "movd %s, %##x\n", rm_string( 4 ), get_rip32() );
+                tracer.Trace( "movd %s, %#x\n", rm_string( 4 ), get_rip32() );
             break;
         }
         case 0xc8: // enter alloc_size, nesting_level
@@ -2599,13 +2622,9 @@ void x64::trace_state()
         case 0xe3: // jcxz / jecxz / jrcxz rel8
         {
             int8_t rel = get_rip8();
-            decode_rex();
-            if ( 0x66 == _prefix.size )
-                tracer.Trace( "jcxz %d\n", (int32_t) rel );
-            else if ( _rex.W )
-                tracer.Trace( "jrcxz %d\n", (int32_t) rel );
-            else
-                tracer.Trace( "jecxz %d\n", (int32_t) rel );
+            const char * name = mode32 ? ( 0x67 == _prefix.address_size ? "jcxz" : "jecxz" )
+                                      : ( 0x67 == _prefix.address_size ? "jecxz" : "jrcxz" );
+            tracer.Trace( "%s %d\n", name, (int32_t) rel );
             break;
         }
         case 0xe8: // call rel32
@@ -2639,6 +2658,11 @@ void x64::trace_state()
         case 0xf4: // hlt
         {
             tracer.Trace( "hlt  # exit the emulator\n" );
+            break;
+        }
+        case 0xf5: // cmc complement carry flag
+        {
+            tracer.Trace( "cmc\n" );
             break;
         }
         case 0xf6:
@@ -4624,7 +4648,10 @@ uint64_t x64::run()
     for ( ;; )
     {
         #ifndef NDEBUG
-            _instruction_start = rip; // just for debugging; should probably remove for performance
+            _instruction_start = rip; // used by diagnostics and instruction tracing
+        #else
+            if ( g_State & stateTraceInstructions )
+                _instruction_start = rip;
         #endif
 
         instruction_count++;        // 14.7% of runtime including _prefix initialization below
