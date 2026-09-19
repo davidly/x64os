@@ -166,12 +166,12 @@ void x64::trace_state()
 
     char reg_string[ 16 * ( 3 + 1 + 16 + 1 ) + 1 ]; // name, colon, value, space, terminator
     char * next_reg = reg_string;
-    const char * const * names = mode32 ? register_names32 : register_names;
+    const char * const * trace_register_names = mode32 ? register_names32 : register_names;
     int reg_count = mode32 ? 8 : 16;
     for ( uint8_t r = 0; r < reg_count; r++ )
         if ( 0 != regs[ r ].q )
         {
-            const char * name = names[ r ];
+            const char * name = trace_register_names[ r ];
             while ( *name )
                 *next_reg++ = *name++;
             *next_reg++ = ':';
